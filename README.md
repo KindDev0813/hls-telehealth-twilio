@@ -57,7 +57,7 @@ After installation make sure to start Docker desktop.
 
 1. Build docker image of installer by executing
     ```shell
-    docker build --tag hls-installer https://github.com/bochoi-twlo/telehealth-v2.git#main
+    docker build --tag hls-installer https://github.com/twilio/hls-telehealth.git#main
     ```
 
 2. Run the built docker image by executing below supplying your Twilio credentials from above
