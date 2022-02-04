@@ -1,0 +1,140 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "resourceType": "Appointment",
+      "id": "a1000000",
+      "status": "booked",
+      "appointmentType": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0276",
+            "code": "ROUTINE"
+          }
+        ]
+      },
+      "reasonCode": [
+        {
+          "text": "I think I twiseted my ankle earlier this week when I jumped down some stairs but I can't tell, I attached a photo"
+        }
+      ],
+      "supportingInformation": [
+        {
+          "reference": "datastore/images/a1000000-ankle.png"
+        }
+      ],
+      "start": "2021-01-01T17:00:00Z",
+      "end": "2021-01-01T17:30:00Z",
+      "participant": [
+        {
+          "actor": {
+            "reference": "Patient/p1000000"
+          }
+        },
+        {
+          "type": [
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/encounter-participant-type",
+                  "code": "ATND"
+                }
+              ]
+            }
+          ],
+          "actor": {
+            "reference": "Practitioner/d1000"
+          }
+        }
+      ]
+    },
+    {
+      "resourceType": "Appointment",
+      "id": "a2000000",
+      "status": "booked",
+      "appointmentType": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0276",
+            "code": "CHECKUP"
+          }
+        ]
+      },
+      "reasonCode": [
+        {
+          "text": "Nose running, think I have a fever but not really sure"
+        }
+      ],
+      "supportingInformation": [],
+      "start": "2021-01-01T18:00:00Z",
+      "end": "2021-01-01T18:30:00Z",
+      "participant": [
+        {
+          "actor": {
+            "reference": "Patient/p2000000"
+          }
+        },
+        {
+          "type": [
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/encounter-participant-type",
+                  "code": "ATND"
+                }
+              ]
+            }
+          ],
+          "actor": {
+            "reference": "Practitioner/d1000"
+          }
+        }
+      ]
+    },
+    {
+      "resourceType": "Appointment",
+      "id": "a3000000000",
+      "status": "booked",
+      "appointmentType": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0276",
+            "code": "FOLLOWUP"
+          }
+        ]
+      },
+      "reasonCode": [
+        {
+          "text": "My shoulder has been bothering me and I’m can’t raise it"
+        }
+      ],
+      "supportingInformation": [],
+      "start": "2021-01-01T19:00:00Z",
+      "end": "2021-01-01T19:30:00Z",
+      "participant": [
+        {
+          "actor": {
+            "reference": "Patient/p3000000"
+          }
+        },
+        {
+          "type": [
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/encounter-participant-type",
+                  "code": "ATND"
+                }
+              ]
+            }
+          ],
+          "actor": {
+            "reference": "Practitioner/d2000"
+          }
+        }
+      ]
+    }
+  ]
+}

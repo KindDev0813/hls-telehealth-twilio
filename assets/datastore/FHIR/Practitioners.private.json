@@ -1,0 +1,45 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 2,
+  "entry": [
+    {
+      "resourceType": "Practitioner",
+      "id": "d1000",
+      "name": [
+        {
+          "use": "official",
+          "text": "Dr. Santos",
+          "family": "Santos",
+          "given": ["Jose"]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "sms",
+          "value": "+12223334444",
+          "use": "mobile"
+        }
+      ]
+    },
+    {
+      "resourceType": "Practitioner",
+      "id": "d2000",
+      "name": [
+        {
+          "use": "official",
+          "text": "Dr. Fauci",
+          "family": "Fauci",
+          "given": ["Anthony"]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "sms",
+          "value": "+13334445555",
+          "use": "mobile"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/twilio/hls-telehealth/blob/main/assets/reference/provider-schema.json",
+  "title": "provider",
+  "description": "Telelheath Provider",
+  "type": "object",
+  "required": [
+    "provider_id",
+    "provider_title",
+    "provider_video_url",
+    "provider_on_call"
+  ],
+  "properties": {
+    "provider_id": {
+      "$id": "#root/provider_id",
+      "description": "unique identifier of provider",
+      "type": "string"
+    },
+    "provider_name": {
+      "$id": "#root/provider_name",
+      "description": "display name of provider",
+      "type": "string"
+    },
+    "provider_phone": {
+      "$id": "#root/provider_phone",
+      "description": "mobile phone of provider",
+      "type": "string",
+      "examples": [
+        "+14153902337",
+        "(415)390-2337",
+        "4153902337"
+      ]
+    },
+    "provider_on_call": {
+      "$id": "#root/provider_on_call",
+      "description": "provider on-call for on-demand appointments",
+      "type": "boolean",
+      "default": false,
+      "examples": [
+        true,
+        false
+      ]
+    }
+  }
+}

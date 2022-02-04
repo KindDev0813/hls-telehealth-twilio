@@ -1,0 +1,19 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "resourceType": "PractitionerRole",
+      "active": true,
+      "practitioner": {
+        "reference": "Practitioner/d1000"
+      },
+      "code": [
+        {
+          "text": "on-call-for-on-demand-appointment"
+        }
+      ]
+    }
+  ]
+}

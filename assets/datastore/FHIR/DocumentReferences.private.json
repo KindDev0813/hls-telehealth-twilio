@@ -1,0 +1,65 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "resourceType": "DocumentReference",
+      "id": "c1000",
+      "status": "current",
+      "description": "Mayo Clinic Minute: What to know about this season's flu vaccine",
+      "content": [
+        {
+          "attachment": {
+            "url": "https://www.youtube.com/embed/E1h2Aqr8cu8",
+            "title": "Flu Vacinne"
+          }
+        }
+      ],
+      "context": {
+        "related": [
+          {
+            "reference": "Practitioner/d1000"
+          }
+        ]
+      }
+    },
+    {
+      "resourceType": "DocumentReference",
+      "id": "c2000",
+      "status": "current",
+      "description": "How CDC is Making COVID-19 Vaccine Recommendations",
+      "content": [
+        {
+          "attachment": {
+            "url": "https://www.youtube.com/embed/6Wqk2CrMrh8",
+            "title": "Covid Vaccine Recommendations"
+          }
+        }
+      ],
+      "context": {
+        "related": [
+          {
+            "reference": "Practitioner/d2000"
+          }
+        ]
+      }
+    },
+    {
+      "resourceType": "DocumentReference",
+      "id": "c3000",
+      "status": "current",
+      "content": [
+        {
+          "attachment": {
+            "url": "https://www.youtube.com/embed/8Z6X3PxXs2I",
+            "title": "Covid and Flu Vaccine"
+          }
+        }
+      ],
+      "context": {
+        "related": []
+      }
+    }
+  ]
+}

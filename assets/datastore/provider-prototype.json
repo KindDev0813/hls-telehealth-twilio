@@ -1,0 +1,6 @@
+{
+  "provider_id": "<UniqueProviderID 1..1>",
+  "provider_name": "<ProvideDisplayFullName 1..1>",
+  "provider_phone": "<ProvideMobilePhone 1..1>",
+  "provider_on_call": "<true|false 1..1, only 1 provider may be on-call at a time>"
+}

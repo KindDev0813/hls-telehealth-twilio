@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/twilio/hls-telehealth/blob/main/assets/reference/patient-schema.json",
+  "title": "patient",
+  "description": "Telelheath waiting room patient",
+  "type": "object",
+  "required": [
+    "patient_id",
+    "patient_name",
+    "patient_given_name",
+    "patient_phone",
+    "patient_gender",
+    "patient_language",
+    "patient_medications",
+    "patient_conditions"
+  ],
+  "properties": {
+    "patient_id": {
+      "$id": "#root/patient_id",
+      "description": "unique identifier of patient",
+      "type": "string"
+    },
+    "patient_name": {
+      "$id": "#root/patient_name",
+      "description": "display name of patient",
+      "type": "string"
+    },
+    "patient_family_name": {
+      "$id": "#root/patient_family_name",
+      "description": "last name of patient",
+      "type": "string"
+    },
+    "patient_given_name": {
+      "$id": "#root/patient_given_name",
+      "description": "first name of patient, used for SMS salutation",
+      "type": "string"
+    },
+    "patient_phone": {
+      "$id": "#root/patient_phone",
+      "description": "mobile phone of patient",
+      "type": "string",
+      "examples": [
+        "+14153902337",
+        "(415)390-2337",
+        "4153902337"
+      ]
+    },
+    "patient_email": {
+      "$id": "#root/patient_email",
+      "description": "email address of patient",
+      "type": "string"
+    },
+    "patient_gender": {
+      "$id": "#root/patient_gender",
+      "description": "gender of patient",
+      "type": "string",
+      "examples": [
+        "Male",
+        "Female",
+        "Other",
+        "Unknown"
+      ]
+    },
+    "patient_language": {
+      "$id": "#root/patient_language",
+      "description": "preferred language of patient, non-English implies translator needed",
+      "type": "string",
+      "examples": [
+        "English",
+        "Spanish"
+      ]
+    },
+    "patient_medications": {
+      "$id": "#root/patient_medications",
+      "type": "array",
+      "default": [],
+      "items":{
+        "$id": "#root/patient_medications/items",
+        "description": "current medication of patient",
+        "type": "string",
+        "examples": [
+          "Tylenol"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "patient_conditions": {
+      "$id": "#root/patient_conditions",
+      "type": "array",
+      "default": [],
+      "items":{
+        "$id": "#root/patient_conditions/items",
+        "description": "current medication of patient",
+        "type": "string",
+        "examples": [
+          "Tylenol"
+        ]
+      },
+      "uniqueItems": true
+    }
+  }
+}

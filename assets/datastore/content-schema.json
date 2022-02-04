@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/twilio/hls-telehealth/blob/main/assets/reference/content-schema.json",
+  "title": "content",
+  "description": "Telelheath waiting room content",
+  "type": "object",
+  "required": [
+    "content_id",
+    "content_title",
+    "content_video_url",
+    "providers"
+  ],
+  "properties": {
+    "content_id": {
+      "$id": "#root/content_id",
+      "description": "unique identifier of content",
+      "type": "string"
+    },
+    "content_title": {
+      "$id": "#root/content_title",
+      "description": "unique short title of content",
+      "type": "string"
+    },
+    "content_description": {
+      "$id": "#root/content_description",
+      "description": "long description of content",
+      "type": "string"
+    },
+    "content_video_url": {
+      "$id": "#root/content_video_url",
+      "description": "direct embeddable url to video content",
+      "type": "string",
+      "examples": [
+        "https://www.youtube.com/embed/E1h2Aqr8cu8"
+      ]
+    },
+    "providers": {
+      "$id": "#root/providers",
+      "type": "array",
+      "default": [],
+      "items":{
+        "$id": "#root/providers/items",
+        "description": "providers identifier of those assigned this content",
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  }
+}

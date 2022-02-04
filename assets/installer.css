@@ -1,0 +1,249 @@
+/*
+ * installer specific css
+ */
+
+
+body {
+    padding: 20px 2% 20px 2%;
+    font-size: 1.9em;
+}
+
+/*
+ * configuration class styles
+ */
+table.configuration {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+td.configuration-label {
+    width: 40%;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+td.configuration-value {
+    width: 60%;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+@media only screen and (min-width: 992px) {
+    body {
+        font-size: 1.6em;
+    }
+}
+
+.form-section {
+    display: grid;
+    grid-template-columns: 100%;
+}
+
+h4 {
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin: 0 auto;
+    width: 95%;
+}
+
+@media only screen and (min-width: 992px) {
+    .form-section-middle .form-group {
+        width: 90%;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    form {
+        margin: 7%;
+        width: 40%;
+        min-width: 600px;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    form {
+        width: 50%;
+    }
+}
+
+.ht:hover .tooltip {
+    display: block;
+}
+
+.tooltip {
+    display: none;
+    color: white;
+    font-weight: normal;
+    font-size: 15px;
+    margin-left: -8px; /* moves the tooltip to the right */
+    margin-top: -80px; /* moves it down */
+    position: absolute;
+    z-index: 1000;
+    width: 350px;
+    background: gray;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 5px;
+    text-align: center;
+}
+@media only screen and (min-width: 992px) {
+    .tooltip {
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+}
+
+.info-circle {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: solid 1px dodgerblue;
+    cursor: default;
+    background-color: dodgerblue;
+    color: white;
+    text-align: center;
+}
+
+.configure-label {
+    display: inline-block;
+}
+
+.configure-label-long {
+    font-size: small;
+    margin-bottom: 10px;
+}
+
+.button {
+    background-color: dodgerblue;
+    border: 1px solid dodgerblue;
+    text-align: center;
+    margin-left: 20%;
+}
+
+.star {
+    color: red;
+}
+
+.configure-error-login {
+    font-size: 15px;
+    color: red;
+}
+
+.configure-error-twilio-phone-number {
+    display: none;
+}
+
+.configure-error {
+    display: none;
+    color: red;
+    font-size: 15px;
+}
+
+/*
+ * --------------------------------------------------------------------------------
+ * deployer styles
+ * --------------------------------------------------------------------------------
+ */
+span.checkmark {
+    color: rgb(20, 176, 83);
+}
+
+.deployer {
+    margin: 10px 0;
+    margin-bottom: 30px;
+}
+
+.service-loader {
+    border: 4px solid rgb(244, 244, 246);
+    border-top: 4px solid rgb(18, 28, 45);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+    margin-top: -5px;
+}
+
+#service-deploy .button.loading {
+    background: rgb(244, 244, 246);
+    border: 1px solid rgb(244, 244, 246);
+    color: rgb(96, 107, 133);
+    box-shadow: none;
+    cursor: default;
+}
+
+/* from https://loading.io/css/ under CC0 license */
+.lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 36px;
+}
+.lds-ellipsis div {
+    position: absolute;
+    top: 11px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #9b4dca;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+.ellipses-text {
+    position: absolute;
+    display: inline-block;
+    height: 36px;
+    padding-top: 5px;
+}

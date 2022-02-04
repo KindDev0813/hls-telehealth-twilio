@@ -1,0 +1,14 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "selectedThumb": "thumb_down",
+      "selectedIssues": [
+        "Couldn't hear"
+      ],
+      "otherIssue": ""
+    }
+  ]
+}

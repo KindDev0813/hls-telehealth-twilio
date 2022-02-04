@@ -1,0 +1,34 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "resourceType": "Condition",
+      "code": {
+        "text": "Asthma"
+      },
+      "subject": {
+        "reference": "Patient/p1000000"
+      }
+    },
+    {
+      "resourceType": "Condition",
+      "code": {
+        "text": "Type 2 Diabetes"
+      },
+      "subject": {
+        "reference": "Patient/p2000000"
+      }
+    },
+    {
+      "resourceType": "Condition",
+      "code": {
+        "text": "Hypertension"
+      },
+      "subject": {
+        "reference": "Patient/p2000000"
+      }
+    }
+  ]
+}

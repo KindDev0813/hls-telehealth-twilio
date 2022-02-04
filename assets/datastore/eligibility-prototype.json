@@ -1,0 +1,6 @@
+{
+  "insurer_id": "<InsurerOrganizationID 1..1>",
+  "subscriber_id": "<SubscriberID 1..1>",
+  "eligibility_status": "<eligible|ineligible 1..1>",
+  "copay_usd": 30.0
+}

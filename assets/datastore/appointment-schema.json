@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/twilio/hls-telehealth/blob/main/assets/reference/appointment-schema.json",
+  "title": "appointment",
+  "description": "Telelheath waiting room appointment",
+  "type": "object",
+  "required": [
+    "appointment_id",
+    "appointment_type",
+    "appointment_start_datetime_utc",
+    "appointment_end_datetime_utc",
+    "appointment_references",
+    "patient_id",
+    "provider_id"
+  ],
+  "properties": {
+    "appointment_id": {
+      "$id": "#root/appointment_id",
+      "description": "unique identifier of appointment",
+      "type": "string"
+    },
+    "appointment_type": {
+      "$id": "#root/appointment_type",
+      "description": "indicator of appointments scheduled from EHR or created on-demand in Telehealth (WALKIN)",
+      "type": "string",
+      "examples": [
+        "WALKIN",
+        "CHECKUP",
+        "EMERGENCY",
+        "FOLLOWUP",
+        "ROUTINE"
+      ]
+    },
+    "appointment_start_datetime_utc": {
+      "$id": "#root/appointment_start_datetime_utc",
+      "description": "appointment start datetime in UTC",
+      "type": "string",
+      "examples": [
+        "YYYYMMDDThh:mm:ssZ",
+        "YYYYMMDDThh:mm:ss.SSSSZ"
+      ]
+    },
+    "appointment_end_datetime_utc": {
+      "$id": "#root/appointment_end_datetime_utc",
+      "description": "appointment end datetime in UTC",
+      "type": "string",
+      "examples": [
+        "YYYYMMDDThh:mm:ssZ",
+        "YYYYMMDDThh:mm:ss.SSSSZ"
+      ]
+    },
+    "appointment_reason": {
+      "$id": "#root/appointment_reason",
+      "description": "description of reason for appointment",
+      "type": "string"
+    },
+    "appointment_references": {
+      "$id": "#root/appointment_references",
+      "type": "array",
+      "default": [],
+      "items":{
+        "$id": "#root/appointment_references/items",
+        "description": "appointment reference resources such as images stored as Assets in Telehealth. Note that this will not be saved to EHR",
+        "type": "string",
+        "examples": [
+          "datastore/images/ankle.jpg"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "patient_id": {
+      "$id": "#root/patient_id",
+      "description": "unique identifier of patient",
+      "type": "string"
+    },
+    "provider_id": {
+      "$id": "#root/provider_id",
+      "description": "unique identifier of provider",
+      "type": "string"
+    }
+  }
+}

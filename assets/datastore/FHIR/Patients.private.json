@@ -1,0 +1,106 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 3,
+  "entry": [
+    {
+      "resourceType": "Patient",
+      "id": "p1000000",
+      "meta": {
+        "source": "http://owlhealth.com/"
+      },
+      "name": [
+        {
+          "use": "official",
+          "text": "Cooper, Sarah",
+          "family": "Cooper",
+          "given": [
+            "Sarah"
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "sms",
+          "value": "+19998887777",
+          "use": "mobile"
+        }
+      ],
+      "gender": "female",
+      "communication": [
+        {
+          "language": {
+            "text": "English"
+          },
+          "preferred": true
+        }
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "p2000000",
+      "meta": {
+        "source": "http://owlhealth.com/"
+      },
+      "name": [
+        {
+          "use": "official",
+          "text": "Green, Jakob",
+          "family": "Green",
+          "given": [
+            "Jakob"
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "sms",
+          "value": "+19998886666",
+          "use": "mobile"
+        }
+      ],
+      "gender": "male",
+      "communication": [
+        {
+          "language": {
+            "text": "Spanish"
+          },
+          "preferred": true
+        }
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "p3000000",
+      "meta": {
+        "source": "http://owlhealth.com/"
+      },
+      "name": [
+        {
+          "use": "official",
+          "text": "Owusu-Koramoah, Jeremiah",
+          "family": "Owusu-Koramoah",
+          "given": [
+            "Jeremiah"
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "sms",
+          "value": "+19998886666",
+          "use": "mobile"
+        }
+      ],
+      "gender": "male",
+      "communication": [
+        {
+          "language": {
+            "text": "English"
+          },
+          "preferred": true
+        }
+      ]
+    }
+  ]
+}

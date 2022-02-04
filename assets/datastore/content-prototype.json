@@ -1,0 +1,10 @@
+{
+  "content_id": "<UniqueContentID 1..1>",
+  "content_title": "<UniqueContentShortTitle 1..1>",
+  "content_description": "<ContentLongDescription 0..1>",
+  "content_video_url": "<ContentVideoURL 1..1>",
+  "providers":
+  [
+    "<ContentAssignedProviderID 0..n, empty array if 0>"
+  ]
+}

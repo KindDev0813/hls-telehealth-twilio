@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Twilio Telehealth Application</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+  <link rel="stylesheet" href="https://unpkg.com/normalize.css/normalize.css">
+  <link rel="stylesheet" href="https://unpkg.com/milligram/dist/milligram.min.css">
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./authentication.css" />
+  <link rel="stylesheet" href="./administration.css" />
+</head>
+
+<body>
+  <header>
+    <h1>Twilio Telehealth Application</h1>
+    <div id="hipaa-disclaimer" style="margin-bottom: 20px;">
+      Note that this application is designed for prototyping purposes only and you should<br/>
+      <a href="https://ahoy.twilio.com/telehealth" target="_blank">consult with a Twilio Expert</a>
+      before publicly offering this service in a production context.
+    </div>
+  </header>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="application/javascript" src="/administration-controller.js"></script>
+  <!-- javascript function initialize() must be loaded before authentication-controller.js -->
+  <script type="application/javascript" src="/authentication-controller.js"></script>
+  <div class="authentication">
+    <div id="password-form">
+      <p id="login-error" style="color:red"></p>
+      <form>
+        <div>
+          <label for="password-input">Password:
+            <input id="password-input" type="password" name="password" style="width: 400px">
+          </label>
+        </div>
+        <button id="btn-authenticate" class="button" onclick="login(event)">Authenticate</button>
+      </form>
+    </div>
+    <div id="mfa-form" style="display: none;">
+      <p>
+        Your password was accepted. For additional security, please enter the security code we sent to your phone.
+      </p>
+      <p id="mfa-error" style="color:red"></p>
+      <form>
+        <div>
+          <label for="mfa-input">
+            <input id="mfa-input" type="text" name="mfacode" style="width: 400px">
+          </label>
+        </div>
+        <button class="button" onclick="mfa(event)">Verify Security Code</button>
+      </form>
+    </div>
+    <p id="auth-successful"  style="display:none">Authenticated successfully</p>
+  </div>
+  <main style="display: none">
+
+
+    <section id="patient-management">
+      <h3>Telehealth Patients</h3>
+
+      <table id="patients">
+        <tr>
+          <th>Patient ID</th>
+          <th>Patient Name</th>
+          <th>Patient Phone</th>
+        </tr>
+      </table>
+      <br/>
+      <br/>
+    </section>
+
+    <section id="content-management">
+      <h3>Waiting Room Content</h3>
+
+      <table id="contents">
+        <thead>
+          <th></th>
+          <th hidden>ID</th>
+          <th>Title</th>
+          <th>Video URL</th>
+          <th>Description</th>
+        </thead>
+      </table>
+      <br/>
+      <a id="content-add" class="button" onclick="addContent('#contents', '#provider-contents', '#provider-selector');">Add Content</a>
+      <br/>
+      <br/>
+    </section>
+
+    <section id="provider-management">
+      <h3>Telehealth Providers</h3>
+
+      <table id="providers">
+        <tr>
+          <th>On-Call</th>
+          <th>Provider ID</th>
+          <th>Provider Name</th>
+          <th>Provider Phone</th>
+        </tr>
+      </table>
+      <br/>
+      <br/>
+    </section>
+
+    <section id="provider-configuration">
+      <h3>Provider Configuration</h3>
+
+      <label>Selected Provider:
+        <select id="provider-selector" name="provider-selector" onchange="selectProvider('#provider-selector');">
+        </select>
+      </label>
+
+      <br/>
+      <h4>Patient Queue</h4>
+      <table id="provider-patients">
+        <tr>
+          <th>Type</th>
+          <th>Appointment ID</th>
+          <th>Patient Name</th>
+          <th>Wait Time</th>
+          <th>Rec</th>
+        </tr>
+      </table>
+      <br/>
+
+      <br/>
+      <h4>Content</h4>
+      <table id="provider-contents">
+        <tr>
+          <th>Use</th>
+          <th>Content Set</th>
+          <th>Video URL</th>
+        </tr>
+      </table>
+      <br/>
+      <br/>
+    </section>
+
+    <section id="telehealth-links">
+      <h4>Telehealth Launching</h4>
+
+      <table class="input">
+        <tr>
+          <th colspan="3">Patient - scheduled appointment</th>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <small><a id="scheduled-patient-link" href="" target="_blank"></a></small>
+          </td>
+          <td class="input-action">
+            <a id="scheduled-patient-link-generate-button" class="button" onclick="generateScheduledPatientLink(event);" enabled>Generate Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="input-label">Enter Patient Phone Number</td>
+          <td class="input-value">
+            <input id="scheduled-patient-phone" class="input" type="text" name="patient-phone">
+          </td>
+          <td class="input-action">
+            <a id="scheduled-patient-link-send-button" class="button" onclick="sendScheduledPatientLink(event);" disabled>Send SMS</a>
+          </td>
+        </tr>
+      </table>
+      <br/>
+      <table class="input">
+        <tr>
+          <th colspan="3">Patient - on-demand appointment</th>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <small><a id="ondemand-patient-link" href="" target="_blank"></a></small>
+          </td>
+        </tr>
+        <tr>
+          <td class="input-label">Enter Patient Phone Number</td>
+          <td class="input-value">
+            <input id="ondemand-patient-phone" class="input" type="text" name="patient-phone">
+          </td>
+          <td class="input-action">
+            <a id="ondemand-patient-link-send" class="button" onclick="sendOnDemandPatientLink(event);" enabled>Send SMS</a>
+          </td>
+        </tr>
+      </table>
+      <br/>
+      <table class="input">
+        <tr>
+          <th colspan="3">Provider</th>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <small><a id="provider-link" href="" target="_blank"></a></small>
+          </td>
+          <td class="input-action">
+            <a id="provider-link-generate-button" class="button" onclick="generateProviderLink(event);" enabled>Generate Link</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="input-label"> Enter Provider Phone Number</td>
+          <td class="input-value">
+            <input id="provider-phone" class="input" type="text" name="patient-phone">
+          </td>
+          <td class="input-action">
+            <a id="provider-link-send-button" class="button" onclick="sendProviderLink(event);" disabled>Send SMS</a>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      Made with 💖 by your friends at <a href="https://www.twilio.com">Twilio</a>
+    </p>
+  </footer>
+</body>
+
+</html>

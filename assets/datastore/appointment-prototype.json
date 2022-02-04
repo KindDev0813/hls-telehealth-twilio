@@ -1,0 +1,12 @@
+{
+  "appointment_id": "<UniqueAppointmentID 1..1>",
+  "appointment_type": "<WALKIN|CHECKUP|EMERGENCY|FOLLOWUP|ROUTINE 1..1>",
+  "appointment_start_datetime_utc": "<Appointment start datetime utc (YYYYMMDDThh:mm:ssZ) 1..1>",
+  "appointment_end_datetime_utc": "<Appointment end datetime utc (YYYYMMDDThh:mm:ssZ) 1..1>",
+  "appointment_reason": "<AppointmentReasonDescription 0..1>",
+  "appointment_references": [
+    "<AppointmentReferenceItem 0..n, empty array if 0>"
+  ],
+  "patient_id": "<PatientID 1..1>",
+  "provider_id": "<ProviderID 1..1>"
+}

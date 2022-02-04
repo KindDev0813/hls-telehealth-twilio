@@ -1,0 +1,16 @@
+{
+  "patient_id": "<UniquePatientID 1..1>",
+  "patient_name": "<PatientDisplayFullName 1..1>",
+  "patient_family_name": "<PatientLastName 0..1>",
+  "patient_given_name": "<PatientFirstName 1..1>",
+  "patient_phone": "<PatientMobilePhone 1..1>",
+  "patient_email": "<PatientEmail 0..1>",
+  "patient_gender": "<Male|Female|Other|Unknown 0..1>",
+  "patient_language": "<PatientPreferredLanguage 1..1, default English>",
+  "patient_medications": [
+    "<PatientMedication 0..n, empty array if 0>"
+  ],
+  "patient_conditions": [
+    "<PatientCondition 0..n, empty array if 0>"
+  ]
+}

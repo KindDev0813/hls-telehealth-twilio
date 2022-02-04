@@ -1,0 +1,47 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 4,
+  "entry": [
+    {
+      "resourceType": "MedicationStatement",
+      "medicationCodeableConcept": {
+        "text": "Albutrerol"
+      },
+      "status": "active",
+      "subject": {
+        "reference": "Patient/p1000000"
+      }
+    },
+    {
+      "resourceType": "MedicationStatement",
+      "medicationCodeableConcept": {
+        "text": "Singulair"
+      },
+      "status": "active",
+      "subject": {
+        "reference": "Patient/p1000000"
+      }
+    },
+    {
+      "resourceType": "MedicationStatement",
+      "medicationCodeableConcept": {
+        "text": "Ibuprofen"
+      },
+      "status": "active",
+      "subject": {
+        "reference": "Patient/p1000000"
+      }
+    },
+    {
+      "resourceType": "MedicationStatement",
+      "medicationCodeableConcept": {
+        "text": "Tylenol"
+      },
+      "status": "active",
+      "subject": {
+        "reference": "Patient/p2000000"
+      }
+    }
+  ]
+}

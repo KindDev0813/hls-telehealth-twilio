@@ -1,0 +1,98 @@
+/*
+ * administration.html specific css
+ */
+
+/*
+ * content table styles
+ */
+table {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+td {
+    padding: 0;
+    margin: 0;
+    padding-top: 8px;
+    padding-left: 2px;
+    padding-right: 2px;
+    vertical-align: middle;
+}
+
+/*
+ * input table styles
+ */
+table.input {
+    width: 100%;
+    border: none;
+    margin: 0;
+}
+
+td.input-label {
+    width: 40%;
+    border: none;
+    margin: 0;
+    vertical-align: middle;
+}
+
+td.input-value {
+    width: 30%;
+    border: none;
+    margin: 0;
+    vertical-align: middle;
+}
+
+td.input-action {
+    width: 30%;
+    border: none;
+    margin: 0;
+    vertical-align: middle;
+    text-align: right;
+}
+
+input.input {
+    padding: 0;
+    margin: 0;
+}
+
+
+.ht:hover .tooltip {
+    display: block;
+}
+
+.tooltip {
+    display: none;
+    color: white;
+    font-weight: normal;
+    font-size: 15px;
+    margin-left: -8px; /* moves the tooltip to the right */
+    margin-top: -80px; /* moves it down */
+    position: absolute;
+    z-index: 1000;
+    width: 350px;
+    background: gray;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 5px;
+    text-align: center;
+}
+
+.info-circle {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: solid 1px dodgerblue;
+    cursor: default;
+    background-color: dodgerblue;
+    color: white;
+    text-align: center;
+}
+
+.star {
+    color: red;
+}

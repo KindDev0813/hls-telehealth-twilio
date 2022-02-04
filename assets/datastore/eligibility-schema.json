@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/twilio/hls-telehealth/blob/main/assets/reference/appointment-schema.json",
+  "title": "eligibility",
+  "description": "Insurance eligibility validation & benefits copay",
+  "type": "object",
+  "required": [
+    "insurer_id",
+    "subscriber_id",
+    "eligibility_status",
+    "copay_usd"
+  ],
+  "properties": {
+    "insurer_id": {
+      "$id": "#root/insurer_id",
+      "description": "id for insurer organization",
+      "type": "string"
+    },
+    "subscriber_id": {
+      "$id": "#root/subscriber_id",
+      "description": "insurer assigned subscriber id",
+      "type": "string"
+    },
+    "eligibility_status": {
+      "$id": "#root/eligibility_status",
+      "description": "eligible|ineligible",
+      "type": "string"
+    },
+    "copay_usd": {
+      "$id": "#root/copay_usd",
+      "description": "copay for telehealth visit in USD",
+      "type": "number"
+    }
+  }
+}

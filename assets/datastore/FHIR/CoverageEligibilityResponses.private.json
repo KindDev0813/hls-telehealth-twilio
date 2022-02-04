@@ -1,0 +1,52 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "resourceType": "CoverageEligibilityResponse",
+      "id": "ceres#######",
+      "text": {
+        "status": "active"
+      },
+      "status": "active",
+      "purpose": [
+        "validation",
+        "benefits"
+      ],
+      "patient": {
+        "reference": "Patient/p#######"
+      },
+      "created": "2022-01-01",
+      "request": {
+        "reference": "http://www.BenefitsInc.com/fhir/coverageeligibilityresponse/cereq#######"
+      },
+      "outcome": "complete",
+      "insurer": {
+        "reference": "Organization/o###"
+      },
+      "insurance": [
+        {
+          "coverage": {
+            "reference": "Coverage/c#######"
+          },
+          "item": [
+            {
+              "benefit": [
+                {
+                  "type": {
+                    "text":  "copay"
+                  },
+                  "allowedMoney": {
+                    "value": 30,
+                    "currency": "USD"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

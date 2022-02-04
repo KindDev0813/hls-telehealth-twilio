@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+::selection {
+  background: #f22f46;
+  color: white;
+}
+
+body {
+  color: #0d122b;
+  border-top: 5px solid #f22f46;
+  padding: 20px;
+  min-height: 100vh;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+header {
+  padding: 2em;
+  margin-bottom: 2em;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+header h1 {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(148, 151, 155, 0.2);
+}
+
+
+a {
+  color: #008cff;
+}
+
+
+main {
+  margin: 0 auto 6em;
+  padding: 0 2em;
+  max-width: 800px;
+}
+
+main p {
+  margin-bottom: 2em;
+}
+
+main p code {
+  color: #f22f46;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 0 0 1px #e8e8e8;
+  line-height: 1.2;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
+main h2 {
+  margin-bottom: 1em;
+}
+
+footer {
+  margin: 0 auto;
+  max-width: 800px;
+  text-align: center;
+}
+
+footer p {
+  border-top: 1px solid rgba(148, 151, 155, 0.2);
+  padding-top: 2em;
+  margin: 0 2em;
+}
+
+/*
+ */
+#hipaa-disclaimer {
+  border: 2px solid rgb(136, 145, 170);
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+span.checkmark {
+  color: rgb(20, 176, 83);
+}
+
+/*
+ * progress bar with text
+ */
+progress {
+  text-align: center;
+  height: 1.5em;
+  width: 50%;
+  -webkit-appearance: none;
+  border: none;
+
+  /* Set the progressbar to relative */
+  position:relative;
+}
+
+progress:before {
+  content: attr(label);
+  font-size: 1em;
+  vertical-align: 0;
+
+  /*Position text over the progress bar */
+  position:absolute;
+  left:0;
+  right:0;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #ffaadd;
+}
+
+progress::-webkit-progress-value {
+  background-color: #ff0000;
+}
+
+progress::-moz-progress-bar {
+  background-color: #ff0000;
+}
