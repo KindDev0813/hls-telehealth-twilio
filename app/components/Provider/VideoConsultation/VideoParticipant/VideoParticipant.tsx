@@ -184,7 +184,7 @@ export const VideoParticipant = ({
         className={`relative flex items-center justify-center bg-dark text-white text-2xl overflow-hidden ${heightClass} ${widthClass}`}
       >
         {!showVideo && (
-          <div className="absolute inset-0 bg-dark text-white flex items-center justify-center">
+          <div className="absolute inset-0 bg-dark text-white flex items-center justify-center text-sm">
             {name}
           </div>
         )}

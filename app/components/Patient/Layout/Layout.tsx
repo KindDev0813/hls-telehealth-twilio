@@ -1,6 +1,7 @@
 import { Heading } from '../../Heading';
 import { Header } from '../Header';
 import { PoweredByTwilio } from '../../PoweredByTwilio';
+import React from "react";
 
 export interface LayoutProps {
   children: React.ReactNode;

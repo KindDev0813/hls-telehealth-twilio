@@ -16,17 +16,19 @@ const Providers = composeProviders(
 
 function VideoProviderChildrenWrapper(props: React.PropsWithChildren<{}>) {
   const { visit, user } = useVisitContext();
-  const { getAudioAndVideoTracks, localTracks } = useVideoContext();
+  const { getAudioAndVideoTracks, localTracks, room } = useVideoContext();
   const [mediaError, setMediaError] = useState<Error>();
 
   useEffect(() => {
-    if (!mediaError) {
-      getAudioAndVideoTracks().catch(error => {
-        console.log('Error acquiring local media:');
-        console.dir(error);
-        setMediaError(error);
-        router.push("/patient/video/no-av-permission");
-      });
+    if (!mediaError ) {
+      if(!room) {
+        getAudioAndVideoTracks().catch(error => {
+          console.log('Error acquiring local media:');
+          console.dir(error);
+          setMediaError(error);
+          router.push("/patient/video/no-av-permission");
+        });
+      }
     }
   }, [getAudioAndVideoTracks, mediaError]);
   return (
