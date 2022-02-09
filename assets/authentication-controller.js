@@ -2,10 +2,39 @@
  * main controller javascript used by index.html
  */
 
-let accessToken = null;
+let accessToken = TokenLocalStorage('get');
 let refreshToken = null;
 let userActive = true;
 const ACCESS_TOKEN_REFRESH_INTERVAL = 20 * 60 * 1000;
+
+
+//waiting for dom loading 
+setTimeout(initLoad, 1000);
+
+
+function initLoad()
+{
+    // try to get data from localStorages
+    const parsedToken = accessToken ? parseJwt(accessToken) :  null;
+    if(parsedToken && parsedToken['exp'] > Date.now()/1000 ) {
+    //    scheduleTokenRefresh();
+        
+        console.log(accessToken);
+        $('#password-form').hide();
+        $('#mfa-form').hide();
+        $('#mfa-input').val('');
+        $('main').show();
+        initialize();
+    } else 
+    {
+        $('#password-form').show();
+        TokenLocalStorage('remove');
+        accessToken = null;
+    
+    }
+    
+}
+
 
 
 async function mfa(e) {
@@ -33,6 +62,7 @@ async function mfa(e) {
         .then((r) => {
             accessToken = r.accessToken;
             refreshToken = r.refreshToken;
+            TokenLocalStorage('set',accessToken);
             $('#mfa-form').hide();
             $('#mfa-input').val('');
             $('#auth-successful').show();
@@ -134,5 +164,24 @@ async function refresh() {
             accessToken = r.accessToken;
         })
         .catch((err) => console.log(err));
+}
+
+//use LocalStorage for token
+//cmd get,set,delete
+function TokenLocalStorage(cmd, token) {
+    switch (cmd) {
+        case 'get':
+            return localStorage.getItem('accessToken');
+            break;
+        case 'set':
+            return localStorage.setItem('accessToken',token);
+            break;
+        case 'remove':
+            localStorage.removeItem('accessToken');
+            return null;
+            break;
+        default:
+          return null;
+    }
 }
 

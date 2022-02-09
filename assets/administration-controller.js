@@ -73,8 +73,8 @@ async function generateScheduledPatientLink(e) {
 
     console.log(THIS, `fetch appointment details from server`);
     appointment_details = await fetchNextScheduledAppointment(provider_id);
-    if (! appointment_details) {
-      alert('no appointment found!!!');
+    if (typeof appointment_details === 'string') {
+      alert(appointment_details);
       return;
     }
     console.log(THIS, `... found appointment: ${appointment_details.appointment.appointment_id}`);
@@ -123,7 +123,10 @@ async function sendScheduledPatientLink(e) {
 
     const phone = $(UI.scheduled_patient_phone).val();
     const url = $(UI.scheduled_patient_link).attr('href');
-
+    if ($(UI.scheduled_patient_link_send_button).is("[disabled]")) {
+      alert('Please generate link!');
+      return;
+    }
     if (! phone) {
       alert('Please enter phone number to received url link!');
       return;
@@ -219,8 +222,8 @@ async function generateProviderLink(e) {
 
     console.log(THIS, `fetch appointment details from server`);
     appointment_details = await fetchNextScheduledAppointment(provider_id);
-    if (! appointment_details) {
-      alert('no appointment found!!!');
+    if (typeof appointment_details === 'string') {
+      alert(appointment_details);
       return;
     }
     console.log(THIS, `... found appointment: ${appointment_details.appointment.appointment_id}`);
@@ -271,6 +274,10 @@ async function sendProviderLink(e) {
     const phone = $(UI.provider_phone).val();
     const url = $(UI.provider_link).attr('href');
 
+    if ($(UI.provider_link_send_button).is("[disabled]")) {
+      alert('Please generate link!');
+      return;
+    }
     if (! phone) {
       alert('Please enter phone number to received url link!');
       return;
@@ -699,17 +706,22 @@ async function fetchNextScheduledAppointment(provider_id) {
           'Content-Type': 'application/json'
         },
       });
+    if(response.status === 401) {
+      return "Invalid or expired token!";
+    }  
+      
     const tuple = await response.json();
+    console.log(tuple);
 
     if (tuple.length === 0) {
       console.log(THIS, `No appointments found for provider: ${provider_id}. returning...`);
-      return output;
+      return "no appointment found!!!";
     }
 
     next_appt = tuple.find(e => e.appointment.appointment_type !== 'WALKIN');
     if (!next_appt) {
       console.log(THIS, `No next scheduled appointment found for provider: ${provider_id}. returning...`);
-      return output;
+      return "no appointment found!!!";
     }
 
     output.appointment = next_appt.appointment;
