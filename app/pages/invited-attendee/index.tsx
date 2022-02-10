@@ -8,13 +8,15 @@ import { Select } from '../../components/Select';
 import { STORAGE_USER_KEY, STORAGE_VISIT_KEY } from '../../constants';
 import clientStorage from '../../services/clientStorage';
 import visitorAuth from '../../services/authService';
-import visitService from '../../services/visitService';
-import { TelehealthUser } from '../../types';
+//import visitService from '../../services/visitService';
+import { TelehealthUser, TelehealthVisit } from '../../types';
+import datastoreService from '../../services/datastoreService';
 
 const InvitedAttendeePage = () => {
   const router = useRouter();
   const [isInitialized, setIsInitialized] = useState(false);
   const [name, setName] = useState('');
+  const [visit, setVisit] = useState<TelehealthVisit>(null);
   const [relationship, setRelationship] = useState('');
   const [terms, setTerms] = useState(false);
   useEffect(() => {
@@ -23,8 +25,15 @@ const InvitedAttendeePage = () => {
       visitorAuth.authenticateVisitorOrPatient(token)
       .then(u => {
         clientStorage.saveToStorage(STORAGE_USER_KEY, u);
-        return visitService.getVisitForPatient(u);
+        
+        async function _fetchFromServer() {
+          const v = await datastoreService.fetchTelehealthVisitForPatient(u, u.visitId);
+          return v;
+        }
+        return _fetchFromServer();
+        // return visitService.getVisitForPatient(u);
       }).then(v => {
+        setVisit(v as TelehealthVisit);
         // need to get the visit
         // call the dataStore service
         // since it is third party no need to call ehr integration
@@ -53,8 +62,8 @@ const InvitedAttendeePage = () => {
         content={
           <>
             <p className="mb-6">
-              Thanks for coming to support Sarah Cooper. Please share some
-              information about yourself below for Dr. Josefina Santos:
+              Thanks for coming to support {visit.ehrPatient.given_name} {visit.ehrPatient.family_name}. Please share some
+              information about yourself below for {visit.ehrProvider.name}:
             </p>
             <div className="">
               <Input className="w-full my-2" autoFocus placeholder="Full Name" name="name"  value={name} onChange={evt => setName(evt.target.value)} />
@@ -62,8 +71,15 @@ const InvitedAttendeePage = () => {
                 className="w-full my-2"
                 placeholder="Relationship with Patient"
                 options={[
-                  { value: 'Caregiver' },
-                  { value: 'Family Member' },
+                  { value: 'Spouse' },
+                  { value: 'Mother' },
+                  { value: 'Father' },
+                  { value: 'Daughter' },
+                  { value: 'Son' },
+                  { value: 'Brother' },
+                  { value: 'Sister' },
+                  { value: 'Friend' },
+                  { value: 'Care Giver' },
                   { value: 'Other' },
                 ]}
                 name="relationship"
@@ -77,9 +93,11 @@ const InvitedAttendeePage = () => {
               </div>
               <div>
                 <Button
+                  disabled={!terms || name == ''}
                   as="button"
                   onClick={onSubmit}
                   className="inline-block w-full mt-3 mb-1"
+                  
                 >
                   Continue
                 </Button>

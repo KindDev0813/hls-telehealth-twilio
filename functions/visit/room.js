@@ -11,7 +11,7 @@ module.exports.handler = async (context, event, callback) => {
 
   // TODO: Add Patient Auth Handler
   const { validateAndDecodeAppToken } = require(Runtime.getFunctions()['authentication-helper'].path);
-  const tokenValidationResult = validateAndDecodeAppToken(context, event, ['patient', 'visitor']);
+  const tokenValidationResult = validateAndDecodeAppToken(context, event, ['patient', 'visitor', 'thirdParty']);
 
   if(tokenValidationResult.response) {
     return callback(null, tokenValidationResult.response);
@@ -27,7 +27,7 @@ module.exports.handler = async (context, event, callback) => {
   response.appendHeader('Access-Control-Allow-Origin', '*');
   response.appendHeader('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
   response.appendHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+ 
   if (!id) {
     response.setStatusCode(400);
     response.setBody({

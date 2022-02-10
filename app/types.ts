@@ -47,7 +47,7 @@ export interface EHRContent {
 }
 
 
-export type TelehealthRole = 'guest' | 'patient' | 'visitor' | 'practitioner' | 'provider' ;
+export type TelehealthRole = 'guest' | 'patient' | 'visitor' | 'practitioner' | 'provider' | 'thirdparty' ;
 
 export interface TelehealthUser {
   id?: string,

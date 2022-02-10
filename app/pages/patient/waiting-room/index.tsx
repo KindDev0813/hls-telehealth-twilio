@@ -5,7 +5,7 @@ import { Heading } from '../../../components/Heading';
 import { Layout } from '../../../components/Patient';
 import { Modal } from '../../../components/Modal';
 import { TechnicalCheck } from '../../../components/TechnicalCheck';
-import { PatientUser, TwilioPage, EHRContent } from '../../../types';
+import { PatientUser, TwilioPage, EHRContent, TelehealthVisit } from '../../../types';
 import { useVisitContext } from '../../../state/VisitContext';
 import useVideoContext from '../../../components/Base/VideoProvider/useVideoContext/useVideoContext';
 import { roomService } from '../../../services/roomService';
@@ -53,15 +53,20 @@ const WaitingRoomPage: TwilioPage = () => {
 
   useEffect(() => {
     if(user && visit) {
-      const interval = setInterval(() => roomService.checkRoom(user as PatientUser, visit.roomName)
+      checkRoom(user as PatientUser, visit)
+    }
+  }, [router, visit, user]);
+
+  function checkRoom(user: PatientUser, visit: TelehealthVisit) {
+    roomService.checkRoom(user as PatientUser, visit.roomName)
       .then(room => {
         if(room.roomAvailable) {
           router.push("/patient/video/")
+        } else {
+          checkRoom(user, visit);
         }
-      }), 5000);
-      return () => clearInterval(interval);
-    }
-  }, [router, visit, user]);
+      });
+  }
 
   return (
     <Layout>
