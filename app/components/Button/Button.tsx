@@ -76,9 +76,8 @@ export const Button = ({
       </Link>
     );
   }
-
   return (
-    <button {...(props as ButtonElementProps)} className={classes}>
+    <button {...(props as ButtonElementProps)} disabled={isDisabled} className={classes}>
       {child}
     </button>
   );
