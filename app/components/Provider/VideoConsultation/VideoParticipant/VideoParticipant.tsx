@@ -174,7 +174,7 @@ export const VideoParticipant = ({
         </div>
       )}
       {showMutedBanner && (
-        <div className="absolute top-0 bottom-0 left--2 right--2 flex items-center justify-center w-full">
+        <div className="absolute top-0 bottom-0 left--2 right--2 flex items-center justify-center w-full rounded-lg z-30">
           <div className="bg-[#000000BF] text-white h-min text-center flex-grow py-4">
             You have been muted
           </div>
