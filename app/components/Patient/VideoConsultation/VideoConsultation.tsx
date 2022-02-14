@@ -239,9 +239,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               toggleEndCallModal={toggleEndCallModal}
             />}
           </>
-        )):(<>
-          <h1 className="text-white">Something went wrong</h1>
-          </>)}
+        )):(<></>)}
       </div>
       <ConnectionIssueModal
         close={() => setConnectionIssueModalVisible(false)}

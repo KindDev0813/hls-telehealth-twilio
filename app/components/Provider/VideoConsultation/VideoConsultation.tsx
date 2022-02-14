@@ -23,7 +23,6 @@ import { TelehealthVisit } from '../../../types';
 
 export interface VideoConsultationProps {}
 
-const providerName = 'Dr. Josefina Santos';
 
 export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
@@ -65,7 +64,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           ...prev,
           providerParticipant: room!.localParticipant,
           patientParticipant: participants.find(p => p.identity != room!.localParticipant.identity),
-          visitorParticipant: participants[1]
+          visitorParticipant: participants.find(p => p.identity.includes('visitor_') )
         }
       })
     }
@@ -94,7 +93,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         <div className="absolute right-6 min-w-[12rem] w-[15%] h-[16%] flex flex-col z-20">
           {callState.providerParticipant &&
             <VideoParticipant
-              name={providerName}
+              name={visit.ehrProvider.name}
               hasAudio={isAudioEnabled}
               hasVideo={isVideoEnabled}
               isProvider
@@ -116,7 +115,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         <div className="w-2/3 h-full">
             {mainDisplayedParticipant &&
               <VideoParticipant
-                name="Sarah Coopers"
+                name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                 hasAudio
                 hasVideo
                 participant={mainDisplayedParticipant}
