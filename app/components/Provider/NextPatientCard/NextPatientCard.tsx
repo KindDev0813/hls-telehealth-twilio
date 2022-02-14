@@ -81,6 +81,8 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
                       key={i}
                       className="flex rounded-lg my-3 border border-link py-3 px-4 text-link text-xs items-center cursor-pointer"
                       href={"http://localhost:3000/" + e}
+                      target="_blank"
+                      rel="noreferrer"
                     >
                       <span className="flex-grow underline">{e.replace(/^.*[\\\/]/, '')}</span>
                       <Icon name="file_download" outline />
