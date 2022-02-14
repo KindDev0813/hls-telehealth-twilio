@@ -127,8 +127,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                   /> }
                  {callState.visitorParticipant && <VideoParticipant
                    name="Visitor"
-                   hasAudio={isAudioEnabled}
-                   hasVideo={isVideoEnabled}
+                   hasAudio
+                   hasVideo
                    isOverlap
                    participant={callState.visitorParticipant}
                  /> }
@@ -176,7 +176,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             <div className="flex-grow">
               <div className="flex flex-col justify-evenly h-full">
                 {callState.patientParticipant && !callState.visitorParticipant && <VideoParticipant
-                  name={visit.patientName}
+                  name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                   hasAudio={isAudioEnabled}
                   hasVideo={isVideoEnabled}
                   isSelf={true}
@@ -187,7 +187,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                   <div className='flex flex-col flex-wrap overflow-x-auto w-[400px] h-[300px]'>
 
                     <VideoParticipant
-                      name={visit.patientName}
+                      name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                       hasAudio={isAudioEnabled}
                       hasVideo={isVideoEnabled}
                       isSelf={true}
@@ -197,8 +197,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     />
                     <VideoParticipant
                       name="Visitor"
-                      hasAudio={isAudioEnabled}
-                      hasVideo={isVideoEnabled}
+                      hasAudio
+                      hasVideo
                       isOverlap
                       isProvider={false}
                       isSelf={false}
@@ -207,7 +207,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     />
                   </div>}
                 {callState.providerParticipant && <VideoParticipant
-                  name={visit.providerName}
+                  name={visit.ehrProvider.name}
                   hasAudio
                   hasVideo
                   isProvider={true}

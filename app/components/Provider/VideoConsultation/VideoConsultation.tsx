@@ -104,8 +104,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           {callState.visitorParticipant &&
             <VideoParticipant
               name='Invited Visitor'
-              hasAudio={isAudioEnabled}
-              hasVideo={isVideoEnabled}
+              hasAudio
+              hasVideo
+              isSelf
               participant={callState.visitorParticipant}
               fullScreen
             />}
@@ -123,7 +124,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             }
         </div>
         <VideoControls
-          containerClass="absolute bottom-10 mb-5 bg-[#FFFFFF4A] rounded-lg"
+          containerClass="absolute bottom-10 mb-5 bg-[#FFFFFF4A] rounded-lg z-[50]"
           isMuted={!isAudioEnabled}
           isVideoStopped={!isVideoEnabled}
           addParticipant={(event) =>
