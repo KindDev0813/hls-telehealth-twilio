@@ -55,25 +55,42 @@ After installation make sure to start Docker desktop.
 
 **Ensure completed prerequisites** - ensure that you have completed all prerequisite steps listed above
 
-1. Build docker image of installer by executing
-    ```shell
-    docker build --tag hls-installer https://github.com/twilio/hls-telehealth.git#main
-    ```
+1. (Optional) if you suspect corrupted docker image and want to build fresh image
+   ```shell
+   docker rmi hls-telehealth-installer
+   ```
+2. github repo is not yet, public.
+   First, log into github
+   Second, let BJ/Leon know your github profile, so they can grant you acess
+   Third, if you have twilio email, you need to get personal access token as password authentication is blocked. See https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+   ```shell
+   git clone https://github.com/twilio/hls-telehealth.git
+   ```
 
-2. Run the built docker image by executing below supplying your Twilio credentials from above
+   ```shell
+   docker build --tag hls-telehealth-installer .
+   ```
+
+   **Do not follow this until repo is public!!!** Build docker image of installer by executing
+   ```shell
+   docker build --tag hls-telehealth-installer https://github.com/twilio/hls-telehealth.git#main
+   ```
+
+3. Run the built docker image by executing below supplying your Twilio credentials from above
    (replace `{YOUR_ACCOUNT_SID}` and `{YOUR_AUTH_TOKEN}` with your Twilio credentials Account SID and Auth token, respectively).
     ```shell
     docker run --name hls-installer --rm -p 3000:3000 \
    -e ACCOUNT_SID={YOUR_ACCOUNT_SID} -e AUTH_TOKEN={YOUR_AUTH_TOKEN} -it hls-installer
     ```
 
-3. Open http://localhost:3000/installer.html using a broswer.
+4. Open http://localhost:3000/installer.html using a broswer.
 
-4. Follow the instructions in the installer to complete installation & configuration.
+5. Follow the instructions in the installer to complete installation & configuration.
 
-5. Launch the admnistration page by clicking 'Open Application' button.
+6. Launch the admnistration page by clicking 'Open Application' button.
 
-6. 'Stop' the docker container `hls-installer` in the docker dashboard.
+7. 'Stop' the docker container `hls-telehealth-installer` in the docker dashboard.
+   Alternatively, you can enter `Control-C` in the terminal where you executed the `docker run` command.
 
 ## Development
 
