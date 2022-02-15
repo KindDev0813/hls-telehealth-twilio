@@ -94,9 +94,18 @@ After installation make sure to start Docker desktop.
 
 ## Development
 
-To get started developing, you'll want to spin up to servers.  One for the frontend and the other for the backend.  They'll be running on 2 different ports so open 2 terminal windows to do so:
+To get started developing, you'll want to spin up to servers, either a front-end or back-end or both together.
+NOTE: You'll want to uncomment and edit this line to the right port number when working with the backend so that you can hit your endpoints properly.  Do not push that line into the repo as when you deploy you will run into problems if the wrong backendRoot Uri is incorrect - https://github.com/twilio/hls-telehealth/blob/main/app/services/constants.ts#L2 
 
-1. A local Next JS server (frontend) by entering ```npm run dev``` in the ```app``` directory
-2. and a Twilio Serverless backend server via ```twilio serverless:start -p 3001``` in the top level
-3. Hit your localhost to visit the app, usually ```http://localhost:3000/```.
+### To run the whole app in development mode:
+1. ```cd``` into the ```app/``` directory.
+2. Run this command to spin up both front-end and back-end servers in parallel on a single terminal window: ```npm run devo```
+  a. This runs the front-end server on port 3000 and the back-end on port 3001.
+
+### Front-end only development:
+1. ```cd``` into the ```app/``` directory.
+2. Then run the command ```npm run dev``` which kicks up a next JS dev server for the front-end.
+
+### Back-end only Developement:
+1. At the top level of the repo, run ```twilio serverless:start -p <YOUR PORT NUMBER>```, the front-end command above runs the front-end app on port 3000. 
 
