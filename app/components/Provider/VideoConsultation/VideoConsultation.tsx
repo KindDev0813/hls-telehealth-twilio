@@ -106,7 +106,6 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               name='Invited Visitor'
               hasAudio
               hasVideo
-              isSelf
               participant={callState.visitorParticipant}
               fullScreen
             />}
