@@ -9,7 +9,7 @@
 # - open in browser, http://localhost:3000/installer.html
 #
 # --------------------------------------------------------------------------------
-FROM twilio/twilio-cli:latest
+FROM twilio/twilio-cli:3.0.0
 ARG TWILIO_ACCOUNT_SID=sid
 ARG TWILIO_AUTH_TOKEN=token
 
