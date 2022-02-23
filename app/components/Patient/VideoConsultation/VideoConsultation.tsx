@@ -145,7 +145,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 />
               </div>
             </div>
-            <div className=" w-full flex-col">
+            <div className=" w-full flex-col h-[180px]">
               <div className="relative flex justify-center bg-primary items-center w-full text-white">
                 Chat with {visit.ehrProvider.name}
                 <div className=" h-10 text-center pt-2 justify-evenly">
@@ -153,7 +153,10 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     <button
                       className="absolute right-3"
                       type="button"
-                      onClick={() => setIsChatWindowOpen(!isChatWindowOpen)}
+                      onClick={() => {
+                        setIsChatWindowOpen(!isChatWindowOpen)
+                        toggleAudioEnabled()
+                      }}
                     >
                       <Icon name="close" />
                     </button>
@@ -161,7 +164,10 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 </div>
               </div>
               <Chat
-                close={() => setIsChatWindowOpen(false)} 
+                close={() => {
+                  setIsChatWindowOpen(false)
+                  toggleAudioEnabled()
+                }}
                 currentUser={visit.ehrPatient.name}
                 otherUser={visit.ehrProvider.name}
                 userId={user.id}
