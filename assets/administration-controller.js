@@ -898,6 +898,7 @@ async function resetData() {
     console.log(THIS, err);
   } finally {
     $(UI.reset_data_button).removeAttr('disabled');
+    initialize();
   }
 }
 
