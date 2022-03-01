@@ -146,7 +146,9 @@ async function fetchAllContent(provider: ProviderUser): Promise<Array<EHRContent
   }).then((r) => r.json());
 
   const allContent : EHRContent [] = tuple.map((t) => instantiateContent(t));
+  console.log(allContent);
   const assignedContent : EHRContent = allContent.find((c) => {
+    console.log(provider.id);
     return c.provider_ids.some((p) => p === provider.id);
   });
 
@@ -314,7 +316,20 @@ async function addAppointment(token: string, ehrAppointment: EHRAppointment): Pr
   return Promise.resolve(newEhrAppointment);
 }
 
-
+async function completeRoom(token: string, roomSid: string) {
+  const resp = await fetch(Uris.get(Uris.visits.completeRoom), {
+    method: 'POST',
+    body: JSON.stringify({roomSid}),
+    headers: { 
+        authorization: `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+  })
+  .then(r => r.json())
+  .catch(err => console.error(err));
+  return resp.data;
+}
 
 /* --------------------------------------------------------------------------------------------------------------
  * add new post visit survey
@@ -371,5 +386,6 @@ export default {
   addPatient,
   addAppointment,
   addSurvey,
-  getSurveys
+  getSurveys,
+  completeRoom
 };

@@ -1,4 +1,7 @@
 import router, { useRouter } from "next/router";
+import { Uris } from "../../services/constants";
+import datastoreService from "../../services/datastoreService";
+import { useVisitContext } from "../../state/VisitContext";
 import useVideoContext from "../Base/VideoProvider/useVideoContext/useVideoContext";
 import { Button } from "../Button";
 import { Modal } from "../Modal"
@@ -12,11 +15,14 @@ export interface EndCallModalProps {
 export const EndCallModal = ({ close, isVisible, isProvider = false }: EndCallModalProps) => {
   const { room } = useVideoContext();
   const router = useRouter();
+  const { user } = useVisitContext();
 
-  function endCall() {
+  async function endCall() {
     console.log("EndedCall");
     close();
     room.disconnect();
+    const resp = await datastoreService.completeRoom(user.token, room.sid);
+    console.log("Resp", resp);
     isProvider ? router.push('/provider/visit-survey/') : router.push('/patient/visit-survey/');
   }
 
