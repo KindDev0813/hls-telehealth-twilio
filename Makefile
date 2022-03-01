@@ -80,11 +80,3 @@ run: build-react
       echo ".env.localhost created from .env"; \
 	fi;
 	twilio serverless:start --env=.env.localhost
-
-restore-datastore:
-	@echo restoring datastore to initial shipped data set
-	cp assets/datastore/FHIR/Appointments.original.private.json assets/datastore/FHIR/Appointments.private.json
-	cp assets/datastore/FHIR/Condition.original.private.json assets/datastore/FHIR/Condition.private.json
-	cp assets/datastore/FHIR/DocumentReferences.original.private.json assets/datastore/FHIR/DocumentReferences.private.json
-	cp assets/datastore/FHIR/MedicationStatements.original.private.json assets/datastore/FHIR/MedicationStatements.private.json
-	cp assets/datastore/FHIR/Patients.original.private.json assets/datastore/FHIR/Patients.private.json

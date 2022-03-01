@@ -29,40 +29,35 @@ const assert = require("assert");
 
 
 exports.handler = async function(context, event, callback) {
-  const THIS = 'deploy-application';
+  const THIS = 'deploy';
 
+  assert(context.DOMAIN_NAME.startsWith('localhost:'), `Can only run on localhost!!!`);
   console.time(THIS);
-  assertLocalhost(context);
   try {
-    assert(event.configuration.APPLICATION_NAME, '.env file does not contain APPLICATION_NAME variable!!!');
-    const application_name = event.configuration.APPLICATION_NAME;
+    const action = event.action ? event.action : 'DEPLOY';
 
-    console.log(THIS, `Deploying Twilio service ... ${application_name}`);
-    const environmentVariables = event.configuration;
-    console.log(THIS, 'configuration:', environmentVariables);
-    const service_sid = await deployService(context, environmentVariables);
-    console.log(THIS, `Deployed: ${service_sid}`);
+    console.log(THIS, `${action} starting ...`);
+    switch (action) {
 
-    console.log(THIS, 'Make Twilio service editable ...');
-    const client = context.getTwilioClient();
-    await client.serverless
-      .services(service_sid)
-      .update({ uiEditable: true });
+      case 'DELETE':
+        console.log(THIS, `${action} not implemented yet`);
+        //deleteApplication();
+        console.log(THIS, `${action} successful`);
+        break;
 
-    console.log(THIS, 'Provisioning dependent Twilio services');
-    const params = await getAllParams(context);
-    //console.log(THIS, params);
+      case 'DEPLOY':
+        const service_sid = await deploy(context, event);
+        console.log(THIS, `${action} successful`);
+        return callback(null, {
+          service_sid: service_sid,
+          service_status: 'DEPLOYED',
+        });
+        break;
 
-    console.log(THIS, 'Seed application data');
-    const summary = await seedData(context);
-    console.log(THIS, summary);
+      default:
+        throw new Error(`unknown event.action=${action}`);
+    }
 
-    console.log(THIS, `Completed deployment of ${application_name}`);
-
-    return callback(null, {
-      service_sid: service_sid,
-      service_status: 'DEPLOYED',
-    });
 
   } catch(err) {
     console.log(err);
@@ -70,6 +65,53 @@ exports.handler = async function(context, event, callback) {
   } finally {
     console.timeEnd(THIS);
   }
+}
+
+
+async function deploy(context, event) {
+  const THIS = 'deploy';
+
+  const client = context.getTwilioClient();
+
+  assert(event.configuration.APPLICATION_NAME, '.env file does not contain APPLICATION_NAME variable!!!');
+  const application_name = event.configuration.APPLICATION_NAME;
+
+  console.log(THIS, `Deploying Twilio service ... ${application_name}`);
+
+  // remove previously created API_KEY as there's no way to access the API secret after initial creation.
+  const apikeys = await client.keys.list();
+  const apikey = apikeys.find(k => k.friendlyName === context.APPLICATION_NAME);
+  if (apikey) {
+    console.log(THIS, 'remove existing API KEY named telehealth');
+    await client.keys(apikey.sid).remove();
+    context.TWILIO_API_KEY_SID = null;
+    context.TWILIO_API_KEY_SECRET = null;
+  }
+
+  const environmentVariables = event.configuration;
+  console.log(THIS, 'configuration:', environmentVariables);
+
+  const service_sid = await deployService(context, environmentVariables);
+  console.log(THIS, `Deployed: ${service_sid}`);
+
+  console.log(THIS, 'Make Twilio service editable ...');
+  await client.serverless
+    .services(service_sid)
+    .update({ uiEditable: true });
+
+  console.log(THIS, 'Provisioning dependent Twilio services');
+  const params = await getAllParams(context);
+  console.log(THIS, params);
+
+  console.log(THIS, 'Seed application data');
+  const summary = await seedData(context);
+  console.log(THIS, summary);
+
+  console.log(THIS, `Completed deployment of ${application_name}`);
+
+  return {
+    service_sid: service_sid
+  };
 }
 
 /* --------------------------------------------------------------------------------
@@ -97,6 +139,7 @@ async function getAssets() {
   //console.log(allAssets);
   return allAssets;
 }
+
 
 async function deployService(context, envrionmentVariables = {}) {
   const client = context.getTwilioClient();

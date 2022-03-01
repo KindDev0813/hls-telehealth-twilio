@@ -10,7 +10,7 @@
  *
  * isValidPassword(password,context)
  * createMfaToken(context,key)
- * createAppToken(issuer,context)
+ * createAppToken(context)
  * checkDisableAuthForLocalhost(context)
  * getVerifyServiceId(context)
  * isValidAppToken(token,context)
@@ -51,7 +51,7 @@ function createRefreshToken(issuer, context) {
 
 function createMfaToken(issuer, context) {
     if (checkDisableAuthForLocalhost(context)) {
-        return createAppToken(issuer, context);
+        return createAppToken(context);
     }
     return createToken(context, 'mfa', { role: 'administrator' }, MFA_TOKEN_DURATION);
 }

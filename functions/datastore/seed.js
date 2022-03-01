@@ -7,19 +7,18 @@
 
 const assert = require("assert");
 const path = require("path");
+const fs = require("fs");
 const { getParam, assertLocalhost } = require(Runtime.getFunctions()['helpers'].path);
 const { upsertSyncDocument } = require(Runtime.getFunctions()['datastore/datastore-helpers'].path);
 
 // --------------------------------------------------------------------------------
-async function seedResource(context, syncServiceSid, seedAssetPath) {
+async function seedResource(context, syncServiceSid, assetName) {
   // open private asset
-  const asset = Runtime.getAssets()[seedAssetPath];
+  const asset = Runtime.getAssets()[assetName];
   const bundle = JSON.parse(asset.open());
   assert(bundle.total === bundle.entry.length, 'bundle checksum error!!!');
-  const syncDocumentName = path.basename(asset.path)
-    .replace(/.+FHIR\//, '')
-    .replace('.private.json', '')
-    .replace('.json', '');
+  const syncDocumentName = assetName.replace(/.+FHIR\//, '').replace('.json', '');
+  console.log('seeding:', assetName, syncDocumentName, ' at ', asset.path);
 
   const document = await upsertSyncDocument(context, syncServiceSid, syncDocumentName, bundle);
 
@@ -36,16 +35,13 @@ exports.handler = async function(context, event, callback) {
   console.time(THIS);
 
   try {
-    assertLocalhost(context);
     const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
     const assets = Runtime.getAssets(); // get all private assets
-    console.log("assets::", assets);
-    resources = Object.values(assets)
-      .map((e) => {
-        return e.path.replace(/.+assets/, '').replace('.private', '');
-      });
+    // console.log("assets:", assets);
+    resources = Object.keys(assets).filter(a => a.includes('FHIR'));
     console.log(THIS, `found ${resources.length} FHIR resources to seed`);
+    console.log("resources:", resources);
 
     const response = [];
     for(r of resources) {
