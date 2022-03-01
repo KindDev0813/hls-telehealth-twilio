@@ -28,6 +28,7 @@ const UI = {
   scheduled_patient_link_send_button: '#scheduled-patient-link-send-button',
   ondemand_patient_link: '#ondemand-patient-link',
   ondemand_patient_phone: '#ondemand-patient-phone',
+  reset_data_button: '#reset-data-button',
 }
 
 
@@ -868,6 +869,35 @@ async function populateProviderPatients() {
 
   } catch (err) {
     console.log(THIS, err);
+  }
+}
+
+
+/* --------------------------------------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------------------------------------
+ */
+async function resetData() {
+  const THIS =  resetData.name;
+
+  try {
+    $(UI.reset_data_button).attr('disabled', 'disabled');
+
+    console.log(THIS, `reset Data`);
+    const response1 = await fetch('/datastore/seed', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: accessToken,
+      })
+    });
+
+  } catch (err) {
+    console.log(THIS, err);
+  } finally {
+    $(UI.reset_data_button).removeAttr('disabled');
   }
 }
 

@@ -280,3 +280,31 @@ function deployApplication(e) {
       });
 }
 
+/* --------------------------------------------------------------------------------
+ * reset data
+ * --------------------------------------------------------------------------------
+ */
+function resetData(e) {
+  const THIS = resetData.name;
+
+  e.preventDefault();
+
+  fetch('/datastore/seed', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  })
+    .then(() => {
+      console.log(THIS, 'successfully reset data');
+      checkApplication();
+    })
+    .catch ((err) => {
+      console.log(THIS, err);
+      window.alert(err);
+      checkApplication();
+    });
+}
+

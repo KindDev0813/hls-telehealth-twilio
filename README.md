@@ -68,13 +68,14 @@ After installation make sure to start Docker desktop.
    ```
 
    ```shell
-   docker build --tag hls-telehealth-installer .
+   docker build --tag hls-telehealth-installer --no-cache .
    ```
 
    **Do not follow this until repo is public!!!** Build docker image of installer by executing
    ```shell
-   docker build --tag hls-telehealth-installer https://github.com/twilio/hls-telehealth.git#main
+   docker build --tag hls-telehealth-installer --no-cache https://github.com/twilio/hls-telehealth.git#main
    ```
+   For machines running Apple M1 chip add the option `--platform linux/amd64`.
 
 3. Run the built docker image by executing below supplying your Twilio credentials from above
    (replace `{YOUR_ACCOUNT_SID}` and `{YOUR_AUTH_TOKEN}` with your Twilio credentials Account SID and Auth token, respectively).
@@ -97,6 +98,16 @@ After installation make sure to start Docker desktop.
 To get started developing, you'll want to spin up to servers, either a front-end or back-end or both together.
 NOTE: You'll want to uncomment and edit this line to the right port number when working with the backend so that you can hit your endpoints properly.  Do not push that line into the repo as when you deploy you will run into problems if the wrong backendRoot Uri is incorrect - https://github.com/twilio/hls-telehealth/blob/main/app/services/constants.ts#L2 
 
+You'll need to create `.env.localhst` file in the root directory with the following variables set
+
+```shell
+ACCOUNT_SID={your-twilio-account account sid}
+AUTH_TOKEN={your-twilio-account auth token}
+DISABLE_AUTH_FOR_LOCALHOST=true
+```
+
+`DISABLE_AUTH_FOR_LOCALHOST` will by-pass MFA when accessing administration page.
+
 ### To run the whole app in development mode:
 1. ```cd``` into the ```app/``` directory.
 2. Run this command to spin up both front-end and back-end servers in parallel on a single terminal window: ```npm run devo```
@@ -109,3 +120,19 @@ NOTE: You'll want to uncomment and edit this line to the right port number when 
 ### Back-end only Developement:
 1. At the top level of the repo, run ```twilio serverless:start -p <YOUR PORT NUMBER>```, the front-end command above runs the front-end app on port 3000. 
 
+### Deploy without using Docker installer
+
+1. Build React components into `assets` folder
+   ```shell
+   make build-react
+   ```
+2. Deploy via CLI
+   ```shell
+   make deploy
+   ```
+   or via using installer page.
+   Start serverless locally
+   ```shell
+   twilio serverless:start --env=.env.localhost
+   ```
+   Open `http://localhost:3000` in your browser and (re-)deploy
