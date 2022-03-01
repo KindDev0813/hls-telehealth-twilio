@@ -12,7 +12,8 @@ export const Uris = {
     invite: '/visit/invite',
     patientRoomToken: '/visit/room',
     providerRoomToken: '/visit/provider-room',
-    recording: '/visit/recording'
+    recording: '/visit/recording',
+    completeRoom: '/visit/complete-room'
   },
   sms: '/send-sms',
 
