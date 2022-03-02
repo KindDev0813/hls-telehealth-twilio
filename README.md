@@ -59,19 +59,7 @@ After installation make sure to start Docker desktop.
    ```shell
    docker rmi hls-telehealth-installer
    ```
-2. github repo is not yet, public.
-   First, log into github
-   Second, let BJ/Leon know your github profile, so they can grant you acess
-   Third, if you have twilio email, you need to get personal access token as password authentication is blocked. See https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
-   ```shell
-   git clone https://github.com/twilio/hls-telehealth.git
-   ```
-
-   ```shell
-   docker build --tag hls-telehealth-installer --no-cache .
-   ```
-
-   **Do not follow this until repo is public!!!** Build docker image of installer by executing
+2. Build the docker image for installer
    ```shell
    docker build --tag hls-telehealth-installer --no-cache https://github.com/twilio/hls-telehealth.git#main
    ```
