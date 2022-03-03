@@ -353,6 +353,13 @@ async function populatePatients() {
       const patients = await response.json();
       console.log(THIS, `loaded ${patients.length} patients`);
 
+      $(UI.patients).empty();
+
+      $(UI.patients).append(`<tr>
+          <th>Patient ID</th>
+          <th>Patient Name</th>
+          <th>Patient Phone</th>
+      </tr>`);
       patients.forEach(row => {
         $(UI.patients).append(`<tr>
         <td>${row.patient_id}</td>
@@ -393,6 +400,18 @@ async function populateContents() {
       });
     const content = await response.json();
     console.log(THIS, `loaded ${contents.length} contents`);
+
+    $(UI.contents).empty();
+
+    $(UI.contents).append(`
+        <thead>
+          <th></th>
+          <th hidden>ID</th>
+          <th>Title</th>
+          <th>Video URL</th>
+          <th>Description</th>
+        </thead>
+    `);
 
     content.forEach(row => {
       const content_css_id = `#content-${row.content_id}`;
@@ -528,6 +547,17 @@ async function populateProviders() {
     const providers = await response.json();
     console.log(THIS, `loaded ${providers.length} providers`);
 
+    $(UI.providers).empty();
+
+    $(UI.providers).append(`
+        <tr>
+          <th>On-Call</th>
+          <th>Provider ID</th>
+          <th>Provider Name</th>
+          <th>Provider Phone</th>
+        </tr>
+    `);
+
     providers.forEach(row => {
       $(UI.providers).append(`<tr>
       <td><input type="checkbox" ${row.provider_on_call ? "checked": ""} disabled></td>
@@ -566,6 +596,7 @@ async function populateProviderSelector() {
     const providers = await response.json();
     console.log(THIS, `loaded ${providers.length} providers`);
 
+    $(UI.provider_selector).empty();
     providers.forEach(row => {
       $(UI.provider_selector).append(`<option value="${row.provider_id}">${row.provider_name}</option>`);
     });
@@ -614,6 +645,16 @@ async function populateProviderContents() {
         },
       });
     const contents = await response.json();
+
+    $(UI.provider_contents).empty();
+
+    $(UI.provider_contents).append(`
+        <tr>
+          <th>Use</th>
+          <th>Content Set</th>
+          <th>Video URL</th>
+        </tr>
+    `);
 
     contents.forEach(row => {
       const is_assigned = row.providers.find(e => e === provider_id) ? 'checked' : '';
@@ -855,6 +896,18 @@ async function populateProviderPatients() {
       patients = await response.json();
     }
     console.log(THIS, 'patients', patients.length);
+
+    $(UI.provider_patients).empty();
+
+    $(UI.provider_patients).append(`
+         <tr>
+          <th>Type</th>
+          <th>Appointment ID</th>
+          <th>Patient Name</th>
+          <th>Wait Time</th>
+          <th>Rec</th>
+        </tr>
+   `);
 
     appointments.forEach(row => {
       const p = patients.find(e => e.patient_id === row.patient_id);

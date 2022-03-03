@@ -69,7 +69,7 @@ After installation make sure to start Docker desktop.
    (replace `{YOUR_ACCOUNT_SID}` and `{YOUR_AUTH_TOKEN}` with your Twilio credentials Account SID and Auth token, respectively).
     ```shell
     docker run --name hls-telehealth-installer --rm --publish 3000:3000 \
-   --env ACCOUNT_SID={YOUR_ACCOUNT_SID} --env AUTH_TOKEN={YOUR_AUTH_TOKEN} -it hls-telehealth-installer
+    --env ACCOUNT_SID={YOUR_ACCOUNT_SID} --env AUTH_TOKEN={YOUR_AUTH_TOKEN} -it hls-telehealth-installer
     ```
 
 4. Open http://localhost:3000/installer.html using a broswer.
