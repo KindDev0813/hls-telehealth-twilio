@@ -337,7 +337,6 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       <InviteParticipantModal
         close={toggleInviteModal}
         isVisible={inviteModalVisible}
-        hasNameInput={false}
         role="visitor"
       />
       <EndCallModal

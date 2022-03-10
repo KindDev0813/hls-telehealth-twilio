@@ -7,7 +7,9 @@ async function inviteVisitor(user: TelehealthUser, phoneNumber: string, visitId:
     
     await fetch(Uris.get(Uris.visits.token), {
         method: 'POST',
-        body: JSON.stringify({ name: user.name, action: action, visitId, id: `${role}_${phoneNumber}` }),
+        body: JSON.stringify({action: action, visitId, id: `${role}_${phoneNumber}` }),
+        //TODO:investigate issue with name: user.name 
+        //body: JSON.stringify({ name: user.name, action: action, visitId, id: `${role}_${phoneNumber}` }),
         headers: { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',

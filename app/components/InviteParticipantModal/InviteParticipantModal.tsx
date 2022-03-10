@@ -10,14 +10,12 @@ import { TelehealthRole } from '../../types';
 export interface InviteParticipantModalProps {
   close: () => void;
   isVisible: boolean;
-  hasNameInput: boolean;
   role: TelehealthRole;
 }
 
 export const InviteParticipantModal = ({
   close,
   isVisible,
-  hasNameInput,
   role,
 }: InviteParticipantModalProps) => {
   const {user, visit} = useVisitContext();
@@ -58,7 +56,7 @@ export const InviteParticipantModal = ({
             />
           </div>
         </div>
-        {hasNameInput && 
+        {role == 'providervisitor' && 
         <div className="my-5">
           <Input
             className="w-full"

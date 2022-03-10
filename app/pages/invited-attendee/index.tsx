@@ -51,7 +51,7 @@ const InvitedAttendeePage = () => {
           const test = async () => {
             let user = await clientStorage.getFromStorage(STORAGE_USER_KEY) as TelehealthUser;
             console.log(user);
-            if(user && user.name) {
+            if(user && user.role == 'providervisitor') {
               router.push("/invited-attendee/technical-check/");
             } else {
               setIsInitialized(true);
