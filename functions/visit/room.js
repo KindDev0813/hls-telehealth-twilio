@@ -11,7 +11,7 @@ module.exports.handler = async (context, event, callback) => {
 
   // TODO: Add Patient Auth Handler
   const { validateAndDecodeAppToken } = require(Runtime.getFunctions()['authentication-helper'].path);
-  const tokenValidationResult = validateAndDecodeAppToken(context, event, ['patient', 'visitor', 'thirdParty']);
+  const tokenValidationResult = validateAndDecodeAppToken(context, event, ['patient', 'visitor', 'providervisitor', 'thirdParty']);
 
   if(tokenValidationResult.response) {
     return callback(null, tokenValidationResult.response);

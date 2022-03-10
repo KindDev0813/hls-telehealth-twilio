@@ -19,7 +19,9 @@ import useSelectedParticipant from '../../Base/VideoProvider/useSelectedParticip
 import { RemoteParticipant } from 'twilio-video';
 import { EndCallModal } from '../../EndCallModal';
 import clientStorage from '../../../services/clientStorage';
-import { TelehealthVisit } from '../../../types';
+import { TelehealthVisit, DataTrackMessage } from '../../../types';
+import { InviteParticipantModal } from '../../InviteParticipantModal';
+
 
 export interface VideoConsultationProps {}
 
@@ -28,6 +30,10 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const [inviteModalRef, setInviteModalRef] = useState(null);
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
+  const [dataTrackMessage, setDataTrackMessage] = useState<DataTrackMessage>(null);
+  const [visitorName, setVisitorName] = useState('Patient Visitor');
+  const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
   const [settingsModalRef, setSettingsModalRef] = useState(null);
   const [connectionIssueModalVisible, setConnectionIssueModalVisible] = useState(false);
@@ -44,7 +50,28 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     patientParticipant: null,
     providerParticipant: null,
     visitorParticipant: null,
+    providerVisitorParticipant: null
   });
+
+  function toggleInviteModal() {
+    setInviteModalVisible(!inviteModalVisible);
+  }
+
+  useEffect(() => {
+    const visitor = participants.find(p => p.identity.startsWith('visitor_'));
+    const providervisitor = participants.find(p => p.identity.startsWith('providervisitor_'));
+    if(!dataTrackMessage) {
+      return;
+    }
+    if(dataTrackMessage.participantId == visitor.identity && dataTrackMessage.name) {
+      setVisitorName(dataTrackMessage.name);
+    }
+    if(dataTrackMessage.participantId == providervisitor.identity && dataTrackMessage.name) {
+      setProviderVisitorName(dataTrackMessage.name);
+    }
+    console.log(dataTrackMessage);
+  }, [dataTrackMessage]);
+  
 
   function toggleEndCallModal() {
     setEndCallModalVisible(!endCallModalVisible);
@@ -63,8 +90,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         return {
           ...prev,
           providerParticipant: room!.localParticipant,
-          patientParticipant: participants.find(p => p.identity != room!.localParticipant.identity),
-          visitorParticipant: participants.find(p => p.identity.includes('visitor_') )
+          patientParticipant: participants.find(p => p.identity == visit.ehrAppointment.patient_id),
+          visitorParticipant: participants.find(p => p.identity.startsWith('visitor_') ),
+          providerVisitorParticipant: participants.find(p => p.identity.startsWith('providervisitor_') ),
         }
       })
     }
@@ -100,13 +128,22 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               isSelf
               participant={callState.providerParticipant}
               fullScreen
+              setDataTrackMessage={setDataTrackMessage}
             />}
           {callState.visitorParticipant &&
             <VideoParticipant
-              name='Invited Visitor'
+              name={visitorName}
               hasAudio
               hasVideo
               participant={callState.visitorParticipant}
+              fullScreen
+            />}
+          {callState.providerVisitorParticipant &&
+            <VideoParticipant
+              name={providerVisitorName}
+              hasAudio
+              hasVideo
+              participant={callState.providerVisitorParticipant}
               fullScreen
             />}
         </div>
@@ -119,16 +156,14 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 hasVideo
                 participant={mainDisplayedParticipant}
                 fullScreen
-              />
+                />
             }
         </div>
         <VideoControls
           containerClass="absolute bottom-10 mb-5 bg-[#FFFFFF4A] rounded-lg z-[50]"
           isMuted={!isAudioEnabled}
           isVideoStopped={!isVideoEnabled}
-          addParticipant={(event) =>
-            setInviteModalRef(inviteModalRef ? null : event?.target)
-          }
+          addParticipant={toggleInviteModal}
           toggleAudio={toggleAudioEnabled}
           toggleChat={() => setIsChatWindowOpen(!isChatWindowOpen)}
           toggleScreenShare={toggleScreenShare}
@@ -170,6 +205,12 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         isRecording={isRecording}
         isVisible={!!settingsModalRef}
         toggleRecording={toggleRecordingCb}
+      />
+      <InviteParticipantModal
+        close={toggleInviteModal}
+        isVisible={inviteModalVisible}
+        hasNameInput={true}
+        role="providervisitor"
       />
       <EndCallModal
         close={toggleEndCallModal}

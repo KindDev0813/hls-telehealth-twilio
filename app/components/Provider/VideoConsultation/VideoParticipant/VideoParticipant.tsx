@@ -11,6 +11,9 @@ import useVideoContext from '../../../Base/VideoProvider/useVideoContext/useVide
 import useMainParticipant from '../../../Base/VideoProvider/useMainParticipany/useMainParticipant';
 import useSelectedParticipant from '../../../Base/VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import useScreenShareParticipant from '../../../Base/VideoProvider/useScreenShareParticipant/useScreenShareParticipant';
+import { Button } from '../../../Button/Button';
+import { DataTrackMessage } from '../../../../types';
+
 export interface VideoParticipantProps {
   hasAudio?: boolean;
   hasVideo?: boolean;
@@ -19,6 +22,7 @@ export interface VideoParticipantProps {
   name: string;
   participant: LocalParticipant | RemoteParticipant;
   fullScreen?:boolean;
+  setDataTrackMessage?:any; //TODO: set model
 }
 
 export const VideoParticipant = ({
@@ -28,7 +32,8 @@ export const VideoParticipant = ({
   isProvider,
   isSelf,
   participant,
-  fullScreen
+  fullScreen,
+  setDataTrackMessage
 }: VideoParticipantProps) => {
   // const [showMutedBanner, setShowMutedBanner] = useState(null);
   const [showMenuRef, setShowMenuRef] = useState(null);
@@ -69,9 +74,17 @@ export const VideoParticipant = ({
   const handleMuteParticipant = () => {
     if (room) {
       setMuted(prev => !prev);
+      //TODO: add real data
+      if(setDataTrackMessage) {
+        setDataTrackMessage(new Date());
+      }
       // @ts-ignore
       const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
-      localDataTrackPublication.track.send(muted);
+      console.log(participant);
+
+      const message: DataTrackMessage = {participantId: participant.identity,isMuted: muted};
+
+      localDataTrackPublication.track.send(JSON.stringify(message));
     }
   }
 

@@ -19,12 +19,15 @@ import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
 import { Icon } from '../../Icon';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
+//import useDataTrackMessage from '../../Base/DataTracks/useDataTrackMessage';
+//import { DataTrackMessage } from '../../../types';
 
 export interface VideoConsultationProps {}
 
 export const VideoConsultation = ({}: VideoConsultationProps) => {
   const router = useRouter();
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
+  const [dataTrackMessage, setDataTrackMessage] = useState(null);
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
@@ -43,22 +46,51 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     visitorName: null,
     patientParticipant: null,
     providerParticipant: null,
-    visitorParticipant: null
+    visitorParticipant: null,
+    providerVisitorParticipant: null
   });
 
   const [flipCamera, flipCameraEnabled] = useToggleFacingMode();
 
+  //handle name for visitiors
+  useEffect(() => {
+    console.log('dataTrackMessage', dataTrackMessage);
+
+  }, [dataTrackMessage]);
+  
+
   useEffect(() => {
     if (room) {
-      const providerParticipant = participants[0];
+  
+      // //set name for visitors
+      // if(user.role == 'visitor' || user.role == 'providervisitor' ) {
+      //   // @ts-ignore
+      //   const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
+
+      //   const dataTrackMessage: DataTrackMessage  = {participantId: user.id, name: user.name}
+      //   localDataTrackPublication.track.send(JSON.stringify(dataTrackMessage));
+      // }
+
+      const providerParticipant = participants.find(p => p.identity == visit.ehrAppointment.provider_id);  
+      const patientParticipant = 
+                        (user.role == 'patient') ? room!.localParticipant : 
+                        participants.find(p => p.identity == visit.ehrAppointment.patient_id);
+      const visitorParticipant = 
+                        (user.role == 'visitor') ? room!.localParticipant : 
+                        participants.find(p => p.identity.startsWith('visitor_'));
+      const providerVisitorParticipant = 
+                        (user.role == 'providervisitor') ? room!.localParticipant : 
+                        participants.find(p => p.identity.startsWith('providervisitor_'));
 
       setCallState(prev => {
         return {
           ...prev,
-          patientParticipant: room!.localParticipant,
+          patientParticipant: patientParticipant,
           providerParticipant: providerParticipant,
-          visitorParticipant: participants[1]
+          visitorParticipant: visitorParticipant,
+          providerVisitorParticipant: providerVisitorParticipant,
         }
+        
       })
 
       const disconnectFromRoom = () => {
@@ -98,6 +130,14 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     setInviteModalVisible(!inviteModalVisible);
   }
 
+  function participantsCount() {
+    return    (callState.providerParticipant ? 1 : 0)
+            + (callState.patientParticipant ? 1 : 0)
+            + (callState.visitorParticipant ? 1 : 0)
+            + (callState.providerVisitorParticipant ? 1 : 0);
+  }
+  
+
   return (
     <>
       <div className="bg-secondary flex flex-col h-full w-full items-center overflow-x-hidden overflow-y-scroll">
@@ -115,23 +155,36 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     hasAudio
                     hasVideo
                     participant={callState.providerParticipant}
+                    setDataTrackMessage={setDataTrackMessage}
                   />}
                <div className="absolute top-1 right-1 flex">
                 {callState.patientParticipant && <VideoParticipant
                     name={visit.patientName}
-                    hasAudio={isAudioEnabled}
-                    hasVideo={isVideoEnabled}
+                    hasAudio={user.role=='patient'?isAudioEnabled:true}
+                    hasVideo={user.role=='patient'?isVideoEnabled:true}
                     isOverlap
-                    isSelf={true}
+                    isSelf={user.role=='patient'}
                     participant={callState.patientParticipant}
+                    setDataTrackMessage={setDataTrackMessage}
                   /> }
                  {callState.visitorParticipant && <VideoParticipant
-                   name="Visitor"
-                   hasAudio
-                   hasVideo
+                   name="Patient Visitor"
+                   hasAudio={user.role=='visitor'?isAudioEnabled:true}
+                   hasVideo={user.role=='visitor'?isVideoEnabled:true}
                    isOverlap
+                   isSelf={user.role=='visitor'}
                    participant={callState.visitorParticipant}
-                 /> }
+                   setDataTrackMessage={setDataTrackMessage}
+                   /> }
+                 {callState.providerVisitorParticipant && <VideoParticipant
+                   name="Provider Visitor"
+                   hasAudio={user.role=='providervisitor'?isAudioEnabled:true}
+                   hasVideo={user.role=='providervisitor'?isVideoEnabled:true}
+                   isOverlap
+                   isSelf={user.role=='providervisitor'}
+                   participant={callState.providerVisitorParticipant}
+                   setDataTrackMessage={setDataTrackMessage}
+                   /> }
                 </div>
                 <Button
                   className="absolute left-4 bottom-3"
@@ -181,36 +234,65 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           <>
             <div className="flex-grow">
               <div className="flex flex-col justify-evenly h-full">
-                {callState.patientParticipant && !callState.visitorParticipant && <VideoParticipant
+                {callState.patientParticipant 
+                  && !callState.visitorParticipant 
+                  && !callState.providerVisitorParticipant 
+                  && <VideoParticipant
                   name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
-                  hasAudio={isAudioEnabled}
-                  hasVideo={isVideoEnabled}
+                  hasAudio={user.role=='patient'?isAudioEnabled:true}
+                  hasVideo={user.role=='patient'?isVideoEnabled:true}
                   isSelf={true}
                   isProvider={false}
                   participant={callState.patientParticipant}
-                />}
-                {callState.patientParticipant && callState.visitorParticipant &&
-                  <div className='flex flex-col flex-wrap overflow-x-auto w-[400px] h-[300px]'>
-
-                    <VideoParticipant
-                      name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
-                      hasAudio={isAudioEnabled}
-                      hasVideo={isVideoEnabled}
-                      isSelf={true}
-                      isProvider={false}
-                      participant={callState.patientParticipant}
-                      carouselScreen
-                    />
-                    <VideoParticipant
-                      name="Visitor"
-                      hasAudio
-                      hasVideo
+                  setDataTrackMessage={setDataTrackMessage}
+                  />}
+                {callState.patientParticipant
+                  && (callState.visitorParticipant || callState.providerVisitorParticipant)
+                  //TODO: should be refactored for more then 4 participants
+                  && <div className={'flex flex-col flex-wrap overflow-x-auto  w-[400px] ' + ((participantsCount()== 3) ? 'h-[300px]' : 'h-[200px]') }>
+                    {callState.patientParticipant &&
+                      <VideoParticipant
+                        name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
+                        hasAudio={user.role=='patient'?isAudioEnabled:true}
+                        hasVideo={user.role=='patient'?isVideoEnabled:true}
+                        isSelf={user.role=='patient'}
+                        isProvider={false}
+                        participant={callState.patientParticipant}
+                        carouselScreen
+                        participantsCount={participantsCount()}
+                        setDataTrackMessage={setDataTrackMessage}
+                        />
+                    }
+                    {callState.visitorParticipant
+                      && <VideoParticipant
+                      name="Patient Visitor"
+                      hasAudio={user.role=='visitor'?isAudioEnabled:true}
+                      hasVideo={user.role=='visitor'?isVideoEnabled:true}
                       isOverlap
                       isProvider={false}
-                      isSelf={false}
+                      isSelf={user.role=='visitor'}
                       participant={callState.visitorParticipant}
                       carouselScreen
-                    />
+                      participantsCount={participantsCount()}
+                      setDataTrackMessage={setDataTrackMessage}
+                      />
+                    }
+                    
+                    {callState.providerVisitorParticipant
+                      && <VideoParticipant
+                      name="Provider Visitor"
+                      hasAudio={user.role=='providervisitor'?isAudioEnabled:true}
+                      hasVideo={user.role=='providervisitor'?isVideoEnabled:true}
+                      isOverlap
+                      isProvider={false}
+                      isSelf={user.role=='providervisitor'}
+                      participant={callState.providerVisitorParticipant}
+                      carouselScreen
+                      participantsCount={participantsCount()}
+                      setDataTrackMessage={setDataTrackMessage}
+                      />
+                    }
+                    
                   </div>}
                 {callState.providerParticipant && <VideoParticipant
                   name={visit.ehrProvider.name}
@@ -219,7 +301,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                   isProvider={true}
                   isSelf={false}
                   participant={callState.providerParticipant}
-                />}
+                  setDataTrackMessage={setDataTrackMessage}
+                  />}
               </div>
               {isChatWindowOpen && (
                 <Button
@@ -254,6 +337,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       <InviteParticipantModal
         close={toggleInviteModal}
         isVisible={inviteModalVisible}
+        hasNameInput={false}
+        role="visitor"
       />
       <EndCallModal
         close={toggleEndCallModal}

@@ -1,10 +1,13 @@
-import { TelehealthUser } from "../types";
+import { TelehealthUser, TelehealthRole } from '../types';
 import { Uris } from "./constants";
 
-async function inviteVisitor(user: TelehealthUser, phoneNumber: string, visitId: string): Promise<void> {
+async function inviteVisitor(user: TelehealthUser, phoneNumber: string, visitId: string, role: TelehealthRole): Promise<void> {
+    //consider only 2 roles of visitor
+    const action = role == 'visitor' ? 'VISITOR' : 'PROVIDERVISITOR';
+    
     await fetch(Uris.get(Uris.visits.token), {
         method: 'POST',
-        body: JSON.stringify({ action: "PASSCODE", visitId, id: `visitor_${phoneNumber}` }),
+        body: JSON.stringify({ name: user.name, action: action, visitId, id: `${role}_${phoneNumber}` }),
         headers: { 
             'Accept': 'application/json',
             'Content-Type': 'application/json',

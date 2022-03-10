@@ -6,12 +6,15 @@ import useTrack from '../../../Base/ParticipantTracks/Publication/useTrack/useTr
 import usePublications from '../../../Base/ParticipantTracks/usePublications/usePublications';
 import useIsTrackEnabled from '../../../Base/VideoProvider/useIsTrackEnabled/useIsTrackEnabled';
 import { Icon } from '../../../Icon';
-import useDataTrackMessage from '../../../Base/DataTracks/useDataTrack';
+import useDataTrackMessage from '../../../Base/DataTracks/useDataTrackMessage';
 import useLocalAudioToggle from '../../../Base/VideoProvider/useLocalAudioToggle/useLocalAudioToggle';
 import useScreenShareParticipant from '../../../Base/VideoProvider/useScreenShareParticipant/useScreenShareParticipant';
 import useMainParticipant from '../../../Base/VideoProvider/useMainParticipany/useMainParticipant';
 import useVideoContext from '../../../Base/VideoProvider/useVideoContext/useVideoContext';
 import useSelectedParticipant from '../../../Base/VideoProvider/useSelectedParticipant/useSelectedParticipant';
+import { DataTrackMessage } from '../../../../types';
+import { useVisitContext } from '../../../../state/VisitContext';
+
 export interface VideoParticipantProps {
   hasAudio?: boolean;
   hasVideo?: boolean;
@@ -21,6 +24,8 @@ export interface VideoParticipantProps {
   name: string;
   participant: LocalParticipant | RemoteParticipant,
   carouselScreen?:boolean;
+  participantsCount?:number;
+  setDataTrackMessage?: any; //TODO: set model
 }
 
 export const VideoParticipant = ({
@@ -31,7 +36,9 @@ export const VideoParticipant = ({
   isOverlap,
   isSelf,
   participant,
-  carouselScreen
+  carouselScreen,
+  participantsCount,
+  setDataTrackMessage
 }: VideoParticipantProps) => {
   const [showMutedBanner, setShowMutedBanner] = useState(null);
   const [isPinned, setIsPinned] = useState(false);
@@ -43,6 +50,7 @@ export const VideoParticipant = ({
   const [selectedParticipant] = useSelectedParticipant();
   const { room } = useVideoContext();
   const localParticipant = room!.localParticipant;
+  const { user, visit } = useVisitContext();
 
   const publications = usePublications(participant);
   const videoPublication = publications.find(p => !p.trackName.includes('screen') && p.kind === 'video');
@@ -56,8 +64,9 @@ export const VideoParticipant = ({
 
   const isVideoEnabled = Boolean(videoTrack);
   const isTrackEnabled = useIsTrackEnabled(audioTrack as LocalAudioTrack | RemoteAudioTrack);
-  const amIMuted = useDataTrackMessage(dataTrack);
 
+  const dataTrackMessage: DataTrackMessage = useDataTrackMessage(dataTrack);
+  
   const videoPriority = (mainParticipant === selectedParticipant || mainParticipant === screenShareParticipant) &&
     mainParticipant !== localParticipant
     ? 'high'
@@ -74,16 +83,37 @@ export const VideoParticipant = ({
      : isProvider
      ? 'h-[234px]'
      : 'h-[364px]';
-  if (carouselScreen) {
+ //TODO: refactor to common logic
+  switch(participantsCount) {
+    case 3:
     widthClass = 'w-[200px]';
     heightClass = 'h-[300px]';
+    break;
+    case 4:
+    widthClass = 'w-[133px]';
+    heightClass = 'h-[200px]';
+    break;
+  }
+  if (carouselScreen) {
+    //widthClass = 'w-[200px]';
+    //heightClass = 'h-[300px]';
   }
 
   useEffect(() => {
     // toggleAudioEnabled() only works for local user
     // in this case the patient
     toggleAudioEnabled();
-  }, [amIMuted, toggleAudioEnabled]);
+  }, [toggleAudioEnabled]);
+
+  //remote control by provider
+  useEffect(() => {
+    setDataTrackMessage(dataTrackMessage);
+    if(dataTrackMessage?.participantId == localParticipant.identity && dataTrackMessage.isMuted != undefined)
+    {
+      toggleAudioEnabled();
+    }
+  }, [dataTrackMessage]);
+  
 
   // Muting non-self Participants useEffect
   // Will need to account for 3rd party later on
