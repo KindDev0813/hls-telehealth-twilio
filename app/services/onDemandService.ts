@@ -22,8 +22,6 @@ export const createEHRPatient = async (token: string): Promise<PatientAppointmen
     ]);
 
     const appointment = getAppointment(provider, patient, healthInfo);
-    console.log("ehrPatient: ", ehrPatient);
-    console.log("appointment: ", appointment);
     return {
       appointment,
       patient: ehrPatient
@@ -34,7 +32,6 @@ export const createEHRPatient = async (token: string): Promise<PatientAppointmen
 }
 
 export const getOnDemandToken = async (patientId = "p1000000", appointmentId = "a1000000"): Promise<Token> => {
-  console.log("PatientID: ", patientId, "AppointmentID: ", appointmentId);
   return fetch(Uris.get(Uris.visits.token), {
     method: 'POST',
     body: JSON.stringify({

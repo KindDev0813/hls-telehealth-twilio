@@ -6,9 +6,10 @@ import { CardHeading } from '../CardHeading';
 import { Icon } from '../../Icon';
 import { useRouter } from 'next/router';
 import clientStorage from '../../../services/clientStorage';
-import {CURRENT_VISIT_ID, STORAGE_VISIT_KEY} from '../../../constants';
+import {CURRENT_VISIT, STORAGE_VISIT_KEY} from '../../../constants';
 import {TelehealthVisit} from "../../../types";
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
+import { CurrentVisit } from '../../../interfaces';
 
 export interface NextPatientCardProps {
   className?: string;
@@ -36,7 +37,11 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
   );
 
   function startVisit() {
-    clientStorage.saveToStorage(CURRENT_VISIT_ID, visitNext.ehrAppointment.id);
+    const currVisit: CurrentVisit = {
+      visitId: visitNext.ehrAppointment.id,
+      visitType: visitNext.ehrAppointment.type
+    }
+    clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
     router.push("/provider/video/");
   };
 

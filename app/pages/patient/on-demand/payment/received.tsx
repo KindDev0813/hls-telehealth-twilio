@@ -25,7 +25,6 @@ interface PaymentReceivedPageProps {
 * - This page creats a token with the visitId attached
 **/
 const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPageProps) => {
-  console.log("Token Exists", tokenExists, "Temptoken", tempTokenObject)
   const router = useRouter();
   const [passcode, setPasscode] = useState<string>(null);
   const [isError, setIsError] = useState<boolean>(false);
@@ -52,7 +51,6 @@ const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPa
   // Publish the Message to Sync
   useEffect(() => {
     const publishMessage = async () => {
-      console.log("hello", tempTokenObject, "syncToken", syncToken, "syncclient", syncClient, "onDemandStream",onDemandStream);
       const storageToken: Token = await getStorageToken();
       if (storageToken) {
         getStorageToken();

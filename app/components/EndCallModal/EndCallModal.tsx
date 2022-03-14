@@ -1,4 +1,7 @@
 import router, { useRouter } from "next/router";
+import { CURRENT_VISIT } from "../../constants";
+import { CurrentVisit } from "../../interfaces";
+import clientStorage from "../../services/clientStorage";
 import { Uris } from "../../services/constants";
 import datastoreService from "../../services/datastoreService";
 import { useVisitContext } from "../../state/VisitContext";
@@ -16,18 +19,15 @@ export const EndCallModal = ({ close, isVisible, isProvider = false }: EndCallMo
   const { room } = useVideoContext();
   const router = useRouter();
   const { user } = useVisitContext();
-  console.log("room", room);
 
   async function endCall() {
-    console.log("EndedCall");
     close();
     room.disconnect();
     const resp = await datastoreService.completeRoom(user.token, room.sid);
-    console.log("Resp", resp);
-    // const currVisit = await clientStorage.getFromStorage<CurrentVisit>(CURRENT_VISIT);
-    // if (currVisit && currVisit.visitType === 'WALKIN') {
-    //   await datastoreService.removeAppointment(user.token, currVisit.visitId);
-    // }
+    const currVisit = await clientStorage.getFromStorage<CurrentVisit>(CURRENT_VISIT);
+    if (currVisit && currVisit.visitType === 'WALKIN') {
+      await datastoreService.removeAppointment(user.token, currVisit.visitId);
+    }
     isProvider ? router.push('/provider/visit-survey/') : router.push('/patient/visit-survey/');
   }
 

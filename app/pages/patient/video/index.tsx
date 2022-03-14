@@ -18,7 +18,6 @@ const VideoPage = () => {
     if(!room) {
       roomService.checkRoom(user as PatientUser, visit.roomName)
       .then(roomTokenResp => {
-        console.log("PATIENT RESP", roomTokenResp);
         if(!roomTokenResp.roomAvailable) {
           router.push('/patient/waiting-room');
         }

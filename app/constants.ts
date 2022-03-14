@@ -16,7 +16,7 @@ export const SELECTED_BACKGROUND_SETTINGS_KEY = 'TwilioVideoApp-selectedBackgrou
 
 export const STORAGE_USER_KEY = 'TelehealthUser';
 export const STORAGE_VISIT_KEY = 'TelehealthVisit';
-export const CURRENT_VISIT_ID = 'CurrentVisitId';
+export const CURRENT_VISIT = 'CurrentVisit';
 
 // On Demand Local Storage Keys
 export const PATIENT_INFO_KEY = 'PatientInfo';
