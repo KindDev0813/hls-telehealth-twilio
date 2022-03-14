@@ -11,6 +11,11 @@ export interface PatientAppointment {
   patient: EHRPatient;
 }
 
+export interface CurrentVisit {
+  visitId: string;
+  visitType: string;
+}
+
 // On Demand Intefaces
 export interface OnDemandData {
   appointment: EHRAppointment;

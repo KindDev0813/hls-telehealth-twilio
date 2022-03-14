@@ -1,6 +1,6 @@
 export const Uris = {
-  backendRoot : 'http://localhost:3001',
-  //backendRoot : '',
+  //backendRoot : 'http://localhost:3001',
+  backendRoot : '',
   token: {
     get: '/visit/token',
     validate: '/token/validate'

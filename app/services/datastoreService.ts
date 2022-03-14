@@ -316,6 +316,10 @@ async function addAppointment(token: string, ehrAppointment: EHRAppointment): Pr
   return Promise.resolve(newEhrAppointment);
 }
 
+/**
+ * Ends the Video Room for all participants.  All participants can no longer enter the room
+ * after this request is made.
+ */
 async function completeRoom(token: string, roomSid: string) {
   const resp = await fetch(Uris.get(Uris.visits.completeRoom), {
     method: 'POST',
@@ -330,6 +334,26 @@ async function completeRoom(token: string, roomSid: string) {
   .catch(err => console.error(err));
   return resp.data;
 }
+
+
+async function removeAppointment(token: string, appointmentId: string) {
+  const appointmentResp = await fetch(Uris.backendRoot + '/datastore/appointments', {
+    method: 'POST',
+    body: JSON.stringify({ action: 'REMOVE', appointment_id: appointmentId, token }),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  }).then(r => r.json());
+
+  if (!appointmentResp) {
+    Promise.reject({ error: "Failed to remove appointment or did not find appointment!"});
+  }
+
+  return Promise.resolve(appointmentResp);
+}
+
 
 /* --------------------------------------------------------------------------------------------------------------
  * add new post visit survey
@@ -385,6 +409,7 @@ export default {
   fetchProviderOnCall,
   addPatient,
   addAppointment,
+  removeAppointment,
   addSurvey,
   getSurveys,
   completeRoom

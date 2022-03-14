@@ -46,7 +46,6 @@ export const getOnDemandToken = async (patientId = "p1000000", appointmentId = "
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
   })
   .then(resp => {
-    //console.log("Token returned", resp.json())
     return resp.json();
   })
   .catch(err => console.log(err));

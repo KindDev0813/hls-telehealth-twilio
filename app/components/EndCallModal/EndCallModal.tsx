@@ -16,6 +16,7 @@ export const EndCallModal = ({ close, isVisible, isProvider = false }: EndCallMo
   const { room } = useVideoContext();
   const router = useRouter();
   const { user } = useVisitContext();
+  console.log("room", room);
 
   async function endCall() {
     console.log("EndedCall");
@@ -23,6 +24,10 @@ export const EndCallModal = ({ close, isVisible, isProvider = false }: EndCallMo
     room.disconnect();
     const resp = await datastoreService.completeRoom(user.token, room.sid);
     console.log("Resp", resp);
+    // const currVisit = await clientStorage.getFromStorage<CurrentVisit>(CURRENT_VISIT);
+    // if (currVisit && currVisit.visitType === 'WALKIN') {
+    //   await datastoreService.removeAppointment(user.token, currVisit.visitId);
+    // }
     isProvider ? router.push('/provider/visit-survey/') : router.push('/patient/visit-survey/');
   }
 

@@ -1,4 +1,3 @@
-import { LocalParticipant, RemoteParticipant } from "twilio-video";
 import { Settings } from "./types";
 
 export const DEFAULT_VIDEO_CONSTRAINTS: MediaStreamConstraints['video'] = {
@@ -38,49 +37,5 @@ export const initialSettings: Settings = {
   roomType: 'group'
 };
 
-// On Demand Intefaces
-export interface PatientInfo {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  needTranslator: string;
-  gender: string;
-}
-interface HealthFile {
-  name: string;
-  url?: string;
-}
-export interface HealthInfo {
-  conditions: string;
-  files?: HealthFile[];
-  medications: string;
-  reason: string;
-}
+export const ON_DEMAND_TOKEN = 'OnDemandToken';
 
-export interface InsuranceInfo {
-  haveInsurance: string;
-  memberId: string;
-  healthPlan: string;
-  isPrimaryMember: string;
-
-}
-
-// Room Interfaces
-export interface ParticipantRoomState {
-  patientName: string;
-  providerName: string;
-  visitorName?: string // todo change to array of visitors
-}
-
-export interface ProviderRoomState extends ParticipantRoomState {
-  patientParticipant: RemoteParticipant;
-  providerParticipant: LocalParticipant;
-  visitorParticipant?: RemoteParticipant; // todo change to array of visitors
-}
-
-export interface PatientRoomState extends ParticipantRoomState {
-  patientParticipant: LocalParticipant;
-  providerParticipant: RemoteParticipant;
-  visitorParticipant?: RemoteParticipant; // todo change to array of visitors
-}
