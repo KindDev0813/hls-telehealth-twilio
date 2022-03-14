@@ -32,7 +32,7 @@ const VideoPage: TwilioPage = () => {
           });
         });
     }
-  },[router, room]);
+  },[router, room, user, chatConnect, videoConnect]);
 
   return <VideoConsultation />;
 };
