@@ -162,10 +162,10 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             <div className="w-full bottom-0 absolute" style={chatHeight}>
               <Chat
                   close={() => {
-                    console.log('here');
                     toggleAudioEnabled();
                     setIsChatWindowOpen(false)
                   }}
+                  showHeader
                   currentUser={visit.ehrPatient.name}
                   otherUser={visit.ehrProvider.name}
                   userId={user.id}
