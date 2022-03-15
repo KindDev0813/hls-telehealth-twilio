@@ -8,15 +8,10 @@ import useSyncContext from '../../../../components/Base/SyncProvider/useSyncCont
 import OnDemandLayout from '../../../../components/Patient/OnDemandLayout';
 import datastoreService from '../../../../services/datastoreService';
 import clientStorage from '../../../../services/clientStorage';
-import { ON_DEMAND_TOKEN } from '../../../../constants';
+import { ON_DEMAND_TOKEN, TEMP_TOKEN } from '../../../../constants';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { createEHRPatient, getOnDemandToken } from '../../../../services/onDemandService';
 import { OnDemandData, Token } from '../../../../interfaces';
-
-interface PaymentReceivedPageProps {
-  tempTokenObject: Token;
-  tokenExists: boolean;
-}
 
 /* 
 * After landing on this page, a visitId should be created from EHR
@@ -24,8 +19,10 @@ interface PaymentReceivedPageProps {
 * - EHR sends back a visitId
 * - This page creats a token with the visitId attached
 **/
-const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPageProps) => {
+const PaymentReceivedPage = () => {
   const router = useRouter();
+  //const [tempToken, setTempToken] = useState<Token>(null);
+  //const [tokenExists, setTokenExists] = useState<boolean>(false);
   const [passcode, setPasscode] = useState<string>(null);
   const [isError, setIsError] = useState<boolean>(false);
   const { syncClient, syncToken, onDemandStream } = useSyncContext();
@@ -48,14 +45,27 @@ const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPa
     }
   }
 
+  // Generate Temporary Token to call patient/appointment APIs
+  // useEffect(() => {
+  //   const generateTempToken = async () => {
+      
+  //     await clientStorage.saveToStorage<Token>(TEMP_TOKEN, tempTokenObject);
+  //   }
+  //   generateTempToken();
+  // }, [])
+  
+
   // Publish the Message to Sync
   useEffect(() => {
     const publishMessage = async () => {
       const storageToken: Token = await getStorageToken();
+      const tempToken = await getOnDemandToken();
+      console.log(tempToken, storageToken, syncToken , syncClient , onDemandStream)
       if (storageToken) {
-        getStorageToken();
-      } else if (tempTokenObject && syncToken && syncClient && onDemandStream && !tokenExists) {
-        const patientAppointment = await createEHRPatient(tempTokenObject.token);
+        await getStorageToken();
+      }
+      else if (tempToken && syncToken && syncClient && onDemandStream && !storageToken ) {
+        const patientAppointment = await createEHRPatient(tempToken.token);
         const appointment = patientAppointment.appointment;
         const patient = patientAppointment.patient;
         onDemandStream.publishMessage({
@@ -65,7 +75,7 @@ const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPa
         })
         .then(async message => {
           const messageData = message.data as OnDemandData;
-          const appt = await datastoreService.addAppointment(tempTokenObject.token, messageData.appointment);
+          const appt = await datastoreService.addAppointment(tempToken.token, messageData.appointment);
           const onDemandToken = await getOnDemandToken(appt.patient_id, appt.id);
           await clientStorage.saveToStorage(ON_DEMAND_TOKEN, onDemandToken);
           setPasscode(onDemandToken.passcode);
@@ -78,7 +88,7 @@ const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPa
       }
     }
     publishMessage();
-  }, [onDemandStream, router, syncClient, syncToken, tempTokenObject, tokenExists]);
+  }, [onDemandStream, router, syncClient, syncToken]);
 
 
   return (
@@ -108,69 +118,5 @@ const PaymentReceivedPage = ({ tempTokenObject, tokenExists }: PaymentReceivedPa
   );
 };
 
-export async function getServerSideProps() {
-  // Call Token endpoint for a temp Token such that we can call
-  // some functions that require a token
-  const tempTokenObject = await getOnDemandToken();
-  const tokenExists = await clientStorage.getFromStorage(ON_DEMAND_TOKEN) ? true : false;
-
-  return { 
-    props: {
-      tempTokenObject: tempTokenObject,
-      tokenExists
-    }
-  }
-}
-
 PaymentReceivedPage.Layout = OnDemandLayout;
 export default PaymentReceivedPage;
-
-
-  // // Will need to change this to real data get call.
-  // useEffect(() => {
-  //   async function publishMessage() {
-  //     const tkn = await getStorageToken();
-  //     if (syncClient && onDemandStream && appt && syncToken && appToken && !tkn) {
-  //       onDemandStream.publishMessage({
-  //         appointment: appt,
-  //         patientSyncToken: syncToken,
-  //       })
-  //       .then(async message => {
-  //         //@ts-ignore
-  //         const apptResp = await datastoreService.addAppointment(appToken, message.data.appointment);
-  //         setApptId(apptResp.id);
-  //       })
-  //       .catch(error => {
-  //         console.error('Stream publishMessage() failed', error);
-  //       });
-  //     }
-  //   }
-  //   publishMessage();
-  // }, [appToken, appt, onDemandStream, syncClient, syncToken]);
-
-  // useEffect(() => {
-  //   async function generateOnDemandToken() {
-  //     const tkn = await getStorageToken();
-  //     if (appToken && patientId && apptId && !tkn) {
-  //       fetch(Uris.get(Uris.visits.token), {
-  //         method: 'POST',
-  //         body: JSON.stringify({
-  //           role: "patient",
-  //           action: "PATIENT",
-  //           id: patientId,
-  //           visitId: apptId // should be generated from EHR
-  //         }),
-  //         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-  //       })
-  //       .then(async token => {
-  //         const resolvedToken = await token.json();
-  //         clientStorage.saveToStorage('OnDemandToken', resolvedToken);
-  //         setPasscode(resolvedToken.passcode);
-  //       }).catch(err => {
-  //         setIsError(true);
-  //         new Error(err);
-  //       });
-  //     }
-  //   }
-  //   generateOnDemandToken();
-  // }, [appToken, apptId, patientId]);
