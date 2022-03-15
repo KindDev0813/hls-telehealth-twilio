@@ -225,16 +225,16 @@ exports.handler = async function(context, event, callback) {
       }
 
       case 'ADD': {
-        assert(event.patient, 'Mssing event.patient!!!');
+        assert(event.patient, 'Missing event.patient!!!');
         const patient = event.patient;
-        assert(patient.patient_name, 'Mssing patient_name!!!');
-        assert(patient.patient_family_name, 'Mssing patient_family_name!!!');
-        assert(patient.patient_given_name, 'Mssing patient_given_name!!!');
-        assert(patient.patient_phone, 'Mssing patient_phone!!!');
-        assert(patient.patient_gender, 'Mssing patient_gender!!!');
-        assert(patient.patient_language, 'Mssing patient_language!!!');
-        assert(patient.patient_medications, 'Mssing patient_medications!!!');
-        assert(patient.patient_conditions, 'Mssing patient_conditions!!!');
+        assert(patient.patient_name, 'Missing patient_name!!!');
+        assert(patient.patient_family_name, 'Missing patient_family_name!!!');
+        assert(patient.patient_given_name, 'Missing patient_given_name!!!');
+        assert(patient.patient_phone, 'Missing patient_phone!!!');
+        assert(patient.patient_gender, 'Missing patient_gender!!!');
+        assert(patient.patient_language, 'Missing patient_language!!!');
+        assert(patient.patient_medications, 'Missing patient_medications!!!');
+        assert(patient.patient_conditions, 'Missing patient_conditions!!!');
         const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
         const now = new Date();

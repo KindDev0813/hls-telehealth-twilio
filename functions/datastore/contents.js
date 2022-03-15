@@ -170,10 +170,10 @@ exports.handler = async function(context, event, callback) {
       }
 
       case 'ADD': {
-        assert(event.content, 'Mssing event.content!!!');
+        assert(event.content, 'Missing event.content!!!');
         const content = JSON.parse(event.content);
-        assert(content.content_title, 'Mssing content_title!!!');
-        assert(content.content_video_url, 'Mssing content_video_url!!!');
+        assert(content.content_title, 'Missing content_title!!!');
+        assert(content.content_video_url, 'Missing content_video_url!!!');
         const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
         const now = new Date();
@@ -203,8 +203,8 @@ exports.handler = async function(context, event, callback) {
       }
 
       case 'ASSIGN': {
-        assert(event.content_id, 'Mssing event.content_id!!!');
-        assert(event.provider_id, 'Mssing event.provider_id!!!');
+        assert(event.content_id, 'Missing event.content_id!!!');
+        assert(event.provider_id, 'Missing event.provider_id!!!');
         const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
         const resources = await read_fhir(context, TWILIO_SYNC_SID, FHIR_DOCUMENT_REFERENCE);
