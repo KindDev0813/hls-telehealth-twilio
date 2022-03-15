@@ -4,7 +4,8 @@ import { Heading } from '../../../components/Heading';
 import { InfoForm, Layout } from '../../../components/Patient';
 import OnDemandLayout from '../../../components/Patient/OnDemandLayout';
 import clientStorage from '../../../services/clientStorage';
-import { PatientInfo, PATIENT_INFO_KEY } from '../../../constants';
+import { PATIENT_INFO_KEY } from '../../../constants';
+import { PatientInfo } from '../../../interfaces';
 
 const InfoFormPage = () => {
   const router = useRouter();

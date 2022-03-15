@@ -4,7 +4,8 @@ import { Heading } from '../../../components/Heading';
 import { HealthForm, Layout } from '../../../components/Patient';
 import OnDemandLayout from '../../../components/Patient/OnDemandLayout';
 import clientStorage from '../../../services/clientStorage';
-import { HealthInfo, HEALTH_INFO_KEY } from '../../../constants';
+import { HEALTH_INFO_KEY } from '../../../constants';
+import { HealthInfo } from '../../../interfaces';
 
 const HealthFormPage = () => {
   const router = useRouter();
