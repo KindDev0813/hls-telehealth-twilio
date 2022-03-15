@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {PatientRoomState} from '../../../constants';
 import { useVisitContext } from '../../../state/VisitContext';
 import useParticipants from '../../Base/VideoProvider/useParticipants/useParticipants';
@@ -17,7 +17,6 @@ import useLocalVideoToggle from '../../Base/VideoProvider/useLocalVideoToggle/us
 import useLocalParticipantNetworkQualityLevel from '../../Base/VideoProvider/useLocalParticipantNetworkQualityLevel/useLocalParticipantNetworkQualityLevel';
 import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
-import { Icon } from '../../Icon';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
 
 export interface VideoConsultationProps {}
@@ -36,6 +35,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const { setIsChatWindowOpen, isChatWindowOpen } = useChatContext();
   const networkQualityLevel = useLocalParticipantNetworkQualityLevel(room);
   const [connectionIssueTimeout, setConnectionIssueTimeout] = useState(null);
+
+  const containerRef = useRef(null);
+
 
   const [callState, setCallState] = useState<PatientRoomState>({
     patientName: null,
@@ -98,9 +100,19 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     setInviteModalVisible(!inviteModalVisible);
   }
 
+  let chatHeight = {
+    height: '200px'
+  };
+  if(containerRef && containerRef.current) {
+    // todo move top video screen constant to common constants
+    chatHeight.height = `${containerRef.current.offsetHeight - 293}px`;
+  }
+
   return (
     <>
-      <div className="bg-secondary flex flex-col h-full w-full items-center overflow-x-hidden overflow-y-scroll">
+      <div
+          ref={containerRef}
+          className="bg-secondary flex flex-col h-full w-full items-center overflow-x-hidden overflow-y-scroll">
         <div className="py-5">
           <PoweredByTwilio inverted />
         </div>        
@@ -111,14 +123,16 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             <div className="flex">
               <div className="relative">
                 {callState.providerParticipant && <VideoParticipant
-                    name={visit.providerName}
+                    name={visit.ehrProvider.name}
                     hasAudio
                     hasVideo
+                    isProvider={true}
+                    isSelf={false}
                     participant={callState.providerParticipant}
-                  />}
-               <div className="absolute top-1 right-1 flex">
+                />}
+               <div className="absolute top-1 right-4 flex">
                 {callState.patientParticipant && <VideoParticipant
-                    name={visit.patientName}
+                    name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                     hasAudio={isAudioEnabled}
                     hasVideo={isVideoEnabled}
                     isOverlap
@@ -145,37 +159,20 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 />
               </div>
             </div>
-            <div className=" w-full flex-col h-[180px]">
-              <div className="relative flex justify-center bg-primary items-center w-full text-white">
-                Chat with {visit.ehrProvider.name}
-                <div className=" h-10 text-center pt-2 justify-evenly">
-                  {isChatWindowOpen && (
-                    <button
-                      className="absolute right-3"
-                      type="button"
-                      onClick={() => {
-                        setIsChatWindowOpen(!isChatWindowOpen)
-                        toggleAudioEnabled()
-                      }}
-                    >
-                      <Icon name="close" />
-                    </button>
-                  )}
-                </div>
-              </div>
+            <div className="w-full bottom-0 absolute" style={chatHeight}>
               <Chat
-                close={() => {
-                  setIsChatWindowOpen(false)
-                  toggleAudioEnabled()
-                }}
-                currentUser={visit.ehrPatient.name}
-                otherUser={visit.ehrProvider.name}
-                userId={user.id}
-                userRole={user.role} 
-                inputPlaceholder={`Message to ${visit.ehrProvider.name}`} 
+                  close={() => {
+                    console.log('here');
+                    toggleAudioEnabled();
+                    setIsChatWindowOpen(false)
+                  }}
+                  currentUser={visit.ehrPatient.name}
+                  otherUser={visit.ehrProvider.name}
+                  userId={user.id}
+                  userRole={user.role}
+                  inputPlaceholder={`Message to ${visit.ehrProvider.name}`}
               />
             </div>
-
           </>
         ) : (
           <>

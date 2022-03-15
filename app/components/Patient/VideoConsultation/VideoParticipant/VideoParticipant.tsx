@@ -105,17 +105,19 @@ export const VideoParticipant = ({
   }, [isVideoEnabled]);
 
   useEffect(() => {
-    if (showMutedBanner !== null) {
-      setShowMutedBanner(!hasAudio);
+    let timer;
+    if(muted) {
+      setShowMutedBanner(true);
+      timer = setTimeout(() => {
+        setShowMutedBanner(false);
+        clearTimeout(timer);
+      }, 3000);
     } else {
       setShowMutedBanner(false);
     }
-
-    const timer = setTimeout(() => {
-      setShowMutedBanner(false);
-    }, 3000);
     return () => clearTimeout(timer);
-  }, [hasAudio, showMutedBanner]);
+
+  }, [muted]);
 
   return (
     <div className="mx-auto relative w-max group">
@@ -139,7 +141,7 @@ export const VideoParticipant = ({
           </div>
         </div>
       )}
-      {showMutedBanner && (
+      {showMutedBanner && isSelf && (
         <div className="absolute top-0 bottom-0 left--2 right--2 flex items-center justify-center w-full rounded-lg z-30">
           <div className="bg-[#000000BF] text-white h-min text-center flex-grow py-4">
             You have been muted
