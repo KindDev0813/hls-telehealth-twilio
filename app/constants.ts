@@ -79,7 +79,7 @@ export interface ProviderRoomState extends ParticipantRoomState {
   visitorParticipant?: RemoteParticipant; // todo change to array of visitors
 }
 
-export interface PatientRoomState extends ParticipantRoomState {
+export interface PatientRoomState {
   patientParticipant: LocalParticipant;
   providerParticipant: RemoteParticipant;
   visitorParticipant?: RemoteParticipant; // todo change to array of visitors

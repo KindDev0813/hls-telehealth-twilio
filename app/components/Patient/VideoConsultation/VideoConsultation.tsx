@@ -40,9 +40,6 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
 
 
   const [callState, setCallState] = useState<PatientRoomState>({
-    patientName: null,
-    providerName: null,
-    visitorName: null,
     patientParticipant: null,
     providerParticipant: null,
     visitorParticipant: null
