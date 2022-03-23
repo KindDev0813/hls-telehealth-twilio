@@ -166,7 +166,11 @@ async function insertSyncMapItem(client, syncServiceSid, syncMapName, syncMapIte
     .services(syncServiceSid)
     .syncMaps(syncMapName)
     .syncMapItems
-    .create({key: syncMapItemKey, data })
+    .create({ 
+      key: syncMapItemKey, 
+      data,
+      ttl: (24 * 60 * 60)
+    })
     .then(mapItem => console.log(mapItem.key)));
 }
 

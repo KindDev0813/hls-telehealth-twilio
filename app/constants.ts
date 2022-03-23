@@ -38,5 +38,3 @@ export const initialSettings: Settings = {
 };
 
 export const ON_DEMAND_TOKEN = 'OnDemandToken';
-export const TEMP_TOKEN = 'TempToken';
-

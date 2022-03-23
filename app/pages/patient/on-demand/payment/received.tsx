@@ -8,7 +8,7 @@ import useSyncContext from '../../../../components/Base/SyncProvider/useSyncCont
 import OnDemandLayout from '../../../../components/Patient/OnDemandLayout';
 import datastoreService from '../../../../services/datastoreService';
 import clientStorage from '../../../../services/clientStorage';
-import { ON_DEMAND_TOKEN, TEMP_TOKEN } from '../../../../constants';
+import { ON_DEMAND_TOKEN } from '../../../../constants';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { createEHRPatient, getOnDemandToken } from '../../../../services/onDemandService';
 import { OnDemandData, Token } from '../../../../interfaces';
@@ -21,8 +21,6 @@ import { OnDemandData, Token } from '../../../../interfaces';
 **/
 const PaymentReceivedPage = () => {
   const router = useRouter();
-  //const [tempToken, setTempToken] = useState<Token>(null);
-  //const [tokenExists, setTokenExists] = useState<boolean>(false);
   const [passcode, setPasscode] = useState<string>(null);
   const [isError, setIsError] = useState<boolean>(false);
   const { syncClient, syncToken, onDemandStream } = useSyncContext();
@@ -43,17 +41,7 @@ const PaymentReceivedPage = () => {
     } else {
       router.push(`/patient?token=${passcode}`);
     }
-  }
-
-  // Generate Temporary Token to call patient/appointment APIs
-  // useEffect(() => {
-  //   const generateTempToken = async () => {
-      
-  //     await clientStorage.saveToStorage<Token>(TEMP_TOKEN, tempTokenObject);
-  //   }
-  //   generateTempToken();
-  // }, [])
-  
+  }  
 
   // Publish the Message to Sync
   useEffect(() => {
