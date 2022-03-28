@@ -1,4 +1,3 @@
-import { LocalParticipant, RemoteParticipant } from "twilio-video";
 import { Settings } from "./types";
 
 export const DEFAULT_VIDEO_CONSTRAINTS: MediaStreamConstraints['video'] = {
@@ -17,7 +16,7 @@ export const SELECTED_BACKGROUND_SETTINGS_KEY = 'TwilioVideoApp-selectedBackgrou
 
 export const STORAGE_USER_KEY = 'TelehealthUser';
 export const STORAGE_VISIT_KEY = 'TelehealthVisit';
-export const CURRENT_VISIT_ID = 'CurrentVisitId';
+export const CURRENT_VISIT = 'CurrentVisit';
 
 // On Demand Local Storage Keys
 export const PATIENT_INFO_KEY = 'PatientInfo';
@@ -38,51 +37,4 @@ export const initialSettings: Settings = {
   roomType: 'group'
 };
 
-// On Demand Intefaces
-export interface PatientInfo {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  needTranslator: string;
-  gender: string;
-}
-interface HealthFile {
-  name: string;
-  url?: string;
-}
-export interface HealthInfo {
-  conditions: string;
-  files?: HealthFile[];
-  medications: string;
-  reason: string;
-}
-
-export interface InsuranceInfo {
-  haveInsurance: string;
-  memberId: string;
-  healthPlan: string;
-  isPrimaryMember: string;
-
-}
-
-// Room Interfaces
-export interface ParticipantRoomState {
-  patientName: string;
-  providerName: string;
-  visitorName?: string // todo change to array of visitors
-}
-
-export interface ProviderRoomState extends ParticipantRoomState {
-  patientParticipant: RemoteParticipant;
-  providerParticipant: LocalParticipant;
-  visitorParticipant?: RemoteParticipant; // todo change to array of visitors
-  providerVisitorParticipant?: RemoteParticipant; // todo change to array of visitors
-}
-
-export interface PatientRoomState extends ParticipantRoomState {
-  patientParticipant: LocalParticipant | RemoteParticipant;
-  providerParticipant: RemoteParticipant;
-  visitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
-  providerVisitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
-}
+export const ON_DEMAND_TOKEN = 'OnDemandToken';

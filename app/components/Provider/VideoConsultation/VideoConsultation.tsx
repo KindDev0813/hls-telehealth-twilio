@@ -9,7 +9,7 @@ import { VideoControls } from '../../VideoControls';
 import { InviteParticipantPopover } from './InviteParticipantPopover';
 import { SettingsPopover } from './SettingsPopover';
 import { VideoParticipant } from './VideoParticipant';
-import { ProviderRoomState, STORAGE_VISIT_KEY } from '../../../constants';
+import { STORAGE_VISIT_KEY } from '../../../constants';
 import useChatContext from '../../Base/ChatProvider/useChatContext/useChatContext';
 import { useVisitContext } from '../../../state/VisitContext';
 import useLocalAudioToggle from '../../Base/VideoProvider/useLocalAudioToggle/useLocalAudioToggle';
@@ -22,10 +22,10 @@ import clientStorage from '../../../services/clientStorage';
 import { TelehealthVisit, DataTrackMessage } from '../../../types';
 import { InviteParticipantModal } from '../../InviteParticipantModal';
 import { roomParticipantsService } from '../../../services/roomParticipantsService';
+import { ProviderRoomState } from '../../../interfaces';
 
 
 export interface VideoConsultationProps {}
-
 
 export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HealthInfo } from '../../../constants';
+import { HealthInfo } from '../../../interfaces';
 import { Button } from '../../Button';
 import { Form } from '../../Form';
 import { Icon } from '../../Icon';

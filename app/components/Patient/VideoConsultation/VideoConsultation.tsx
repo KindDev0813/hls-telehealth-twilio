@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {PatientRoomState} from '../../../constants';
 import { useVisitContext } from '../../../state/VisitContext';
 import useParticipants from '../../Base/VideoProvider/useParticipants/useParticipants';
 import useRoomState from '../../Base/VideoProvider/useRoomState/useRoomState';
@@ -19,6 +18,7 @@ import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
 import { Icon } from '../../Icon';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
+import { PatientRoomState } from '../../../interfaces';
 import { RemoteParticipant } from 'twilio-video';
 import { roomParticipantsService } from '../../../services/roomParticipantsService';
 
