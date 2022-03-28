@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DataTrack, LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteDataTrack, RemoteParticipant } from 'twilio-video';
+import { LocalDataTrackPublication, DataTrack, LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteDataTrack, RemoteParticipant } from 'twilio-video';
 import { joinClasses } from '../../../../utils';
 import ParticipantTracks from '../../../Base/ParticipantTracks/ParticipantTracks';
 import useTrack from '../../../Base/ParticipantTracks/Publication/useTrack/useTrack';
@@ -25,7 +25,7 @@ export interface VideoParticipantProps {
   participant: LocalParticipant | RemoteParticipant,
   carouselScreen?:boolean;
   participantsCount?:number;
-  setDataTrackMessage?: any; //TODO: set model
+  setDataTrackMessage: (msg: DataTrackMessage) => void;
 }
 
 export const VideoParticipant = ({
@@ -48,7 +48,7 @@ export const VideoParticipant = ({
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
   const [selectedParticipant] = useSelectedParticipant();
-  const { room } = useVideoContext();
+  const { room, localTracks } = useVideoContext();
   const localParticipant = room!.localParticipant;
   const { user, visit } = useVisitContext();
 
@@ -105,15 +105,34 @@ export const VideoParticipant = ({
     toggleAudioEnabled();
   }, [toggleAudioEnabled]);
 
-  //remote control by provider
   useEffect(() => {
-    setDataTrackMessage(dataTrackMessage);
-    if(dataTrackMessage?.participantId == localParticipant.identity && dataTrackMessage.isMuted != undefined)
-    {
-      toggleAudioEnabled();
+    if(dataTrackMessage){
+      setDataTrackMessage(dataTrackMessage);
+      //remote control by provider
+      if(dataTrackMessage.participantId == localParticipant.identity && dataTrackMessage.isMuted != undefined)
+      {
+        toggleAudioEnabled();
+      }
     }
   }, [dataTrackMessage]);
+
+  //send name to all patricipants
+  useEffect(() => {
+    if(user.role == 'visitor' || user.role == 'providervisitor' ) {
+        // @ts-ignore
+        const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
+        if(localDataTrackPublication) {
+          const msg: DataTrackMessage  = {participantId: user.id, name: user.name};
+          // send name to itself
+          setDataTrackMessage(msg);
+          //send name to the rest using data track
+          localDataTrackPublication.track.send(JSON.stringify(msg));
+        }
+    }
+  },[dataTrack]);
   
+    
+
 
   // Muting non-self Participants useEffect
   // Will need to account for 3rd party later on

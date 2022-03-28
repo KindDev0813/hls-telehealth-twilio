@@ -19,8 +19,9 @@ import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
 import { Icon } from '../../Icon';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
-//import useDataTrackMessage from '../../Base/DataTracks/useDataTrackMessage';
-//import { DataTrackMessage } from '../../../types';
+import { RemoteParticipant } from 'twilio-video';
+import { roomParticipantsService } from '../../../services/roomParticipantsService';
+
 
 export interface VideoConsultationProps {}
 
@@ -28,6 +29,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const router = useRouter();
   const [isAudioEnabled, toggleAudioEnabled] = useLocalAudioToggle();
   const [dataTrackMessage, setDataTrackMessage] = useState(null);
+  const [visitorName, setVisitorName] = useState('Patient Visitor');
+  const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
@@ -54,52 +57,43 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
 
   //handle name for visitiors
   useEffect(() => {
-    console.log('dataTrackMessage', dataTrackMessage);
+    if(!dataTrackMessage) {
+      return;
+    }
 
+    if(dataTrackMessage.name) {
+      if(callState.visitorParticipant && callState.visitorParticipant.identity == dataTrackMessage.participantId) {
+        setVisitorName(dataTrackMessage.name);
+      }
+  
+      if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
+        setProviderVisitorName(dataTrackMessage.name);
+      }
+    }
   }, [dataTrackMessage]);
   
 
   useEffect(() => {
     if (room) {
-  
-      // //set name for visitors
-      // if(user.role == 'visitor' || user.role == 'providervisitor' ) {
-      //   // @ts-ignore
-      //   const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
-
-      //   const dataTrackMessage: DataTrackMessage  = {participantId: user.id, name: user.name}
-      //   localDataTrackPublication.track.send(JSON.stringify(dataTrackMessage));
-      // }
-
-      const providerParticipant = participants.find(p => p.identity == visit.ehrAppointment.provider_id);  
-      const patientParticipant = 
-                        (user.role == 'patient') ? room!.localParticipant : 
-                        participants.find(p => p.identity == visit.ehrAppointment.patient_id);
-      const visitorParticipant = 
-                        (user.role == 'visitor') ? room!.localParticipant : 
-                        participants.find(p => p.identity.startsWith('visitor_'));
-      const providerVisitorParticipant = 
-                        (user.role == 'providervisitor') ? room!.localParticipant : 
-                        participants.find(p => p.identity.startsWith('providervisitor_'));
-
+      const providerParticipant = roomParticipantsService.getProvider(user, room, participants as RemoteParticipant[], visit);
       setCallState(prev => {
         return {
           ...prev,
-          patientParticipant: patientParticipant,
-          providerParticipant: providerParticipant,
-          visitorParticipant: visitorParticipant,
-          providerVisitorParticipant: providerVisitorParticipant,
+          patientParticipant: roomParticipantsService.getPatient(user, room, participants as RemoteParticipant[], visit),
+          providerParticipant: roomParticipantsService.getProvider(user, room, participants as RemoteParticipant[], visit),
+          visitorParticipant: roomParticipantsService.getPatientVisitor(user, room, participants as RemoteParticipant[], visit),
+          providerVisitorParticipant: roomParticipantsService.getProviderVisitor(user, room, participants as RemoteParticipant[], visit),
         }
         
       })
 
       const disconnectFromRoom = () => {
+        console.log(callState);
         if (!callState.providerParticipant) {
           room.disconnect();
           router.push('/patient/visit-survey/');
         }
       }
-
       if (room && providerParticipant) {
         room.on('participantDisconnected', disconnectFromRoom);
         return () => {
@@ -168,7 +162,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     setDataTrackMessage={setDataTrackMessage}
                   /> }
                  {callState.visitorParticipant && <VideoParticipant
-                   name="Patient Visitor"
+                   name={visitorName}
                    hasAudio={user.role=='visitor'?isAudioEnabled:true}
                    hasVideo={user.role=='visitor'?isVideoEnabled:true}
                    isOverlap
@@ -177,7 +171,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                    setDataTrackMessage={setDataTrackMessage}
                    /> }
                  {callState.providerVisitorParticipant && <VideoParticipant
-                   name="Provider Visitor"
+                   name={providerVisitorName}
                    hasAudio={user.role=='providervisitor'?isAudioEnabled:true}
                    hasVideo={user.role=='providervisitor'?isVideoEnabled:true}
                    isOverlap
@@ -265,7 +259,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     }
                     {callState.visitorParticipant
                       && <VideoParticipant
-                      name="Patient Visitor"
+                      name={visitorName}
                       hasAudio={user.role=='visitor'?isAudioEnabled:true}
                       hasVideo={user.role=='visitor'?isVideoEnabled:true}
                       isOverlap
@@ -280,7 +274,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                     
                     {callState.providerVisitorParticipant
                       && <VideoParticipant
-                      name="Provider Visitor"
+                      name={providerVisitorName}
                       hasAudio={user.role=='providervisitor'?isAudioEnabled:true}
                       hasVideo={user.role=='providervisitor'?isVideoEnabled:true}
                       isOverlap

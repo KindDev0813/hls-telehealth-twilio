@@ -21,6 +21,7 @@ import { EndCallModal } from '../../EndCallModal';
 import clientStorage from '../../../services/clientStorage';
 import { TelehealthVisit, DataTrackMessage } from '../../../types';
 import { InviteParticipantModal } from '../../InviteParticipantModal';
+import { roomParticipantsService } from '../../../services/roomParticipantsService';
 
 
 export interface VideoConsultationProps {}
@@ -57,19 +58,21 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     setInviteModalVisible(!inviteModalVisible);
   }
 
+  //handle name for visitors
   useEffect(() => {
-    const visitor = participants.find(p => p.identity.startsWith('visitor_'));
-    const providervisitor = participants.find(p => p.identity.startsWith('providervisitor_'));
     if(!dataTrackMessage) {
       return;
     }
-    if(dataTrackMessage.participantId == visitor.identity && dataTrackMessage.name) {
-      setVisitorName(dataTrackMessage.name);
+
+    if(dataTrackMessage.name) {
+      if(callState.visitorParticipant && callState.visitorParticipant.identity == dataTrackMessage.participantId) {
+        setVisitorName(dataTrackMessage.name);
+      }
+  
+      if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
+        setProviderVisitorName(dataTrackMessage.name);
+      }
     }
-    if(dataTrackMessage.participantId == providervisitor.identity && dataTrackMessage.name) {
-      setProviderVisitorName(dataTrackMessage.name);
-    }
-    console.log(dataTrackMessage);
   }, [dataTrackMessage]);
   
 
@@ -89,10 +92,10 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       setCallState(prev => {
         return {
           ...prev,
-          providerParticipant: room!.localParticipant,
-          patientParticipant: participants.find(p => p.identity == visit.ehrAppointment.patient_id),
-          visitorParticipant: participants.find(p => p.identity.startsWith('visitor_') ),
-          providerVisitorParticipant: participants.find(p => p.identity.startsWith('providervisitor_') ),
+          patientParticipant: roomParticipantsService.getPatient(user, room, participants as RemoteParticipant[], visit),
+          providerParticipant: roomParticipantsService.getProvider(user, room, participants as RemoteParticipant[], visit),
+          visitorParticipant: roomParticipantsService.getPatientVisitor(user, room, participants as RemoteParticipant[], visit),
+          providerVisitorParticipant: roomParticipantsService.getProviderVisitor(user, room, participants as RemoteParticipant[], visit),
         }
       })
     }
@@ -137,6 +140,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               hasVideo
               participant={callState.visitorParticipant}
               fullScreen
+              setDataTrackMessage={setDataTrackMessage}
             />}
           {callState.providerVisitorParticipant &&
             <VideoParticipant
@@ -145,6 +149,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               hasVideo
               participant={callState.providerVisitorParticipant}
               fullScreen
+              setDataTrackMessage={setDataTrackMessage}
             />}
         </div>
 
@@ -156,6 +161,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 hasVideo
                 participant={mainDisplayedParticipant}
                 fullScreen
+                setDataTrackMessage={setDataTrackMessage}
                 />
             }
         </div>
