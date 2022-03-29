@@ -87,7 +87,7 @@ After installation make sure to start Docker desktop.
 To get started developing, you'll want to spin up to servers, either a front-end or back-end or both together.
 NOTE: You'll want to uncomment and edit this line to the right port number when working with the backend so that you can hit your endpoints properly.  Do not push that line into the repo as when you deploy you will run into problems if the wrong backendRoot Uri is incorrect - https://github.com/twilio/hls-telehealth/blob/main/app/services/constants.ts#L2 
 
-You'll need to create `.env.localhst` file in the root directory with the following variables set
+You'll need to create `.env.localhost` file in the root directory with the following variables set
 
 ```shell
 ACCOUNT_SID={your-twilio-account account sid}
