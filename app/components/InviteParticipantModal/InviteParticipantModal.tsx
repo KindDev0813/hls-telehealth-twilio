@@ -5,26 +5,35 @@ import { Modal } from '../Modal';
 import { Select } from '../Select';
 import invitationService from '../../services/invitationService'
 import { useVisitContext } from '../../state/VisitContext';
+import { TelehealthRole } from '../../types';
 
 export interface InviteParticipantModalProps {
   close: () => void;
   isVisible: boolean;
+  role: TelehealthRole;
 }
 
 export const InviteParticipantModal = ({
   close,
   isVisible,
+  role,
 }: InviteParticipantModalProps) => {
-  const { user, visit} = useVisitContext();
+  const {user, visit} = useVisitContext();
+  
   const [inviteMethod, setInviteMethod] = useState('SMS');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [name, setName] = useState('');
 
   async function submitInvite(event) {
     event.preventDefault();
     // TODO - Submit form to back-end
-    await invitationService.inviteVisitor(user, phoneNumber, visit.id);
+    if(name) {
+      user.name = name;
+    }
+    await invitationService.inviteVisitor(user, phoneNumber, visit.id, role);
     console.log(inviteMethod, phoneNumber);
     setPhoneNumber('');
+    setName('');
     close();
   }
 
@@ -47,6 +56,16 @@ export const InviteParticipantModal = ({
             />
           </div>
         </div>
+        {role == 'providervisitor' && 
+        <div className="my-5">
+          <Input
+            className="w-full"
+            placeholder="Full Name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </div>
+        }
         <div className="my-5">
           <Input
             className="w-full"
