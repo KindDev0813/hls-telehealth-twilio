@@ -190,7 +190,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                   participant={callState.patientParticipant}
                 />}
                 {callState.patientParticipant && callState.visitorParticipant &&
-                  <div className='flex flex-col flex-wrap overflow-x-auto w-[400px] h-[300px]'>
+                  <div className='flex flex-col flex-wrap overflow-x-hidden w-[400px] h-[300px]'>
 
                     <VideoParticipant
                       name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
