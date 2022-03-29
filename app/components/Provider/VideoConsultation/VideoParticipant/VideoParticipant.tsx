@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteParticipant } from 'twilio-video';
+import { DataTrack, LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteParticipant } from 'twilio-video';
 import { joinClasses } from '../../../../utils';
 import ParticipantTracks from '../../../Base/ParticipantTracks/ParticipantTracks';
 import useTrack from '../../../Base/ParticipantTracks/Publication/useTrack/useTrack';
@@ -11,6 +11,9 @@ import useVideoContext from '../../../Base/VideoProvider/useVideoContext/useVide
 import useMainParticipant from '../../../Base/VideoProvider/useMainParticipany/useMainParticipant';
 import useSelectedParticipant from '../../../Base/VideoProvider/useSelectedParticipant/useSelectedParticipant';
 import useScreenShareParticipant from '../../../Base/VideoProvider/useScreenShareParticipant/useScreenShareParticipant';
+import useDataTrackMessage from '../../../Base/DataTracks/useDataTrackMessage';
+import { DataTrackMessage } from '../../../../types';
+
 export interface VideoParticipantProps {
   hasAudio?: boolean;
   hasVideo?: boolean;
@@ -19,6 +22,7 @@ export interface VideoParticipantProps {
   name: string;
   participant: LocalParticipant | RemoteParticipant;
   fullScreen?:boolean;
+  setDataTrackMessage:(msg: DataTrackMessage) => void;
 }
 
 export const VideoParticipant = ({
@@ -28,7 +32,8 @@ export const VideoParticipant = ({
   isProvider,
   isSelf,
   participant,
-  fullScreen
+  fullScreen,
+  setDataTrackMessage
 }: VideoParticipantProps) => {
   const [showMutedBanner, setShowMutedBanner] = useState(null);
   const [showMenuRef, setShowMenuRef] = useState(null);
@@ -45,12 +50,17 @@ export const VideoParticipant = ({
   const videoPublication = publications.find(p => !p.trackName.includes('screen') && p.kind === 'video');
   const screenSharePublication = publications.find(p => p.trackName.includes('screen'));
   const audioPublication = publications.find(p => p.kind === 'audio');
+  const dataPublication = publications.find(p => p.kind === 'data');
+
 
   const audioTrack = useTrack(audioPublication) as LocalAudioTrack | RemoteAudioTrack | undefined;
   const videoTrack = useTrack(videoPublication || screenSharePublication);
+  const dataTrack = useTrack(dataPublication) as DataTrack | undefined;
   
   const isVideoEnabled = Boolean(videoTrack);
   const isTrackEnabled = useIsTrackEnabled(audioTrack as LocalAudioTrack | RemoteAudioTrack);
+
+  const dataTrackMessage: DataTrackMessage = useDataTrackMessage(dataTrack);
 
   const videoPriority = (mainParticipant === selectedParticipant || mainParticipant === screenShareParticipant) &&
     mainParticipant !== localParticipant
@@ -71,9 +81,20 @@ export const VideoParticipant = ({
       setMuted(prev => !prev);
       // @ts-ignore
       const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
-      localDataTrackPublication.track.send(muted);
+      console.log(participant);
+
+      const message: DataTrackMessage = {participantId: participant.identity,isMuted: muted};
+
+      localDataTrackPublication.track.send(JSON.stringify(message));
     }
   }
+
+  useEffect(() => {
+    if(dataTrackMessage){
+      setDataTrackMessage(dataTrackMessage);
+    }
+  }, [dataTrackMessage]);
+  
 
   // Muting non-self Participants useEffect
   // Will need to account for 3rd party later on

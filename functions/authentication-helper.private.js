@@ -25,7 +25,7 @@ const jwt = require('jsonwebtoken');
 const MFA_TOKEN_DURATION = 5 * 60;
 const APP_TOKEN_DURATION = 30 * 60;
 const REFRESH_TOKEN_DURATION = 24 * 60 * 60;
-const USER_TOKEN_DURATION = 30 * 24 * 60 * 60;
+const USER_TOKEN_DURATION = 24 * 60 * 60;
 const AUTH_HEADER_TYPE = "Bearer";
 
 function isValidPassword(password, context) {

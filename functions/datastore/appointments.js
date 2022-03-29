@@ -255,12 +255,12 @@ exports.handler = async function(context, event, callback) {
       }
 
       case 'ADD': {
-        assert(event.appointment, 'Mssing event.appointment!!!');
+        assert(event.appointment, 'Missing event.appointment!!!');
         const appointment = event.appointment;
-        assert(appointment.appointment_reason, 'Mssing appointment_reason!!!');
-        assert(appointment.appointment_references, 'Mssing appointment_references!!!');
-        assert(appointment.patient_id, 'Mssing patient_id!!!');
-        assert(appointment.provider_id, 'Mssing provider_id!!!');
+        assert(appointment.appointment_reason, 'Missing appointment_reason!!!');
+        assert(appointment.appointment_references, 'Missing appointment_references!!!');
+        assert(appointment.patient_id, 'Missing patient_id!!!');
+        assert(appointment.provider_id, 'Missing provider_id!!!');
         const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
         const now = new Date();
@@ -290,7 +290,7 @@ exports.handler = async function(context, event, callback) {
       }
 
       case 'REMOVE': {
-        assert(event.appointment_id, 'Mssing event.appointment_id!!!');
+        assert(event.appointment_id, 'Missing event.appointment_id!!!');
         const TWILIO_SYNC_SID = await getParam(context, 'TWILIO_SYNC_SID');
 
         const resources = await read_fhir(context, TWILIO_SYNC_SID, FHIR_APPOINTMENT);

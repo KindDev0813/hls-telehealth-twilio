@@ -10,7 +10,7 @@ import {
 } from '../../../../components/Patient';
 import OnDemandLayout from '../../../../components/Patient/OnDemandLayout';
 import clientStorage from '../../../../services/clientStorage';
-import { InsuranceInfo } from '../../../../constants';
+import { InsuranceInfo } from '../../../../interfaces';
 
 const InsurancePage = () => {
   const router = useRouter();

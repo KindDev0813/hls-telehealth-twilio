@@ -58,6 +58,9 @@ module.exports.handler = async (context, event, callback) => {
   else if(event.action === 'VISITOR') {    
     await getPasscode(context, 'visitor', event, response);
   } 
+  else if(event.action === 'PROVIDERVISITOR') {    
+    await getPasscode(context, 'providervisitor', event, response);
+  } 
   else if(event.action === 'PROVIDER') {    
     await getPasscode(context, 'provider', event, response);
   } 

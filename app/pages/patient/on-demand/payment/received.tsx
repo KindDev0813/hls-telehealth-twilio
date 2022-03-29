@@ -1,22 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert } from '../../../../components/Alert';
 import { Button } from '../../../../components/Button';
 import { Layout } from '../../../../components/Patient';
 import { useRouter } from 'next/router';
-import { Uris } from '../../../../services/constants';
 import useSyncContext from '../../../../components/Base/SyncProvider/useSyncContext/useSyncContext';
 import OnDemandLayout from '../../../../components/Patient/OnDemandLayout';
 import datastoreService from '../../../../services/datastoreService';
-import { EHRAppointment, EHRPatient } from '../../../../types';
 import clientStorage from '../../../../services/clientStorage';
-import { HealthInfo, HEALTH_INFO_KEY, PatientInfo, PATIENT_INFO_KEY } from '../../../../constants';
+import { ON_DEMAND_TOKEN } from '../../../../constants';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
-
-export interface Token {
-  passcode: string;
-  token: string;
-}
+import { createEHRPatient, getOnDemandToken } from '../../../../services/onDemandService';
+import { OnDemandData, Token } from '../../../../interfaces';
 
 /* 
 * After landing on this page, a visitId should be created from EHR
@@ -27,141 +22,62 @@ export interface Token {
 const PaymentReceivedPage = () => {
   const router = useRouter();
   const [passcode, setPasscode] = useState<string>(null);
-  const [apptId, setApptId] = useState<string>('');
-  const [patientId, setPatientId] = useState<string>('');
-  const [appToken, setAppToken] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
-  const [appt, setAppt] = useState<EHRAppointment>(null);
   const { syncClient, syncToken, onDemandStream } = useSyncContext();
   
   async function getStorageToken() {
-    const storageToken: Token = await clientStorage.getFromStorage('OnDemandToken');
-    if (storageToken) setPasscode(storageToken.passcode);
+    const storageToken: Token = await clientStorage.getFromStorage(ON_DEMAND_TOKEN);
+    if (storageToken) {
+      setPasscode(storageToken.passcode);
+    }
     return storageToken;
   }
   
-  const publishOnDemandVisit = useCallback(
-    async (token: string) => {
-      try {      
-        const [patientInfo, healthInfo] = await Promise.all([
-          clientStorage.getFromStorage(PATIENT_INFO_KEY),
-          clientStorage.getFromStorage(HEALTH_INFO_KEY)
-        ]) as [PatientInfo, HealthInfo];
-
-        const ehrPatient: EHRPatient = {
-          name: patientInfo.lastName,
-          family_name: patientInfo.lastName,
-          given_name: patientInfo.firstName,
-          phone: patientInfo.phoneNumber,
-          gender: patientInfo.gender
-        }
-
-        // combine calls to reduce latency time
-        const [provider, patient] = await Promise.all([
-          datastoreService.fetchProviderOnCall(token),
-          datastoreService.addPatient(token, ehrPatient)
-        ]);
-        const appointment: EHRAppointment = {
-          provider_id: provider.id,
-          patient_id: patient.id,
-          reason: healthInfo.reason,
-          references: [],
-        }
-        setPatientId(patient.id);
-        setAppt(appointment);
-      } catch(err) {
-        console.log(err);
-        router.push('/patient/on-demand/info');
-      }
-    }, [router]);
-
-  // The values in this fetch statement will be gathered from EHR integration
-  useEffect(() => {
-    async function generateFakeToken() {
-      const tkn = await getStorageToken();
-      if (!tkn) {
-        fetch(Uris.get(Uris.visits.token), {
-          method: 'POST',
-          body: JSON.stringify({
-            role: "patient",
-            action: "PATIENT",
-            id: "p1000000",
-            visitId: "a1000000" // should be generated from EHR
-          }),
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-        })
-        .then(async token => {
-          const resolvedToken = await token.json();
-          publishOnDemandVisit(resolvedToken.token);
-          setAppToken(resolvedToken.token);
-        }).catch(err => {
-          setIsError(true);
-          new Error(err);
-        });
-      }
-    }
-    generateFakeToken();
-  }, [publishOnDemandVisit, syncToken]);
-
-  // Will need to change this to real data get call.
-  useEffect(() => {
-    async function publishMessage() {
-      const tkn = await getStorageToken();
-      if (syncClient && onDemandStream && appt && syncToken && appToken && !tkn) {
-        onDemandStream.publishMessage({
-          appointment: appt,
-          patientSyncToken: syncToken,
-        })
-        .then(async message => {
-          //@ts-ignore
-          const apptResp = await datastoreService.addAppointment(appToken, message.data.appointment);
-          setApptId(apptResp.id);
-        })
-        .catch(error => {
-          console.error('Stream publishMessage() failed', error);
-        });
-      }
-    }
-    publishMessage();
-  }, [appToken, appt, onDemandStream, syncClient, syncToken]);
-
-  useEffect(() => {
-    async function generateOnDemandToken() {
-      const tkn = await getStorageToken();
-      if (appToken && patientId && apptId && !tkn) {
-        fetch(Uris.get(Uris.visits.token), {
-          method: 'POST',
-          body: JSON.stringify({
-            role: "patient",
-            action: "PATIENT",
-            id: patientId,
-            visitId: apptId // should be generated from EHR
-          }),
-          headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-        })
-        .then(async token => {
-          const resolvedToken = await token.json();
-          clientStorage.saveToStorage('OnDemandToken', resolvedToken);
-          setPasscode(resolvedToken.passcode);
-        }).catch(err => {
-          setIsError(true);
-          new Error(err);
-        });
-      }
-    }
-    generateOnDemandToken();
-  }, [appToken, apptId, patientId]);
-
   // No check needed because the payment is already validated
   const enterWaitingRoom = async () => {
     const tkn = await getStorageToken();
-    console.log("my passcode", passcode, tkn);
     if (tkn && tkn.passcode) {
       router.push(`/patient?token=${tkn.passcode}`);
     } else {
       router.push(`/patient?token=${passcode}`);
     }
-  }
+  }  
+
+  // Publish the Message to Sync
+  useEffect(() => {
+    const publishMessage = async () => {
+      const storageToken: Token = await getStorageToken();
+      const tempToken = await getOnDemandToken();
+      console.log(tempToken, storageToken, syncToken , syncClient , onDemandStream)
+      if (storageToken) {
+        await getStorageToken();
+      }
+      else if (tempToken && syncToken && syncClient && onDemandStream && !storageToken ) {
+        const patientAppointment = await createEHRPatient(tempToken.token);
+        const appointment = patientAppointment.appointment;
+        const patient = patientAppointment.patient;
+        onDemandStream.publishMessage({
+          appointment: appointment,
+          patient: patient,
+          patientSyncToken: syncToken,
+        })
+        .then(async message => {
+          const messageData = message.data as OnDemandData;
+          const appt = await datastoreService.addAppointment(tempToken.token, messageData.appointment);
+          const onDemandToken = await getOnDemandToken(appt.patient_id, appt.id);
+          await clientStorage.saveToStorage(ON_DEMAND_TOKEN, onDemandToken);
+          setPasscode(onDemandToken.passcode);
+        })
+        .catch(error => console.error('Stream publishMessage() failed', error));
+      } else {
+        alert("Something Went Wrong! Please re-enter your information!");
+        console.log("Null Sync Objects and OnDemand Token Present!")
+        router.push('/patient/on-demand/info');
+      }
+    }
+    publishMessage();
+  }, [onDemandStream, router, syncClient, syncToken]);
+
 
   return (
     <Layout>

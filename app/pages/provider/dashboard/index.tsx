@@ -31,18 +31,17 @@ const DashboardPage: TwilioPage = () => {
   const { user } = useVisitContext();
   const { connect: syncConnect, syncClient, onDemandStream } = useSyncContext();
 
+  // Patient number 1: 1Rgz6s5uuJnI2GV2dDzbMieoRPqsGe0VfhkjfKkwbxU
+
   const fetchVisits = useCallback(async () => {
     datastoreService.fetchAllTelehealthVisits(user)
       .then(async allVisits => {
-        const onDemandVisits = allVisits.filter(
-          (visit, index, self) => 
-            visit.ehrAppointment.type === 'WALKIN' && 
-            index === self.findIndex(t => t.ehrPatient.phone === visit.ehrPatient.phone)
-          );
+        const onDemandVisits = allVisits.filter(visit => visit.ehrAppointment.type === 'WALKIN');
         const regularVisits = allVisits.filter(visit => visit.ehrAppointment.type !== 'WALKIN');
         setOnDemandQueue(onDemandVisits);
         setVisitQueue(regularVisits);
         setVisitNext(onDemandVisits.length ? onDemandVisits[0] : regularVisits[0]);
+        console.log("ALLVISITS: ", allVisits)
       });
     }, [user]
   ); 
