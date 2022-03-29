@@ -240,7 +240,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 {callState.patientParticipant
                   && (callState.visitorParticipant || callState.providerVisitorParticipant)
                   //TODO: should be refactored for more then 4 participants
-                  && <div className={'flex flex-col flex-wrap overflow-x-auto  w-[400px] ' + ((participantsCount()== 3) ? 'h-[300px]' : 'h-[200px]') }>
+                  && <div className={'flex flex-col flex-wrap overflow-x-hidden  w-[400px] ' + ((participantsCount()== 3) ? 'h-[300px]' : 'h-[200px]') }>
                     {callState.patientParticipant &&
                       <VideoParticipant
                         name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
