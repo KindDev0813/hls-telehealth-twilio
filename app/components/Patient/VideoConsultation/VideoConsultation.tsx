@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import { useVisitContext } from '../../../state/VisitContext';
 import useParticipants from '../../Base/VideoProvider/useParticipants/useParticipants';
 import useRoomState from '../../Base/VideoProvider/useRoomState/useRoomState';
@@ -16,7 +16,6 @@ import useLocalVideoToggle from '../../Base/VideoProvider/useLocalVideoToggle/us
 import useLocalParticipantNetworkQualityLevel from '../../Base/VideoProvider/useLocalParticipantNetworkQualityLevel/useLocalParticipantNetworkQualityLevel';
 import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
-import { Icon } from '../../Icon';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
 import { PatientRoomState } from '../../../interfaces';
 import { RemoteParticipant } from 'twilio-video';
@@ -43,6 +42,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const networkQualityLevel = useLocalParticipantNetworkQualityLevel(room);
   const [connectionIssueTimeout, setConnectionIssueTimeout] = useState(null);
 
+  const containerRef = useRef(null);
+
+
   const [callState, setCallState] = useState<PatientRoomState>({
     patientName: null,
     providerName: null,
@@ -65,13 +67,13 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       if(callState.visitorParticipant && callState.visitorParticipant.identity == dataTrackMessage.participantId) {
         setVisitorName(dataTrackMessage.name);
       }
-  
+
       if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
         setProviderVisitorName(dataTrackMessage.name);
       }
     }
   }, [dataTrackMessage]);
-  
+
 
   useEffect(() => {
     if (room) {
@@ -84,7 +86,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           visitorParticipant: roomParticipantsService.getPatientVisitor(user, room, participants as RemoteParticipant[], visit),
           providerVisitorParticipant: roomParticipantsService.getProviderVisitor(user, room, participants as RemoteParticipant[], visit),
         }
-        
+
       })
 
       const disconnectFromRoom = () => {
@@ -130,11 +132,20 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             + (callState.visitorParticipant ? 1 : 0)
             + (callState.providerVisitorParticipant ? 1 : 0);
   }
-  
+
+  let chatHeight = {
+    height: '200px'
+  };
+  if(containerRef && containerRef.current) {
+    // todo move top video screen constant to common constants
+    chatHeight.height = `${containerRef.current.offsetHeight - 293}px`;
+  }
 
   return (
     <>
-      <div className="bg-secondary flex flex-col h-full w-full items-center overflow-x-hidden overflow-y-scroll">
+      <div
+          ref={containerRef}
+          className="bg-secondary flex flex-col h-full w-full items-center overflow-x-hidden overflow-y-scroll">
         <div className="py-5">
           <PoweredByTwilio inverted />
         </div>        
@@ -145,15 +156,17 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             <div className="flex">
               <div className="relative">
                 {callState.providerParticipant && <VideoParticipant
-                    name={visit.providerName}
+                    name={visit.ehrProvider.name}
                     hasAudio
                     hasVideo
+                    isProvider={true}
+                    isSelf={false}
                     participant={callState.providerParticipant}
-                    setDataTrackMessage={setDataTrackMessage}
+                setDataTrackMessage={setDataTrackMessage}
                   />}
-               <div className="absolute top-1 right-1 flex">
+               <div className="absolute top-1 right-4 flex">
                 {callState.patientParticipant && <VideoParticipant
-                    name={visit.patientName}
+                    name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                     hasAudio={user.role=='patient'?isAudioEnabled:true}
                     hasVideo={user.role=='patient'?isVideoEnabled:true}
                     isOverlap
@@ -192,34 +205,18 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                 />
               </div>
             </div>
-            <div className=" w-full flex-col h-[180px]">
-              <div className="relative flex justify-center bg-primary items-center w-full text-white">
-                Chat with {visit.ehrProvider.name}
-                <div className=" h-10 text-center pt-2 justify-evenly">
-                  {isChatWindowOpen && (
-                    <button
-                      className="absolute right-3"
-                      type="button"
-                      onClick={() => {
-                        setIsChatWindowOpen(!isChatWindowOpen)
-                        toggleAudioEnabled()
-                      }}
-                    >
-                      <Icon name="close" />
-                    </button>
-                  )}
-                </div>
-              </div>
+            <div className="w-full bottom-0 absolute" style={chatHeight}>
               <Chat
-                close={() => {
-                  setIsChatWindowOpen(false)
-                  toggleAudioEnabled()
-                }}
-                currentUser={visit.ehrPatient.name}
-                otherUser={visit.ehrProvider.name}
-                userId={user.id}
-                userRole={user.role} 
-                inputPlaceholder={`Message to ${visit.ehrProvider.name}`} 
+                  close={() => {
+                    toggleAudioEnabled();
+                    setIsChatWindowOpen(false)
+                  }}
+                  showHeader
+                  currentUser={visit.ehrPatient.name}
+                  otherUser={visit.ehrProvider.name}
+                  userId={user.id}
+                  userRole={user.role}
+                  inputPlaceholder={`Message to ${visit.ehrProvider.name}`}
               />
             </div>
 
@@ -228,9 +225,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           <>
             <div className="flex-grow">
               <div className="flex flex-col justify-evenly h-full">
-                {callState.patientParticipant 
-                  && !callState.visitorParticipant 
-                  && !callState.providerVisitorParticipant 
+                {callState.patientParticipant
+                  && !callState.visitorParticipant
+                  && !callState.providerVisitorParticipant
                   && <VideoParticipant
                   name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
                   hasAudio={user.role=='patient'?isAudioEnabled:true}
@@ -271,7 +268,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                       setDataTrackMessage={setDataTrackMessage}
                       />
                     }
-                    
+
                     {callState.providerVisitorParticipant
                       && <VideoParticipant
                       name={providerVisitorName}
@@ -286,7 +283,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
                       setDataTrackMessage={setDataTrackMessage}
                       />
                     }
-                    
+
                   </div>}
                 {callState.providerParticipant && <VideoParticipant
                   name={visit.ehrProvider.name}

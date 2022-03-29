@@ -35,7 +35,7 @@ export const VideoParticipant = ({
   fullScreen,
   setDataTrackMessage
 }: VideoParticipantProps) => {
-  // const [showMutedBanner, setShowMutedBanner] = useState(null);
+  const [showMutedBanner, setShowMutedBanner] = useState(null);
   const [showMenuRef, setShowMenuRef] = useState(null);
   const [isPinned, setIsPinned] = useState(false);
   const [muted, setMuted] = useState(hasAudio);
@@ -115,18 +115,20 @@ export const VideoParticipant = ({
     }
   }, [isVideoEnabled]);
 
-  /*useEffect(() => {
-    if (showMutedBanner !== null) {
-      setShowMutedBanner(!muted);
+  useEffect(() => {
+    let timer;
+    if(muted) {
+      setShowMutedBanner(true);
+      timer = setTimeout(() => {
+        setShowMutedBanner(false);
+        clearTimeout(timer);
+      }, 3000);
     } else {
       setShowMutedBanner(false);
     }
-
-    const timer = setTimeout(() => {
-      setShowMutedBanner(false);
-    }, 3000);
     return () => clearTimeout(timer);
-  }, [muted, showMutedBanner]);*/
+
+  }, [muted]);
 
   const currentParticipant = isSelf ? mainParticipant : participant;
 
@@ -194,7 +196,7 @@ export const VideoParticipant = ({
           </div>
         </div>
       )}
-      {muted && isSelf && (
+      {showMutedBanner && isSelf && (
         <div className="absolute top-0 bottom-0 left--2 right--2 flex items-center justify-center w-full rounded-lg z-30">
           <div className="bg-[#000000BF] text-white h-min text-center flex-grow py-4">
             You have been muted

@@ -15,7 +15,7 @@ export interface ChatProps {
   userId: string;
 }
 
-export const Chat = ({ inputPlaceholder, showHeader, currentUser, userId , userRole, otherUser }: ChatProps) => {
+export const Chat = ({ inputPlaceholder, showHeader, currentUser, userId , userRole, otherUser, close }: ChatProps) => {
 
   const messageListRef = useRef(null);
   const { messages, isChatWindowOpen, setIsChatWindowOpen, conversation } = useChatContext();
@@ -37,7 +37,7 @@ export const Chat = ({ inputPlaceholder, showHeader, currentUser, userId , userR
               <button
                 className="absolute right-3"
                 type="button"
-                onClick={() => setIsChatWindowOpen(!isChatWindowOpen)}
+                onClick={() => close ? close() : setIsChatWindowOpen(!isChatWindowOpen)}
               >
                 <Icon name="close" />
               </button>
