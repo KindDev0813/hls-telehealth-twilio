@@ -90,25 +90,30 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         )}
       >
 
-        <div className="absolute right-6 min-w-[12rem] w-[15%] h-[16%] flex flex-col z-20">
+        <div className="absolute right-6 min-w-[12rem] w-[15%] flex flex-col z-20">
           {callState.providerParticipant &&
-            <VideoParticipant
-              name={visit.ehrProvider.name}
-              hasAudio={isAudioEnabled}
-              hasVideo={isVideoEnabled}
-              isProvider
-              isSelf
-              participant={callState.providerParticipant}
-              fullScreen
-            />}
+            <div className="w-full">
+              <VideoParticipant
+                  name={visit.ehrProvider.name}
+                  hasAudio={isAudioEnabled}
+                  hasVideo={isVideoEnabled}
+                  isProvider
+                  isSelf
+                  participant={callState.providerParticipant}
+                  fullScreen
+              />
+            </div>
+           }
           {callState.visitorParticipant &&
-            <VideoParticipant
-              name='Invited Visitor'
-              hasAudio
-              hasVideo
-              participant={callState.visitorParticipant}
-              fullScreen
-            />}
+              <div className="w-full">
+                  <VideoParticipant
+                      name='Invited Visitor'
+                      hasAudio
+                      hasVideo
+                      participant={callState.visitorParticipant}
+                      fullScreen
+                  />
+              </div>}
         </div>
 
         <div className="w-2/3 h-full">

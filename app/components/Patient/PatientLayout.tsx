@@ -7,6 +7,7 @@ import VideoProvider from "../Base/VideoProvider";
 import useConnectionOptions from "../Base/VideoProvider/useConnectionOptions/useConnectionOptions";
 import useVideoContext from "../Base/VideoProvider/useVideoContext/useVideoContext";
 import composeProviders from "../ComposeProviders/ComposeProviders";
+import {TwilioError} from "twilio-video";
 
 const Providers = composeProviders(
   VideoProviderChildrenWrapper,
@@ -26,7 +27,7 @@ function VideoProviderChildrenWrapper(props: React.PropsWithChildren<{}>) {
           console.log('Error acquiring local media:');
           console.dir(error);
           setMediaError(error);
-          router.push("/patient/video/no-av-permission");
+          void router.push("/patient/video/no-av-permission");
         });
       }
     }
@@ -41,9 +42,15 @@ function VideoProviderChildrenWrapper(props: React.PropsWithChildren<{}>) {
 
 export function PatientVideoContextLayout(props: React.PropsWithChildren<{}>) {
   const connectionOptions = useConnectionOptions();
+
+  const catchErrorAndRedirect = (error: TwilioError | Error) => {
+    console.log('catchErrorAndRedirect', error);
+    void router.push('/patient/visit-survey/');
+  }
+
   return (
     <VisitStateProvider>
-      <VideoProvider options={connectionOptions} onError={(error) => console.log(error)}>
+      <VideoProvider options={connectionOptions} onError={catchErrorAndRedirect}>
         <Providers>
           {props.children}
         </Providers>
@@ -53,4 +60,3 @@ export function PatientVideoContextLayout(props: React.PropsWithChildren<{}>) {
 }
   
 export default PatientVideoContextLayout;
-  
