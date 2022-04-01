@@ -10,11 +10,10 @@ export const createEHRPatient = async (token: string): Promise<PatientAppointmen
     // Gets User Information from Local Storage to create Patient
     const [patientInfo, healthInfo] = await Promise.all([
       clientStorage.getFromStorage(PATIENT_INFO_KEY),
-      clientStorage.getFromStorage(HEALTH_INFO_KEY)
+      clientStorage.getFromStorage(HEALTH_INFO_KEY),
     ]) as [PatientInfo, HealthInfo];
 
     const ehrPatient = getEHRPatient(patientInfo);
-
     // combine calls to reduce latency time
     const [provider, patient] = await Promise.all([
       datastoreService.fetchProviderOnCall(token),
@@ -49,13 +48,20 @@ export const getOnDemandToken = async (patientId = "p1000000", appointmentId = "
 }
 
 const getEHRPatient = (patientInfo: PatientInfo): EHRPatient => {
-  return {
+  let langOptions = {};
+
+  if(patientInfo.needTranslator === 'Yes') {
+      const {needTranslator, language} = patientInfo;
+      langOptions = {needTranslator, language};
+  }
+
+  return Object.assign({
     name: patientInfo.lastName,
     family_name: patientInfo.lastName,
     given_name: patientInfo.firstName,
     phone: patientInfo.phoneNumber,
-    gender: patientInfo.gender
-  }
+    gender: patientInfo.gender,
+  }, langOptions)
 }
 
 const getAppointment = (provider: EHRProvider, patient: EHRPatient, healthInfo: HealthInfo): EHRAppointment => {
