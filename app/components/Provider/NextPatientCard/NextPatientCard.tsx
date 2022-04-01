@@ -57,6 +57,12 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
       setVisitWaitTime((diffSeconds > 0 ? 'Wait Time ': 'Start Time ') + hhmmdd);
 
       setVisitNeedTranslator(visitNext.ehrPatient.language === 'English' ? 'No' : 'Yes');
+
+      console.log('Patient');
+      console.log(visitNext.ehrPatient);
+
+      console.log('Visit');
+      console.log(visitNext);
     }
   }, [visitNext]);
 
@@ -73,11 +79,8 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
               <Field label="Gender" value={visitNext.ehrPatient.gender} />
               <Field label="Language" value={visitNext.ehrPatient.language} />
               <Field label="Translator" value={visitNeedTranslator} />
-              <Field
-                label="Preexisting Conditions"
-                value={visitNext.ehrPatient.conditions.join(', ')}
-              />
-              <Field label="Current Medications" value={visitNext.ehrPatient.medications.join(', ')} />
+              <Field label="Preexisting Conditions" value={visitNext.ehrPatient.conditions[0]}/>
+              <Field label="Current Medications" value={visitNext.ehrPatient.medications[0]}/>
               {visitNext.ehrAppointment.references.length > 0 ? (
                 <li>
                   <label className="text-bold">Attached Files:</label>
