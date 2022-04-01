@@ -12,6 +12,23 @@ export interface InfoFormProps {
 
 export const InfoForm = ({ onSubmit }: InfoFormProps) => {
   const [value, setValue] = useState<any>({});
+
+  const langOptions = [
+      { value: 'Arabic' },
+      { value: 'Chinese' },
+      { value: 'French' },
+      { value: 'German' },
+      { value: 'Indonesian' },
+      { value: 'Italian' },
+      { value: 'Japanese' },
+      { value: 'Korean' },
+      { value: 'Portuguese' },
+      { value: 'Russian' },
+      { value: 'Spanish' },
+      { value: 'Other' },
+  ]
+
+
   return (
     <>
       <p className="text-dark">This will be shared with your doctor.</p>
@@ -64,7 +81,7 @@ export const InfoForm = ({ onSubmit }: InfoFormProps) => {
           <Select
             className="my-2"
             placeholder="Language"
-            options={[{ value: 'Spanish ' }]}
+            options={langOptions}
             name="language"
           />
         )}

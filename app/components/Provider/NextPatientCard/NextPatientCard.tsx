@@ -66,18 +66,18 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
         <div className="font-bold text-xs">Next Patient:</div>
         {visitNext ?
           <div>
-            <CardHeading>{visitNext.ehrPatient.name}</CardHeading>
+            <CardHeading>{visitNext.ehrPatient?.name}</CardHeading>
             <div className="font-bold text-light text-xs">{visitWaitTime}</div>
             <ul className="pl-5">
               <Field label="Reason for Visit" value={visitNext.ehrAppointment.reason} />
-              <Field label="Gender" value={visitNext.ehrPatient.gender} />
-              <Field label="Language" value={visitNext.ehrPatient.language} />
+              <Field label="Gender" value={visitNext.ehrPatient?.gender} />
+              <Field label="Language" value={visitNext.ehrPatient?.language} />
               <Field label="Translator" value={visitNeedTranslator} />
               <Field
                 label="Preexisting Conditions"
-                value={visitNext.ehrPatient.conditions.join(', ')}
+                value={(visitNext.ehrPatient && visitNext.ehrPatient.conditions) ? visitNext.ehrPatient.conditions.join(', ') : ''}
               />
-              <Field label="Current Medications" value={visitNext.ehrPatient.medications.join(', ')} />
+              <Field label="Current Medications" value={(visitNext.ehrPatient && visitNext.ehrPatient.medications) ? visitNext.ehrPatient.medications.join(', ') : ''} />
               {visitNext.ehrAppointment.references.length > 0 ? (
                 <li>
                   <label className="text-bold">Attached Files:</label>
