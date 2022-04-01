@@ -9,13 +9,14 @@ import { STORAGE_USER_KEY, STORAGE_VISIT_KEY } from '../../constants';
 import clientStorage from '../../services/clientStorage';
 import visitorAuth from '../../services/authService';
 //import visitService from '../../services/visitService';
-import { TelehealthUser, TelehealthVisit } from '../../types';
+import { TelehealthUser, TelehealthVisit, PatientUser } from '../../types';
 import datastoreService from '../../services/datastoreService';
 
 const InvitedAttendeePage = () => {
   const router = useRouter();
   const [isInitialized, setIsInitialized] = useState(false);
   const [name, setName] = useState('');
+  const [user, setUser] = useState(null);
   const [visit, setVisit] = useState<TelehealthVisit>(null);
   const [relationship, setRelationship] = useState('');
   const [terms, setTerms] = useState(false);
@@ -24,10 +25,16 @@ const InvitedAttendeePage = () => {
     if(token) {
       visitorAuth.authenticateVisitorOrPatient(token)
       .then(u => {
+        let user = u;
+      //  console.log(user1);
+        setUser(user);
         clientStorage.saveToStorage(STORAGE_USER_KEY, u);
-        
+        console.log(user);        
+
         async function _fetchFromServer() {
           const v = await datastoreService.fetchTelehealthVisitForPatient(u, u.visitId);
+          console.log(user);
+          setUser(user);
           return v;
         }
         return _fetchFromServer();
@@ -39,7 +46,20 @@ const InvitedAttendeePage = () => {
         // since it is third party no need to call ehr integration
         if(v) {
           clientStorage.saveToStorage(STORAGE_VISIT_KEY, v);
-          setIsInitialized(true);
+          //provider attendee
+
+          const test = async () => {
+            let user = await clientStorage.getFromStorage(STORAGE_USER_KEY) as TelehealthUser;
+            console.log(user);
+            if(user && user.role == 'providervisitor') {
+              router.push("/invited-attendee/technical-check/");
+            } else {
+              setIsInitialized(true);
+            }
+  
+          };
+          test();
+
         }
       });
       // TODO: Implement CATCH

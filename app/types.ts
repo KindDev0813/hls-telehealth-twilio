@@ -47,7 +47,7 @@ export interface EHRContent {
 }
 
 
-export type TelehealthRole = 'guest' | 'patient' | 'visitor' | 'practitioner' | 'provider' | 'thirdparty' ;
+export type TelehealthRole = 'guest' | 'patient' | 'visitor' | 'practitioner' | 'provider' | 'providervisitor' | 'thirdParty' ;
 
 export interface TelehealthUser {
   id?: string,
@@ -147,4 +147,10 @@ export interface PostVisitSurvey {
   selectedThumb: Reaction;
   selectedIssues: string[];
   otherIssue: string;
+}
+
+export interface DataTrackMessage {
+  participantId: string;
+  isMuted?: boolean;
+  name?: string;
 }
