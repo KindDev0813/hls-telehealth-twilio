@@ -29,7 +29,7 @@ export interface PatientInfo {
   phoneNumber: string;
   email: string;
   needTranslator: string;
-  language: string;
+  language?: string;
   gender: string;
 }
 
