@@ -30,6 +30,7 @@ export interface PatientInfo {
   email: string;
   needTranslator: string;
   gender: string;
+  language?: string;
 }
 interface HealthFile {
   name: string;
