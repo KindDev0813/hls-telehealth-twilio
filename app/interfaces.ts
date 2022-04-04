@@ -29,8 +29,10 @@ export interface PatientInfo {
   phoneNumber: string;
   email: string;
   needTranslator: string;
+  language: string;
   gender: string;
 }
+
 interface HealthFile {
   name: string;
   url?: string;
