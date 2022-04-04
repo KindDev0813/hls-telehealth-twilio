@@ -10,7 +10,7 @@ export const createEHRPatient = async (token: string): Promise<PatientAppointmen
     // Gets User Information from Local Storage to create Patient
     const [patientInfo, healthInfo] = await Promise.all([
       clientStorage.getFromStorage(PATIENT_INFO_KEY),
-      clientStorage.getFromStorage(HEALTH_INFO_KEY)
+      clientStorage.getFromStorage(HEALTH_INFO_KEY),
     ]) as [PatientInfo, HealthInfo];
 
     const ehrPatient = getEHRPatient(patientInfo, healthInfo);
@@ -46,10 +46,20 @@ export const getOnDemandToken = async (patientId = "p1000000", appointmentId = "
     return resp.json();
   })
   .catch(err => console.log(err));
+
+
+  
 }
 
 const getEHRPatient = (patientInfo: PatientInfo, healthInfo: HealthInfo): EHRPatient => {
-  return {
+  let langOptions = {};
+
+  if(patientInfo.needTranslator === 'Yes') {
+      const {needTranslator, language} = patientInfo;
+      langOptions = {needTranslator, language};
+  }
+
+  return Object.assign({
     name: patientInfo.lastName,
     family_name: patientInfo.lastName,
     given_name: patientInfo.firstName,
@@ -57,7 +67,7 @@ const getEHRPatient = (patientInfo: PatientInfo, healthInfo: HealthInfo): EHRPat
     gender: patientInfo.gender,
     conditions: new Array(healthInfo.conditions),
     medications: new Array(healthInfo.medications)
-  }
+  }, langOptions)
 }
 
 const getAppointment = (provider: EHRProvider, patient: EHRPatient, healthInfo: HealthInfo): EHRAppointment => {
