@@ -14,16 +14,6 @@ export interface PatientQueueCardProps {
   setIsNewVisit: (isVisit:boolean) => void;
 }
 
-function calculateWaitTime(visitStartTimeLTZ) {
-  const now : Date = new Date();
-  const diffSeconds = Math.trunc((now.getTime() - visitStartTimeLTZ.getTime())/1000);
-  const hhmmdd = Math.trunc(diffSeconds/60/60).toString().padStart(2,'0')
-      + ':' + Math.trunc(diffSeconds/60).toString().padStart(2,'0')
-      + ':' + Math.trunc(diffSeconds % 60).toString().padStart(2,'0');
-
-  return (diffSeconds > 0 ? 'Waiting ': 'Starting ') + hhmmdd;
-}
-
 export const PatientQueueCard = ({ className, onDemandQueue, visitQueue, isNewVisit, setIsNewVisit }: PatientQueueCardProps) => {
   const refreshQueueCard = useCallback(() => {
       setIsNewVisit(false);
@@ -47,10 +37,10 @@ export const PatientQueueCard = ({ className, onDemandQueue, visitQueue, isNewVi
             <div>Reason For Visit:</div>
           </div>
           {onDemandQueue.map((visit, index) => (
-            <PatientVisitCard visit={visit} key={index} index={index} waitTime={calculateWaitTime(visit.ehrAppointment.start_datetime_ltz)} isOnDemand={true}/>
+            <PatientVisitCard visit={visit} key={index} index={index} waitTime={visit.ehrAppointment.start_datetime_ltz.getTime()} isOnDemand={true}/>
           ))}
           {visitQueue.map((visit, index) => (
-            <PatientVisitCard visit={visit} key={index} index={index} waitTime={calculateWaitTime(visit.ehrAppointment.start_datetime_ltz)} />
+            <PatientVisitCard visit={visit} key={index} index={index} waitTime={visit.ehrAppointment.start_datetime_ltz.getTime()} />
           ))}
         </div> :
         <LoadingSpinner/>

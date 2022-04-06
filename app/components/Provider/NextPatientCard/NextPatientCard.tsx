@@ -10,16 +10,16 @@ import {CURRENT_VISIT, STORAGE_VISIT_KEY} from '../../../constants';
 import {TelehealthVisit} from "../../../types";
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import { CurrentVisit } from '../../../interfaces';
+import WaitTimer from '../../WaitTimer/WaitTimer';
 
 export interface NextPatientCardProps {
   className?: string;
   visitNext: TelehealthVisit;
 }
 
-
 export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) => {
+
   const router = useRouter();
-  const [ visitWaitTime, setVisitWaitTime ] = useState<string>();
   const [ visitNeedTranslator, setVisitNeedTranslator ] = useState<string>();
 
   const Field = ({ label, value }) => (
@@ -48,21 +48,7 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
   useEffect(() => {
     if (visitNext) {
       clientStorage.saveToStorage(STORAGE_VISIT_KEY, visitNext);
-      const now : Date = new Date();
-      const diffSeconds = Math.trunc((now.getTime() - visitNext.ehrAppointment.start_datetime_ltz.getTime())/1000);
-      console.log(diffSeconds, Math.trunc(diffSeconds/60/60), Math.trunc(diffSeconds/60), Math.trunc(diffSeconds % 60));
-      const hhmmdd = Math.trunc(diffSeconds/60/60).toString().padStart(2,'0')
-          + ':' + Math.trunc(diffSeconds/60).toString().padStart(2,'0')
-          + ':' + Math.trunc(diffSeconds % 60).toString().padStart(2,'0');
-      setVisitWaitTime((diffSeconds > 0 ? 'Wait Time ': 'Start Time ') + hhmmdd);
-
       setVisitNeedTranslator(visitNext.ehrPatient.language === 'English' ? 'No' : 'Yes');
-
-      console.log('Patient');
-      console.log(visitNext.ehrPatient);
-
-      console.log('Visit');
-      console.log(visitNext);
     }
   }, [visitNext]);
 
@@ -73,7 +59,7 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
         {visitNext ?
           <div>
             <CardHeading>{visitNext.ehrPatient?.name}</CardHeading>
-            <div className="font-bold text-light text-xs">{visitWaitTime}</div>
+            <WaitTimer startTime={visitNext.ehrAppointment.start_datetime_ltz.getTime()}/>
             <ul className="pl-5">
               <Field label="Reason for Visit" value={visitNext.ehrAppointment.reason} />
               <Field label="Gender" value={visitNext.ehrPatient?.gender} />

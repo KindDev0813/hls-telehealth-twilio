@@ -1,11 +1,12 @@
 import { TelehealthVisit } from "../../../types";
 import { joinClasses } from "../../../utils"
+import WaitTimer from '../../WaitTimer/WaitTimer'
 
 
 export interface PatientVisitCardProps {
   visit: TelehealthVisit;
   index: number;
-  waitTime: string;
+  waitTime: number;
   isOnDemand?: boolean; 
 }
 
@@ -21,9 +22,7 @@ export const PatientVisitCard = ({visit, index, waitTime, isOnDemand = false}: P
       <div>
         <a className="text-link underline">{visit.ehrPatient.name}</a>
         {isOnDemand && <span className="text-red-400"> (On Demand)</span>}
-        <div className="font-bold text-light">
-          { waitTime }
-        </div>
+          <WaitTimer startTime={waitTime}/>
       </div>
       <div className="line-clamp-2 overflow-ellipsis overflow-hidden text-dark">
         {visit.ehrAppointment.reason}
