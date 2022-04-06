@@ -31,6 +31,7 @@ export interface PatientInfo {
   needTranslator: string;
   language?: string;
   gender: string;
+  language?: string;
 }
 
 interface HealthFile {

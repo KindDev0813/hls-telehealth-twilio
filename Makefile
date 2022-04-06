@@ -63,8 +63,10 @@ installer-open:
     done
 	open -a "Google Chrome" http://localhost:3000/installer/index.html
 
+get-service-name:
+	$(eval SERVICE_NAME := $(shell grep -w APPLICATION_NAME .env | head -1 | sed 's/^.*=//'))
 
-get-service-sid:
+get-service-sid: get-service-name
 	$(eval SERVICE_SID := $(shell twilio api:serverless:v1:services:list -o=json \
 	| jq --raw-output '.[] | select(.friendlyName == "$(SERVICE_NAME)") | .sid'))
 	@if [[ ! -z "$(SERVICE_SID)" ]]; then \
@@ -79,7 +81,7 @@ get-environment-sid: get-service-sid
 	$(eval ENVIRONMENT_SID := $(shell twilio api:serverless:v1:services:environments:list --service-sid $(SERVICE_SID) -o=json \
 	| jq --raw-output '.[0].sid'))
 	@if [[ ! -z "$(ENVIRONMENT_SID)" ]]; then \
-	  @echo "ENVIRONMENT_SID=$(ENVIRONMENT_SID)"; \
+	  echo "ENVIRONMENT_SID=$(ENVIRONMENT_SID)"; \
 	else \
 	  echo "$@: Environment for service named $(SERVICE_NAME) is not found!!! aborting..."; \
 	fi
@@ -104,8 +106,15 @@ build: clean
 make-service-editable: get-service-sid
 	twilio api:serverless:v1:services:update --sid=$(SERVICE_SID) --ui-editable -o=json
 
+build-react:
+	@echo build react app
+	cd app && npm install
+	cd app && npm run build
+	cd app && npm run export
+	cp -r app/out/* assets
 
-deploy:
+deploy: build-react
+	@echo twilio serverless:deploy
 	twilio serverless:deploy --runtime node14
 	@echo If initial deployment, also execute 'make make-service-editable'
 
