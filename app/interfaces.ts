@@ -31,7 +31,6 @@ export interface PatientInfo {
   needTranslator: string;
   language?: string;
   gender: string;
-  language?: string;
 }
 
 interface HealthFile {
@@ -50,7 +49,6 @@ export interface InsuranceInfo {
   memberId: string;
   healthPlan: string;
   isPrimaryMember: string;
-
 }
 
 // Room Interfaces

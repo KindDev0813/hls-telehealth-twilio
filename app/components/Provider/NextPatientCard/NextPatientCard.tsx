@@ -11,6 +11,7 @@ import {TelehealthVisit} from "../../../types";
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import { CurrentVisit } from '../../../interfaces';
 import WaitTimer from '../../WaitTimer/WaitTimer';
+import {forEachDeclaredVariable} from "tsutils";
 
 export interface NextPatientCardProps {
   className?: string;
@@ -65,8 +66,8 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
               <Field label="Gender" value={visitNext.ehrPatient?.gender} />
               <Field label="Language" value={visitNext.ehrPatient?.language} />
               <Field label="Translator" value={visitNeedTranslator} />
-              <Field label="Preexisting Conditions" value={visitNext.ehrPatient.conditions[0]}/>
-              <Field label="Current Medications" value={visitNext.ehrPatient.medications[0]}/>
+              <Field label="Preexisting Conditions" value={(visitNext.ehrPatient && visitNext.ehrPatient.conditions) ? visitNext.ehrPatient.conditions.join(',') : ''}/>
+              <Field label="Current Medications" value={(visitNext.ehrPatient && visitNext.ehrPatient.medications) ? visitNext.ehrPatient.medications.join(',') : ''}/>
               {visitNext.ehrAppointment.references.length > 0 ? (
                 <li>
                   <label className="text-bold">Attached Files:</label>
