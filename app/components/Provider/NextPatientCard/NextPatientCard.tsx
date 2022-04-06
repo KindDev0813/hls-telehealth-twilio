@@ -11,7 +11,6 @@ import {TelehealthVisit} from "../../../types";
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import { CurrentVisit } from '../../../interfaces';
 import WaitTimer from '../../WaitTimer/WaitTimer';
-import {forEachDeclaredVariable} from "tsutils";
 
 export interface NextPatientCardProps {
   className?: string;
