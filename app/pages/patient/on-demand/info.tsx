@@ -10,17 +10,9 @@ import { PatientInfo } from '../../../interfaces';
 const InfoFormPage = () => {
   const router = useRouter();
   const submitInfo = useCallback(
-    (formValue: PatientInfo) => {
-      clientStorage.saveToStorage(PATIENT_INFO_KEY, {
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        phoneNumber: formValue.phoneNumber,
-        email: formValue.email,
-        needTranslator: formValue.needTranslator,
-        gender: formValue.gender
-      } as PatientInfo);
-      
-      router.push(`/patient/on-demand/health`);
+    (patientInfoModel: PatientInfo) => {
+      void clientStorage.saveToStorage(PATIENT_INFO_KEY, patientInfoModel);
+      void router.push(`/patient/on-demand/health`);
     },
     [router],
   );

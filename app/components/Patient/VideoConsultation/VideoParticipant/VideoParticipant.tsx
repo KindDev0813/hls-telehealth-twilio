@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { DataTrack, LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteDataTrack, RemoteParticipant } from 'twilio-video';
+import { LocalDataTrackPublication, DataTrack, LocalAudioTrack, LocalParticipant, RemoteAudioTrack, RemoteDataTrack, RemoteParticipant } from 'twilio-video';
 import { joinClasses } from '../../../../utils';
 import ParticipantTracks from '../../../Base/ParticipantTracks/ParticipantTracks';
 import useTrack from '../../../Base/ParticipantTracks/Publication/useTrack/useTrack';
 import usePublications from '../../../Base/ParticipantTracks/usePublications/usePublications';
 import useIsTrackEnabled from '../../../Base/VideoProvider/useIsTrackEnabled/useIsTrackEnabled';
 import { Icon } from '../../../Icon';
-import useDataTrackMessage from '../../../Base/DataTracks/useDataTrack';
+import useDataTrackMessage from '../../../Base/DataTracks/useDataTrackMessage';
 import useLocalAudioToggle from '../../../Base/VideoProvider/useLocalAudioToggle/useLocalAudioToggle';
 import useScreenShareParticipant from '../../../Base/VideoProvider/useScreenShareParticipant/useScreenShareParticipant';
 import useMainParticipant from '../../../Base/VideoProvider/useMainParticipany/useMainParticipant';
 import useVideoContext from '../../../Base/VideoProvider/useVideoContext/useVideoContext';
 import useSelectedParticipant from '../../../Base/VideoProvider/useSelectedParticipant/useSelectedParticipant';
+import { DataTrackMessage } from '../../../../types';
+import { useVisitContext } from '../../../../state/VisitContext';
+
 export interface VideoParticipantProps {
   hasAudio?: boolean;
   hasVideo?: boolean;
@@ -21,6 +24,8 @@ export interface VideoParticipantProps {
   name: string;
   participant: LocalParticipant | RemoteParticipant,
   carouselScreen?:boolean;
+  participantsCount?:number;
+  setDataTrackMessage: (msg: DataTrackMessage) => void;
 }
 
 export const VideoParticipant = ({
@@ -31,7 +36,9 @@ export const VideoParticipant = ({
   isOverlap,
   isSelf,
   participant,
-  carouselScreen
+  carouselScreen,
+  participantsCount,
+  setDataTrackMessage
 }: VideoParticipantProps) => {
   const [showMutedBanner, setShowMutedBanner] = useState(null);
   const [isPinned, setIsPinned] = useState(false);
@@ -41,8 +48,9 @@ export const VideoParticipant = ({
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
   const [selectedParticipant] = useSelectedParticipant();
-  const { room } = useVideoContext();
+  const { room, localTracks } = useVideoContext();
   const localParticipant = room!.localParticipant;
+  const { user, visit } = useVisitContext();
 
   const publications = usePublications(participant);
   const videoPublication = publications.find(p => !p.trackName.includes('screen') && p.kind === 'video');
@@ -56,8 +64,9 @@ export const VideoParticipant = ({
 
   const isVideoEnabled = Boolean(videoTrack);
   const isTrackEnabled = useIsTrackEnabled(audioTrack as LocalAudioTrack | RemoteAudioTrack);
-  const amIMuted = useDataTrackMessage(dataTrack);
 
+  const dataTrackMessage: DataTrackMessage = useDataTrackMessage(dataTrack);
+  
   const videoPriority = (mainParticipant === selectedParticipant || mainParticipant === screenShareParticipant) &&
     mainParticipant !== localParticipant
     ? 'high'
@@ -74,16 +83,56 @@ export const VideoParticipant = ({
      : isProvider
      ? 'h-[234px]'
      : 'h-[364px]';
-  if (carouselScreen) {
+ //TODO: refactor to common logic
+  switch(participantsCount) {
+    case 3:
     widthClass = 'w-[200px]';
     heightClass = 'h-[300px]';
+    break;
+    case 4:
+    widthClass = 'w-[133px]';
+    heightClass = 'h-[200px]';
+    break;
+  }
+  if (carouselScreen) {
+    //widthClass = 'w-[200px]';
+    //heightClass = 'h-[300px]';
   }
 
   useEffect(() => {
     // toggleAudioEnabled() only works for local user
     // in this case the patient
     toggleAudioEnabled();
-  }, [amIMuted, toggleAudioEnabled]);
+  }, [toggleAudioEnabled]);
+
+  useEffect(() => {
+    if(dataTrackMessage){
+      setDataTrackMessage(dataTrackMessage);
+      //remote control by provider
+      if(dataTrackMessage.participantId == localParticipant.identity && dataTrackMessage.isMuted != undefined)
+      {
+        toggleAudioEnabled();
+      }
+    }
+  }, [dataTrackMessage]);
+
+  //send name to all patricipants
+  useEffect(() => {
+    if(user.role == 'visitor' || user.role == 'providervisitor' ) {
+        // @ts-ignore
+        const [localDataTrackPublication] = [...room.localParticipant.dataTracks.values()];
+        if(localDataTrackPublication) {
+          const msg: DataTrackMessage  = {participantId: user.id, name: user.name};
+          // send name to itself
+          setDataTrackMessage(msg);
+          //send name to the rest using data track
+          localDataTrackPublication.track.send(JSON.stringify(msg));
+        }
+    }
+  },[dataTrack]);
+  
+    
+
 
   // Muting non-self Participants useEffect
   // Will need to account for 3rd party later on
@@ -105,17 +154,19 @@ export const VideoParticipant = ({
   }, [isVideoEnabled]);
 
   useEffect(() => {
-    if (showMutedBanner !== null) {
-      setShowMutedBanner(!hasAudio);
+    let timer;
+    if(muted) {
+      setShowMutedBanner(true);
+      timer = setTimeout(() => {
+        setShowMutedBanner(false);
+        clearTimeout(timer);
+      }, 3000);
     } else {
       setShowMutedBanner(false);
     }
-
-    const timer = setTimeout(() => {
-      setShowMutedBanner(false);
-    }, 3000);
     return () => clearTimeout(timer);
-  }, [hasAudio, showMutedBanner]);
+
+  }, [muted]);
 
   return (
     <div className="mx-auto relative w-max group">
@@ -139,7 +190,7 @@ export const VideoParticipant = ({
           </div>
         </div>
       )}
-      {showMutedBanner && (
+      {showMutedBanner && isSelf && (
         <div className="absolute top-0 bottom-0 left--2 right--2 flex items-center justify-center w-full rounded-lg z-30">
           <div className="bg-[#000000BF] text-white h-min text-center flex-grow py-4">
             You have been muted

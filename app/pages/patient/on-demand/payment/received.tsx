@@ -24,7 +24,7 @@ const PaymentReceivedPage = () => {
   const [passcode, setPasscode] = useState<string>(null);
   const [isError, setIsError] = useState<boolean>(false);
   const { syncClient, syncToken, onDemandStream } = useSyncContext();
-  
+
   async function getStorageToken() {
     const storageToken: Token = await clientStorage.getFromStorage(ON_DEMAND_TOKEN);
     if (storageToken) {
@@ -41,19 +41,20 @@ const PaymentReceivedPage = () => {
     } else {
       router.push(`/patient?token=${passcode}`);
     }
-  }  
+  }
+
 
   // Publish the Message to Sync
   useEffect(() => {
     const publishMessage = async () => {
       const storageToken: Token = await getStorageToken();
       const tempToken = await getOnDemandToken();
-      console.log(tempToken, storageToken, syncToken , syncClient , onDemandStream)
-      if (storageToken) {
-        await getStorageToken();
-      }
-      else if (tempToken && syncToken && syncClient && onDemandStream && !storageToken ) {
+      console.log('storageToken=', storageToken, 'tempToken=', tempToken, 'syncToken =', syncToken , 'syncClient =', syncClient , 'onDemandStream=', onDemandStream);
+
+      if (tempToken && syncToken && syncClient && onDemandStream && !storageToken ) {
         const patientAppointment = await createEHRPatient(tempToken.token);
+        console.log('patientAppointment', patientAppointment);
+
         const appointment = patientAppointment.appointment;
         const patient = patientAppointment.patient;
         onDemandStream.publishMessage({
@@ -76,7 +77,7 @@ const PaymentReceivedPage = () => {
       }
     }
     publishMessage();
-  }, [onDemandStream, router, syncClient, syncToken]);
+  }, [onDemandStream, syncClient, syncToken]);
 
 
   return (

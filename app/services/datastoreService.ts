@@ -8,16 +8,16 @@ const assert = require('assert');
 
 function instantiatePatient(data: any) : EHRPatient {
   return {
-    id: data.patient_id,
-    name: data.patient_name,
-    family_name: data.patient_family_name,
-    given_name: data.patient_given_name,
-    phone: data.patient_phone,
-    ...(data.patient_email && { email: data.patient_email }),
-    gender: data.patient_gender,
-    ...(data.patient_language && { language: data.patient_language }),
-    medications: data.patient_medications,
-    conditions: data.patient_conditions,
+    id: data?.patient_id,
+    name: data?.patient_name,
+    family_name: data?.patient_family_name,
+    given_name: data?.patient_given_name,
+    phone: data?.patient_phone,
+    ...(data?.patient_email && { email: data?.patient_email }),
+    gender: data?.patient_gender,
+    ...(data?.patient_language && { language: data?.patient_language }),
+    medications: data?.patient_medications,
+    conditions: data?.patient_conditions,
   } as EHRPatient;
 }
 

@@ -46,11 +46,11 @@ exports.handler = async function(context, event, callback) {
     const to_phone = await client.lookups.v1.phoneNumbers(event.to_phone)
       .fetch({countryCode: 'US'})
       .then(phone => phone.phoneNumber);
-
     const message = await client.messages.create({
       body: event.body,
       from: from_phone,
       to: to_phone,
+      //smartEncoded: true
     });
 
 

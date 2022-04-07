@@ -30,6 +30,7 @@ export interface PatientInfo {
   email: string;
   needTranslator: string;
   gender: string;
+  language?: string;
 }
 interface HealthFile {
   name: string;
@@ -61,10 +62,12 @@ export interface ProviderRoomState extends ParticipantRoomState {
   patientParticipant: RemoteParticipant;
   providerParticipant: LocalParticipant;
   visitorParticipant?: RemoteParticipant; // todo change to array of visitors
+  providerVisitorParticipant?: RemoteParticipant; // todo change to array of visitors
 }
 
 export interface PatientRoomState extends ParticipantRoomState {
-  patientParticipant: LocalParticipant;
+  patientParticipant: LocalParticipant | RemoteParticipant;
   providerParticipant: RemoteParticipant;
-  visitorParticipant?: RemoteParticipant; // todo change to array of visitors
+  visitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
+  providerVisitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
 }

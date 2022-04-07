@@ -119,3 +119,6 @@ dist
 #DS_Store
 .DS_Store
 .idea/
+
+# Environment for local development
+.env.localhost
