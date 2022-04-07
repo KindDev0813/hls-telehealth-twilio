@@ -95,6 +95,8 @@ async function getAll(context) {
       return a.appointment_start_datetime_utc.localeCompare(b.appointment_start_datetime_utc);
     });
 
+  //TODO remove appointment time manipulation for test data
+
   // rebase time where first (earliest) appointment is 5min past current time
   const first_appointment_ts = new Date(appointments[0].appointment_start_datetime_utc);
   const diff = new Date().getTime() - first_appointment_ts.getTime() - 5*60*1000;
