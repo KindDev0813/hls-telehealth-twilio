@@ -68,13 +68,13 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       if(callState.visitorParticipant && callState.visitorParticipant.identity == dataTrackMessage.participantId) {
         setVisitorName(dataTrackMessage.name);
       }
-  
+
       if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
         setProviderVisitorName(dataTrackMessage.name);
       }
     }
   }, [dataTrackMessage]);
-  
+
 
   function toggleEndCallModal() {
     setEndCallModalVisible(!endCallModalVisible);
