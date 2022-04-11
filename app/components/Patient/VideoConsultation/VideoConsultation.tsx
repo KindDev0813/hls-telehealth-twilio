@@ -17,7 +17,7 @@ import useLocalParticipantNetworkQualityLevel from '../../Base/VideoProvider/use
 import { EndCallModal } from '../../EndCallModal';
 import { useRouter } from 'next/router';
 import {useToggleFacingMode} from "../../Base/VideoProvider/useToggleFacingMode/useToggleFacingMode";
-import { PatientRoomState } from '../../../interfaces';
+import { PatientRoomState, ChatUser } from '../../../interfaces';
 import { RemoteParticipant } from 'twilio-video';
 import { roomParticipantsService } from '../../../services/roomParticipantsService';
 
@@ -30,7 +30,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [dataTrackMessage, setDataTrackMessage] = useState(null);
   const [visitorName, setVisitorName] = useState('Patient Visitor');
   const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
-  const [chatUsers, setChatUsers] = useState(null);
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>(null);
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);

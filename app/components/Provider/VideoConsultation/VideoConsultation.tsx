@@ -22,7 +22,7 @@ import clientStorage from '../../../services/clientStorage';
 import { TelehealthVisit, DataTrackMessage } from '../../../types';
 import { InviteParticipantModal } from '../../InviteParticipantModal';
 import { roomParticipantsService } from '../../../services/roomParticipantsService';
-import { ProviderRoomState } from '../../../interfaces';
+import { ProviderRoomState, ChatUser } from '../../../interfaces';
 
 
 export interface VideoConsultationProps {}
@@ -35,7 +35,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [dataTrackMessage, setDataTrackMessage] = useState<DataTrackMessage>(null);
   const [visitorName, setVisitorName] = useState('Patient Visitor');
   const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
-  const [chatUsers, setChatUsers] = useState(null);
+  const [chatUsers, setChatUsers] = useState<ChatUser[]>(null);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
   const [settingsModalRef, setSettingsModalRef] = useState(null);
   const [connectionIssueModalVisible, setConnectionIssueModalVisible] = useState(false);

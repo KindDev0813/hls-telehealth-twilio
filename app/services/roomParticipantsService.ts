@@ -28,7 +28,7 @@ function getProviderVisitor(user: any, room: Room, participants: Array<RemotePar
                                           : participants.find(p => p.identity.startsWith('providervisitor_'));
 }
 
-function getChatUsers(user: any, room: Room, participants: Array<RemoteParticipant>, visit: TelehealthVisit, patientVisitorName: string, providerVisitorName: string): any {
+function getChatUsers(user: any, room: Room, participants: Array<RemoteParticipant>, visit: TelehealthVisit, patientVisitorName: string, providerVisitorName: string): ChatUser[] {
 
   const users: ChatUser[] = [];
   if(visit.ehrProvider) {

@@ -35,8 +35,7 @@ export const Chat = ({ inputPlaceholder, showHeader, users, userId , userRole, o
 
   // get current users and save to storage to have names after users disconnected
   useEffect(() => {
-    const getStoredUsers = async () => {
-      clientStorage.getFromStorage(STORAGE_CHAT_USERS_KEY).then((stored: ChatUser[]) => {
+    clientStorage.getFromStorage(STORAGE_CHAT_USERS_KEY, []).then((stored: ChatUser[]) => {
         const updatedUsers = stored.map(su => ({...su, ...users.find(u => u.id === su.id)}));
         users.forEach(user => {
           if(!updatedUsers.find(u=>u.id === user.id)) {
@@ -48,8 +47,6 @@ export const Chat = ({ inputPlaceholder, showHeader, users, userId , userRole, o
         
         clientStorage.saveToStorage(STORAGE_CHAT_USERS_KEY, updatedUsers);
       });
-    }
-    getStoredUsers();
   }, [users]);
 
   return (
