@@ -18,6 +18,9 @@ export const STORAGE_USER_KEY = 'TelehealthUser';
 export const STORAGE_VISIT_KEY = 'TelehealthVisit';
 export const CURRENT_VISIT = 'CurrentVisit';
 
+// This is used to have users info for chat after user leave the room
+export const STORAGE_CHAT_USERS_KEY = 'ChatUsers';
+
 // On Demand Local Storage Keys
 export const PATIENT_INFO_KEY = 'PatientInfo';
 export const HEALTH_INFO_KEY = 'HealthInfo';

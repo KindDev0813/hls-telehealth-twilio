@@ -35,6 +35,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [dataTrackMessage, setDataTrackMessage] = useState<DataTrackMessage>(null);
   const [visitorName, setVisitorName] = useState('Patient Visitor');
   const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
+  const [chatUsers, setChatUsers] = useState(null);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
   const [settingsModalRef, setSettingsModalRef] = useState(null);
   const [connectionIssueModalVisible, setConnectionIssueModalVisible] = useState(false);
@@ -72,6 +73,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
       if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
         setProviderVisitorName(dataTrackMessage.name);
       }
+      
+      setChatUsers(roomParticipantsService.getChatUsers(user, room, participants as RemoteParticipant[], visit, visitorName, providerVisitorName));
     }
   }, [dataTrackMessage]);
 
@@ -98,6 +101,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           providerVisitorParticipant: roomParticipantsService.getProviderVisitor(user, room, participants as RemoteParticipant[], visit),
         }
       })
+
+      setChatUsers(roomParticipantsService.getChatUsers(user, room, participants as RemoteParticipant[], visit, visitorName, providerVisitorName));
+
     }
   }, [participants, room]);
 
@@ -187,8 +193,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         <div className="absolute bottom-0 right-10 max-w-[405px] w-full max-h-[400px] h-full">
           <Chat
             close={() => setIsChatWindowOpen(false)}
-            currentUser={visit.ehrProvider.name}
             otherUser={visit.ehrPatient.name}
+            users={chatUsers}
             userRole={user.role}
             userId={user.id}
             showHeader
