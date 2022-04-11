@@ -17,6 +17,8 @@ import useSyncContext from '../../../components/Base/SyncProvider/useSyncContext
 import { Uris } from '../../../services/constants';
 import { SyncStreamMessage } from 'twilio-sync';
 import SurveyResultsCard from '../../../components/SurveyResultsCard/SurveyResultsCard';
+import clientStorage from '../../../services/clientStorage';
+import { FLEX_ENABLED_KEY } from '../../../constants';
 
 const DashboardPage: TwilioPage = () => {
   
@@ -28,10 +30,9 @@ const DashboardPage: TwilioPage = () => {
   const [ contentAssigned, setContentAssigned ] = useState<EHRContent>();
   const [ contentAvailable, setContentAvailable ] = useState<EHRContent[]>([]);
   const [ isNewVisit, setIsNewVisit ] = useState<boolean>(false);
+  const [ isFlexEnabled, setIsFlexEnabled ] = useState<boolean>(false);
   const { user } = useVisitContext();
   const { connect: syncConnect, syncClient, onDemandStream } = useSyncContext();
-
-  // Patient number 1: 1Rgz6s5uuJnI2GV2dDzbMieoRPqsGe0VfhkjfKkwbxU
 
   const fetchVisits = useCallback(async () => {
     datastoreService.fetchAllTelehealthVisits(user)
@@ -46,8 +47,20 @@ const DashboardPage: TwilioPage = () => {
     }, [user]
   ); 
 
+  // We use this to determine if telehealth is being called from an iFrame
+  useEffect(() => {
+    const getFlexEnabled = async () => {
+      const flexEnabled = await clientStorage.getFromStorage(FLEX_ENABLED_KEY);
+      if (flexEnabled && flexEnabled === 1) {
+        setIsFlexEnabled(true);
+      }
+    }
+    getFlexEnabled();
+  }, []);
+
   // Gets Sync token to utilize Sync API prior to video room
   useEffect(() => {
+    const getSyncToken = () => {
       fetch(Uris.get(Uris.visits.token), {
         method: 'POST',
         body: JSON.stringify({ action: "SYNC" }),
@@ -58,8 +71,10 @@ const DashboardPage: TwilioPage = () => {
       }).then(async r => {
         const syncToken = await r.json();
         syncConnect(syncToken.token);
-      })
-  }, [syncConnect]);
+      });
+    }
+    if (!isFlexEnabled) getSyncToken();
+  }, [isFlexEnabled, syncConnect]);
 
   useEffect(() => {
     if (!mediaError) {
@@ -103,20 +118,26 @@ const DashboardPage: TwilioPage = () => {
 
   return (
     <Layout>
-      <div className="grid gap-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1" >
+      {!isFlexEnabled ? 
+        <div className="grid gap-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1" >
+          <div>
+            <NextPatientCard className="my-2" visitNext={visitNext} />
+            <InviteCard />
+          </div>
+          <div>
+            <PatientQueueCard className="my-2" onDemandQueue={onDemandQueue} visitQueue={visitQueue} isNewVisit={isNewVisit} setIsNewVisit={setIsNewVisit}/>
+            <ContentManagementCard className="my-2" contentAssigned={contentAssigned} contentAvailable={contentAvailable}/>
+            <SurveyResultsCard className="my-2"/>
+          </div>
+          <div className="order-first lg:order-last">
+            <AudioVideoCard />
+          </div>
+        </div>
+        : 
         <div>
-          <NextPatientCard className="my-2" visitNext={visitNext} />
-          <InviteCard />
+          <AudioVideoCard visitNext={visitNext}/>
         </div>
-        <div>
-          <PatientQueueCard className="my-2" onDemandQueue={onDemandQueue} visitQueue={visitQueue} isNewVisit={isNewVisit} setIsNewVisit={setIsNewVisit}/>
-          <ContentManagementCard className="my-2" contentAssigned={contentAssigned} contentAvailable={contentAvailable}/>
-          <SurveyResultsCard className="my-2"/>
-        </div>
-        <div className="order-first lg:order-last">
-          <AudioVideoCard />
-        </div>
-      </div>
+      }
     </Layout>
   );
 };

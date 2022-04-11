@@ -5,12 +5,26 @@ import useVideoContext from '../../Base/VideoProvider/useVideoContext/useVideoCo
 import { Card } from '../../Card';
 import VideoTrack from '../../Base/ParticipantTracks/Publication/VideoTrack/VideoTrack';
 import { useEffect, useState } from 'react';
+import { TelehealthVisit } from '../../../types';
+import clientStorage from '../../../services/clientStorage';
+import { FLEX_AGENT_NAME_KEY } from '../../../constants';
 
-export interface AudioVideoCardProps {}
+export interface AudioVideoCardProps {
+  visitNext?: TelehealthVisit;
+}
 
-export const AudioVideoCard = ({}: AudioVideoCardProps) => {
+export const AudioVideoCard = ({ visitNext }: AudioVideoCardProps) => {
   const { localTracks } = useVideoContext();
+  const [ flexAgentName, setFlexAgentName ] = useState<string>("");
   const [ videoTrack, setVideoTrack ] = useState<LocalVideoTrack>();
+
+  useEffect(() => {
+    const setAgentName = async () => {
+        const agentName = await clientStorage.getFromStorage<string>(FLEX_AGENT_NAME_KEY);
+        if (agentName) setFlexAgentName(agentName);
+    }
+    if (visitNext) setAgentName();
+  }, [visitNext]);
 
   useEffect(() => {
     setVideoTrack(localTracks.find(track => track.name.includes('camera')) as LocalVideoTrack); 
@@ -24,8 +38,14 @@ export const AudioVideoCard = ({}: AudioVideoCardProps) => {
         </div> :
           <img src="/provider.jpg" alt="Provider" className="border border-light" /> 
       }
+      {flexAgentName ? 
+        <div className="text-primary text-2xl mt-4 text-center">
+          {flexAgentName}
+        </div> :
+        <></>
+      }
       <Card>
-        <AudioVideoSettings />
+        <AudioVideoSettings visitNext={visitNext} />
       </Card>
     </>
   );

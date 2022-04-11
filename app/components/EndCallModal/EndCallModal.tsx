@@ -1,8 +1,7 @@
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { CURRENT_VISIT } from "../../constants";
 import { CurrentVisit } from "../../interfaces";
 import clientStorage from "../../services/clientStorage";
-import { Uris } from "../../services/constants";
 import datastoreService from "../../services/datastoreService";
 import { useVisitContext } from "../../state/VisitContext";
 import useVideoContext from "../Base/VideoProvider/useVideoContext/useVideoContext";
