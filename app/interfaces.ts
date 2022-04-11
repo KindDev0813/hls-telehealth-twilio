@@ -71,3 +71,8 @@ export interface PatientRoomState extends ParticipantRoomState {
   visitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
   providerVisitorParticipant?: LocalParticipant | RemoteParticipant; // todo change to array of visitors
 }
+
+export interface ChatUser {
+  id: string;
+  name: string;
+}

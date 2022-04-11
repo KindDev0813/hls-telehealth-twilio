@@ -9,6 +9,8 @@ function getFromStorage<T>(key: string, def?: T): Promise<T> {
         if (userStr) {
             const userObj = JSON.parse(userStr);
             return Promise.resolve(userObj as T);
+        } else {
+            return Promise.resolve(def);
         }
     } catch(e) {
         console.log(e);
