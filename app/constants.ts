@@ -27,6 +27,10 @@ export const HEALTH_INFO_KEY = 'HealthInfo';
 export const INSURANCE_INFO_KEY = 'InsuranceInfo';
 export const LOCAL_SYNC_TOKEN_KEY = 'LocalSyncToken';
 
+// Flex Enabled Keys
+export const FLEX_ENABLED_KEY = "FlexEnabled";
+export const FLEX_AGENT_NAME_KEY = "FlexAgentName";
+
 export const ALLOWED_FILE_TYPES =
 'audio/*, image/*, text/*, video/*, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document .xslx, .ppt, .pdf, .key, .svg, .csv';
 

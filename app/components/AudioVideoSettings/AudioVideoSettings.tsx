@@ -5,12 +5,18 @@ import { VirtualBackgroundOptions } from '../VirtualBackgroundOptions';
 import { useEffect, useState } from 'react';
 import MicTest from './MicTest';
 import { Icon } from '../Icon';
+import { TelehealthVisit } from '../../types';
+import clientStorage from '../../services/clientStorage';
+import { CURRENT_VISIT } from '../../constants';
+import { CurrentVisit } from '../../interfaces';
+import router from 'next/router';
 
 export interface AudioVideoSettingsProps {
   className?: string;
   isDark?: boolean;
   isCallInProgress?: boolean;
   isRecording?: boolean;
+  visitNext?: TelehealthVisit;
   toggleRecording?: () => void;
 }
 
@@ -31,12 +37,23 @@ export const AudioVideoSettings = ({
   isDark,
   isCallInProgress,
   isRecording,
+  visitNext,
   toggleRecording,
 }: AudioVideoSettingsProps) => {
   const [videoDevices, setVideoDevices] = useState<ReadonlyArray<Device>>([]);
   const [audioInputDevices, setAudioInputDevices] = useState<ReadonlyArray<Device>>([]);
   const [audioOutputDevices, setAudioOutputDevices] = useState<ReadonlyArray<Device>>([]);
   const [isMicOn, setIsMicOn] = useState<boolean>(false);
+
+  function startVisit() {
+    console.log(visitNext);
+    const currVisit: CurrentVisit = {
+      visitId: visitNext.ehrAppointment.id,
+      visitType: visitNext.ehrAppointment.type
+    }
+    clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
+    router.push("/provider/video/");
+  };
   
   function handleChange(e) {
     // Todo: Handle Device Change.
@@ -132,10 +149,15 @@ export const AudioVideoSettings = ({
           <MicTest className="w-full" isMicOn={isMicOn}/>
         </div>
       )}
-        <div className="my-3">
-            <Label>Virtual Background</Label>
-            <VirtualBackgroundOptions isDark={isDark} />
-        </div>
+      <div className="my-3">
+          <Label>Virtual Background</Label>
+          <VirtualBackgroundOptions isDark={isDark} />
+      </div>
+      <div className="my-5 font-bold text-center">
+        <Button as="button" onClick={startVisit}>
+          Start Visit
+        </Button>
+      </div>
 
       <div className="my-5 font-bold text-center text-xs">
         Saved to your Twilio account
