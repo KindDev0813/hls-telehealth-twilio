@@ -18,7 +18,6 @@ exports.handler = async function(context, event, callback) {
     if (!isValidAppToken(token, context)) 
       return callback(null, setUnauthorized(response));
 
-
     await client.messages
       .create({
         body: "Hi Patient!  To join the video room click on this link: " + url, 
