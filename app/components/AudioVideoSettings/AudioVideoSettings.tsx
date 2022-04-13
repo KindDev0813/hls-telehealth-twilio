@@ -7,9 +7,12 @@ import MicTest from './MicTest';
 import { Icon } from '../Icon';
 import { TelehealthVisit } from '../../types';
 import clientStorage from '../../services/clientStorage';
-import { CURRENT_VISIT } from '../../constants';
+import { CURRENT_VISIT, FLEX_ENABLED_KEY } from '../../constants';
 import { CurrentVisit } from '../../interfaces';
 import router from 'next/router';
+import { Input } from '../Input';
+import { Uris } from '../../services/constants';
+import { useVisitContext } from '../../state/VisitContext';
 
 export interface AudioVideoSettingsProps {
   className?: string;
@@ -44,9 +47,14 @@ export const AudioVideoSettings = ({
   const [audioInputDevices, setAudioInputDevices] = useState<ReadonlyArray<Device>>([]);
   const [audioOutputDevices, setAudioOutputDevices] = useState<ReadonlyArray<Device>>([]);
   const [isMicOn, setIsMicOn] = useState<boolean>(false);
+  // Flex useStates
+  const [flexEnabled, setFlexEnabled] = useState<boolean>(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [isPhoneDigits, setIsPhoneDigits] = useState<boolean>(true);
+  const [isValidPhoneFormat, setIsValidPhoneFormat] = useState<boolean>(true);
+  const { user, visit } = useVisitContext();
 
   function startVisit() {
-    console.log(visitNext);
     const currVisit: CurrentVisit = {
       visitId: visitNext.ehrAppointment.id,
       visitType: visitNext.ehrAppointment.type
@@ -54,12 +62,71 @@ export const AudioVideoSettings = ({
     clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
     router.push("/provider/video/");
   };
+
+  async function sendMessage() {
+    const reg = /^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$/i;
+    const isPhoneMatch = reg.test(phoneNumber);
+    if (isPhoneMatch && phoneNumber[0] === "+" && phoneNumber.length === 12) {
+      const response = await fetch(Uris.get(Uris.visits.token), {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'PATIENT',
+          id: visit.ehrAppointment.patient_id,
+          visitId: visit.ehrAppointment.id
+        }),
+      }).then((response) => response.json());
+      
+      const url = `${location.origin}/patient/index.html?token=${response.passcode}`;
+
+      await fetch(Uris.get(Uris.flex.patientLink), {
+        method: 'POST',
+        body: JSON.stringify({token: user.token, patientPhone: phoneNumber, url}),
+        headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(resp => console.log(resp.json()))
+      .catch(err => console.error(err));
+    } else {
+        setIsValidPhoneFormat(false);
+        setTimeout(() => {
+          setIsValidPhoneFormat(true);
+        }, 5000);
+    }
+  }
   
   function handleChange(e) {
     // Todo: Handle Device Change.
     console.log(e.target.value);
   }
-  
+
+  useEffect(() => {
+    const digitsReg = /^[0-9]+$/;
+    if((phoneNumber[0] === "+" && digitsReg.test(phoneNumber.substring(1))) || phoneNumber.length === 0) {
+      setIsPhoneDigits(true);
+    } else {
+      setIsPhoneDigits(false);
+    }
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    const checkFlexEnabled = async () => {
+      const isFlexEnabled = await clientStorage.getFromStorage(FLEX_ENABLED_KEY) as number;
+      if (isFlexEnabled) {
+        setFlexEnabled(true);
+      } else {
+        setFlexEnabled(false);
+      }
+    }
+    checkFlexEnabled();
+  }, []);
+
   // Gets machine's Audio and Video devices
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then(devices => {
@@ -149,16 +216,41 @@ export const AudioVideoSettings = ({
           <MicTest className="w-full" isMicOn={isMicOn}/>
         </div>
       )}
-      <div className="my-3">
-          <Label>Virtual Background</Label>
-          <VirtualBackgroundOptions isDark={isDark} />
-      </div>
-      <div className="my-5 font-bold text-center">
-        <Button as="button" onClick={startVisit}>
-          Start Visit
-        </Button>
-      </div>
-
+      {flexEnabled ?
+        <></> :
+        <div className="my-3">
+            <Label>Virtual Background</Label>
+            <VirtualBackgroundOptions isDark={isDark} />
+        </div>
+      }
+      {flexEnabled ?
+        <div className='text-center'>
+          <Label>Send Patient Telehealth Video Link to Patient Phone ex: (+12345678910)</Label>
+          <div className="flex flex-row justify-center px-5">
+            <Input
+              className="rounded-r-none border-r-0"
+              placeholder="Patient Phone"
+              value={phoneNumber}
+              onChange={(event) => setPhoneNumber(event.target.value)}
+            />
+            <Button 
+              icon='mail' 
+              as='button' 
+              className='rounded-l-sm'
+              onClick={sendMessage}
+              disabled={phoneNumber.length ? false : true}
+            />
+          </div>
+          {!isPhoneDigits ? <div className='text-primary mt-2'>{"Phone Number should be in E.164 Format ex: \"+14083334444\" without hyphens"}</div> : <></> }
+          {!isValidPhoneFormat ? <div className='text-primary mt-2'>Phone not in a valid format</div> : <></> }
+          <div className="my-5 font-bold ">
+            <Button as="button" onClick={startVisit}>
+              Start Visit
+            </Button>
+          </div>
+        </div> :
+        <></>
+      }
       <div className="my-5 font-bold text-center text-xs">
         Saved to your Twilio account
       </div>

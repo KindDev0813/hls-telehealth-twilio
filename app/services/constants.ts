@@ -15,6 +15,9 @@ export const Uris = {
     recording: '/visit/recording',
     completeRoom: '/visit/complete-room'
   },
+  flex: {
+    patientLink: '/flex/send-patient-link',
+  },
   sms: '/send-sms',
 
   get: (endpoint: string): string => {
