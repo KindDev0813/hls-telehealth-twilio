@@ -59,7 +59,7 @@ export const NextPatientCard = ({ className, visitNext }: NextPatientCardProps) 
         {visitNext ?
           <div>
             <CardHeading>{visitNext.ehrPatient?.name}</CardHeading>
-            <WaitTimer startTime={visitNext.ehrAppointment.start_datetime_ltz.getTime()}/>
+            <WaitTimer appointmentData={visitNext.ehrAppointment}/>
             <ul className="pl-5">
               <Field label="Reason for Visit" value={visitNext.ehrAppointment.reason} />
               <Field label="Gender" value={visitNext.ehrPatient?.gender} />

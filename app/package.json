@@ -28,7 +28,8 @@
     "react-popper": "^2.2.5",
     "react-uuid": "^1.0.2",
     "twilio-sync": "3.0.6",
-    "twilio-video": "^2.18.1"
+    "twilio-video": "^2.18.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

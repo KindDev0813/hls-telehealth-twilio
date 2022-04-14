@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import {EHRAppointment} from "../../types";
 
-function WaitTimer(props) {
+export interface WaitTimerProps {
+  appointmentData: EHRAppointment;
+}
 
-  const appointmentTime = props.startTime;
-  var textLabel: string = '';
+function WaitTimer(props: WaitTimerProps) {
+
+  const appointmentTime = props.appointmentData.start_datetime_ltz.getTime();
+  let textLabel: string = '';
 
   const calculateTime = () => {
 
     const currentTime = new Date().getTime();
-    var estimatedTime: number;
+    let estimatedTime: number;
 
     if (appointmentTime > currentTime) {
       // future schedule appointment case
@@ -34,45 +40,47 @@ function WaitTimer(props) {
   const [timeLeft, setTimeLeft] = useState(calculateTime());
 
   useEffect(() => {
-    setTimeout(() => {
+    let timer = setTimeout(() => {
       setTimeLeft(calculateTime());
     }, 1000);
+    return () => {
+      clearTimeout(timer);
+    };
   });
-
-  const timerComponents = [];
-
-  Object.keys(timeLeft).forEach((interval) => {
-    // adding 00 to null values
-    if (!timeLeft[interval]) {
-      timerComponents.push(
-          <span>{"00"}</span>
-      );
-    }
-    // adding 0 to less than 10 values
-     else if(timeLeft[interval] < 10){
-      timerComponents.push(
-          <span>{'0'}{timeLeft[interval]}</span>
-      );
-    }
-     // adding other values
-    else {
-      timerComponents.push(
-          <span>{timeLeft[interval]}</span>
-      );
-    }
-    // adding colon
-      timerComponents.push(
-          <span>{":"}</span>
-      );
-  });
-
-  // removing the last colon after seconds
-  timerComponents.pop();
 
   return (
       <div className="font-bold text-light text-xs">
         <div>
-          {textLabel} {timerComponents}
+          {textLabel}
+          {Object.keys(timeLeft).map((interval) => {
+              if (!timeLeft[interval]) {
+                if (interval != 'ss'){
+                  return <span key={uuidv4()}>{"00"}{":"}</span>
+                } else {
+                  return <span key={uuidv4()}>{"00"}</span>
+                }
+              }
+              else if(timeLeft[interval] < 10) {
+                if (interval != 'ss'){
+                  return <span key={uuidv4()}>{'0'}{timeLeft[interval]}{":"}</span>
+                } else {
+                  return <span key={uuidv4()}>{'0'}{timeLeft[interval]}</span>
+                }
+              }
+              else if(timeLeft[interval] > 10) {
+                if (interval != 'ss'){
+                  return <span key={uuidv4()}>{timeLeft[interval]}{":"}</span>
+                } else {
+                  return <span key={uuidv4()}>{timeLeft[interval]}</span>
+                }
+              }
+              else if(timeLeft[interval] === 10) {
+                if (interval != 'ss') {
+                  return <span key={uuidv4()}>{timeLeft[interval]}{":"}</span>
+                } else {
+                  return <span key={uuidv4()}>{timeLeft[interval]}</span>
+                }
+              }})}
         </div>
       </div>
   );

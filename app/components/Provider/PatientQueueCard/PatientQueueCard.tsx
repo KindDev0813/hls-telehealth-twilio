@@ -37,10 +37,10 @@ export const PatientQueueCard = ({ className, onDemandQueue, visitQueue, isNewVi
             <div>Reason For Visit:</div>
           </div>
           {onDemandQueue.map((visit, index) => (
-            <PatientVisitCard visit={visit} key={index} index={index} waitTime={visit.ehrAppointment.start_datetime_ltz.getTime()} isOnDemand={true}/>
+            <PatientVisitCard visit={visit} key={index} index={index} appointmentData={visit.ehrAppointment} isOnDemand={true}/>
           ))}
           {visitQueue.map((visit, index) => (
-            <PatientVisitCard visit={visit} key={index} index={index} waitTime={visit.ehrAppointment.start_datetime_ltz.getTime()} />
+            <PatientVisitCard visit={visit} key={index} index={index} appointmentData={visit.ehrAppointment} />
           ))}
         </div> :
         <LoadingSpinner/>
