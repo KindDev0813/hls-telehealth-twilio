@@ -67,20 +67,14 @@ function WaitTimer(props: WaitTimerProps) {
                   return <span key={uuidv4()}>{'0'}{timeLeft[interval]}</span>
                 }
               }
-              else if(timeLeft[interval] > 10) {
+              else if(timeLeft[interval] >= 10) {
                 if (interval != 'ss'){
                   return <span key={uuidv4()}>{timeLeft[interval]}{":"}</span>
                 } else {
                   return <span key={uuidv4()}>{timeLeft[interval]}</span>
                 }
               }
-              else if(timeLeft[interval] === 10) {
-                if (interval != 'ss') {
-                  return <span key={uuidv4()}>{timeLeft[interval]}{":"}</span>
-                } else {
-                  return <span key={uuidv4()}>{timeLeft[interval]}</span>
-                }
-              }})}
+             })}
         </div>
       </div>
   );
