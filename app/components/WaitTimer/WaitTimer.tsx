@@ -39,14 +39,14 @@ function WaitTimer(props: WaitTimerProps) {
 
   const [timeLeft, setTimeLeft] = useState(calculateTime());
 
-  useEffect(() => {
-    let timer = setTimeout(() => {
-      setTimeLeft(calculateTime());
-    }, 1000);
-    return () => {
-      clearTimeout(timer);
-    };
-  });
+  useEffect(
+      () => {
+        let timer = setTimeout(() => setTimeLeft(calculateTime()), 1000);
+        return () => {
+          clearTimeout(timer);
+        };
+      },
+  );
 
   return (
       <div className="font-bold text-light text-xs">
