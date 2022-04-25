@@ -95,16 +95,26 @@ async function getAll(context) {
       return a.appointment_start_datetime_utc.localeCompare(b.appointment_start_datetime_utc);
     });
 
+  //TODO remove time manipulation for appointment data
+
   // rebase time where first (earliest) appointment is 5min past current time
   const first_appointment_ts = new Date(appointments[0].appointment_start_datetime_utc);
   const diff = new Date().getTime() - first_appointment_ts.getTime() - 5*60*1000;
   appointments.forEach(appt => {
-    const start_ts = new Date(appt.appointment_start_datetime_utc);
-    const end_ts = new Date(appt.appointment_end_datetime_utc);
-    appt.appointment_start_datetime_utc = new Date(start_ts.getTime() + diff).toISOString();
-    appt.appointment_end_datetime_utc = new Date(end_ts.getTime() + diff).toISOString();
+    // adding time to test data
+    if (appt.appointment_id === 'a1000000' || appt.appointment_id === 'a2000000' || appt.appointment_id === 'a3000000000'){
+      const start_ts = new Date(appt.appointment_start_datetime_utc);
+      const end_ts = new Date(appt.appointment_end_datetime_utc);
+      appt.appointment_start_datetime_utc = new Date(start_ts.getTime() + diff).toISOString();
+      appt.appointment_end_datetime_utc = new Date(end_ts.getTime() + diff).toISOString();
+    } else {
+      // using real time for real patient flow
+      const start_ts = new Date(appt.appointment_start_datetime_utc);
+      const end_ts = new Date(appt.appointment_end_datetime_utc);
+      appt.appointment_start_datetime_utc = new Date(start_ts.getTime()).toISOString();
+      appt.appointment_end_datetime_utc = new Date(end_ts.getTime()).toISOString();
+    }
   });
-
   return appointments;
 }
 exports.getAll = getAll;

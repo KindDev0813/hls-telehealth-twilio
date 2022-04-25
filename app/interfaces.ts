@@ -29,9 +29,10 @@ export interface PatientInfo {
   phoneNumber: string;
   email: string;
   needTranslator: string;
-  gender: string;
   language?: string;
+  gender: string;
 }
+
 interface HealthFile {
   name: string;
   url?: string;
@@ -48,7 +49,6 @@ export interface InsuranceInfo {
   memberId: string;
   healthPlan: string;
   isPrimaryMember: string;
-
 }
 
 // Room Interfaces

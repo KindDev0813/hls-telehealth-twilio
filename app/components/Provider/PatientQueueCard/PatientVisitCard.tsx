@@ -1,15 +1,16 @@
-import { TelehealthVisit } from "../../../types";
+import {EHRAppointment, TelehealthVisit} from "../../../types";
 import { joinClasses } from "../../../utils"
+import WaitTimer from '../../WaitTimer/WaitTimer'
 
 
 export interface PatientVisitCardProps {
   visit: TelehealthVisit;
   index: number;
-  waitTime: string;
+  appointmentData: EHRAppointment;
   isOnDemand?: boolean; 
 }
 
-export const PatientVisitCard = ({visit, index, waitTime, isOnDemand = false}: PatientVisitCardProps) => {
+export const PatientVisitCard = ({visit, index, appointmentData, isOnDemand = false}: PatientVisitCardProps) => {
   return (
     <div
       key={index}
@@ -21,9 +22,7 @@ export const PatientVisitCard = ({visit, index, waitTime, isOnDemand = false}: P
       <div>
         <a className="text-link underline">{visit.ehrPatient.name}</a>
         {isOnDemand && <span className="text-red-400"> (On Demand)</span>}
-        <div className="font-bold text-light">
-          { waitTime }
-        </div>
+          <WaitTimer appointmentData={appointmentData}/>
       </div>
       <div className="line-clamp-2 overflow-ellipsis overflow-hidden text-dark">
         {visit.ehrAppointment.reason}

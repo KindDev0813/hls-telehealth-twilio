@@ -31,11 +31,7 @@ export const HealthForm = ({ onSubmit }: HealthFormProps) => {
       </p>
         <Textarea className="my-2" placeholder="Preexisting Conditions" setText={setConditions} required/>
         <Textarea className="my-2" placeholder="Current Medications" setText={setMedications} required/>
-        <Textarea
-          className="my-2"
-          placeholder="Reason for visit (symptoms, etc - this is optional)"
-          setText={setReason}
-        />
+        <Textarea className="my-2" placeholder="Reason for visit (symptoms, etc - this is optional)" setText={setReason}/>
       <div>
         <p className="my-3 text-dark">
           Would you like to share a file, such as a photo, form, or test result?
