@@ -44,12 +44,16 @@ export const AudioVideoSettings = ({
   toggleRecording,
 }: AudioVideoSettingsProps) => {
   const [videoDevices, setVideoDevices] = useState<ReadonlyArray<Device>>([]);
-  const [audioInputDevices, setAudioInputDevices] = useState<ReadonlyArray<Device>>([]);
-  const [audioOutputDevices, setAudioOutputDevices] = useState<ReadonlyArray<Device>>([]);
+  const [audioInputDevices, setAudioInputDevices] = useState<
+    ReadonlyArray<Device>
+  >([]);
+  const [audioOutputDevices, setAudioOutputDevices] = useState<
+    ReadonlyArray<Device>
+  >([]);
   const [isMicOn, setIsMicOn] = useState<boolean>(false);
   // Flex useStates
   const [flexEnabled, setFlexEnabled] = useState<boolean>(false);
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [isPhoneDigits, setIsPhoneDigits] = useState<boolean>(true);
   const [isValidPhoneFormat, setIsValidPhoneFormat] = useState<boolean>(true);
   const { user, visit } = useVisitContext();
@@ -57,50 +61,55 @@ export const AudioVideoSettings = ({
   function startVisit() {
     const currVisit: CurrentVisit = {
       visitId: visitNext.ehrAppointment.id,
-      visitType: visitNext.ehrAppointment.type
-    }
+      visitType: visitNext.ehrAppointment.type,
+    };
     clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
-    router.push("/provider/video/");
-  };
+    router.push('/provider/video/');
+  }
 
   async function sendMessage() {
-    const reg = /^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$/i;
+    const reg =
+      /^(?:(?:\(?(?:00|\+)([1-99]\d\d|[1-99]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$/i;
     const isPhoneMatch = reg.test(phoneNumber);
-    if (isPhoneMatch && phoneNumber[0] === "+" && phoneNumber.length === 12) {
+    if (isPhoneMatch) {
       const response = await fetch(Uris.get(Uris.visits.token), {
         method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: 'PATIENT',
           id: visit.ehrAppointment.patient_id,
-          visitId: visit.ehrAppointment.id
+          visitId: visit.ehrAppointment.id,
         }),
       }).then((response) => response.json());
-      
+
       const url = `${location.origin}/patient/index.html?token=${response.passcode}`;
 
       await fetch(Uris.get(Uris.flex.patientLink), {
         method: 'POST',
-        body: JSON.stringify({token: user.token, patientPhone: phoneNumber, url}),
-        headers: { 
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`
-        }
+        body: JSON.stringify({
+          token: user.token,
+          patientPhone: phoneNumber,
+          url,
+        }),
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
       })
-      .then(resp => console.log(resp.json()))
-      .catch(err => console.error(err));
+        .then((resp) => console.log(resp.json()))
+        .catch((err) => console.error(err));
     } else {
-        setIsValidPhoneFormat(false);
-        setTimeout(() => {
-          setIsValidPhoneFormat(true);
-        }, 5000);
+      setIsValidPhoneFormat(false);
+      setTimeout(() => {
+        setIsValidPhoneFormat(true);
+      }, 5000);
     }
   }
-  
+
   function handleChange(e) {
     // Todo: Handle Device Change.
     console.log(e.target.value);
@@ -108,7 +117,10 @@ export const AudioVideoSettings = ({
 
   useEffect(() => {
     const digitsReg = /^[0-9]+$/;
-    if((phoneNumber[0] === "+" && digitsReg.test(phoneNumber.substring(1))) || phoneNumber.length === 0) {
+    if (
+      (phoneNumber[0] === '+' && digitsReg.test(phoneNumber.substring(1))) ||
+      phoneNumber.length === 0
+    ) {
       setIsPhoneDigits(true);
     } else {
       setIsPhoneDigits(false);
@@ -117,32 +129,37 @@ export const AudioVideoSettings = ({
 
   useEffect(() => {
     const checkFlexEnabled = async () => {
-      const isFlexEnabled = await clientStorage.getFromStorage(FLEX_ENABLED_KEY) as number;
+      const isFlexEnabled = (await clientStorage.getFromStorage(
+        FLEX_ENABLED_KEY
+      )) as number;
       if (isFlexEnabled) {
         setFlexEnabled(true);
       } else {
         setFlexEnabled(false);
       }
-    }
+    };
     checkFlexEnabled();
   }, []);
 
   // Gets machine's Audio and Video devices
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      const videoInputDevices: Device[] = devices.filter(device => device.kind === 'videoinput');
-      const audioInputs: Device[] = devices.filter((device, index, array) => 
-        device.kind === 'audioinput' && 
-        !device.label.includes("Virtual")
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      const videoInputDevices: Device[] = devices.filter(
+        (device) => device.kind === 'videoinput'
       );
-      const audioOutputs: Device[] = devices.filter(device => 
-        device.kind === 'audiooutput' &&
-        !device.label.includes("Virtual"));
+      const audioInputs: Device[] = devices.filter(
+        (device, index, array) =>
+          device.kind === 'audioinput' && !device.label.includes('Virtual')
+      );
+      const audioOutputs: Device[] = devices.filter(
+        (device) =>
+          device.kind === 'audiooutput' && !device.label.includes('Virtual')
+      );
       setVideoDevices(videoInputDevices);
       setAudioInputDevices(audioInputs);
       setAudioOutputDevices(audioOutputs);
-    })
-  }, [isMicOn])
+    });
+  }, [isMicOn]);
 
   const Label = ({ children }) => (
     <label
@@ -161,25 +178,26 @@ export const AudioVideoSettings = ({
         <Label>Camera</Label>
         <Select
           isDark={isDark}
-          key={"videoInput"}
+          key={'videoInput'}
           onChange={handleChange}
           className="w-full"
-          options={videoDevices.map(device => (
-            { 
-              label: device.label ? device.label : "System Default (Webcam)",
-              value: device.deviceId
-            }))
-          }
+          options={videoDevices.map((device) => ({
+            label: device.label ? device.label : 'System Default (Webcam)',
+            value: device.deviceId,
+          }))}
         />
       </div>
       <div className="my-3">
         <Label>Voice Input Device:</Label>
         <Select
           isDark={isDark}
-          key={"audioInput"}
+          key={'audioInput'}
           onChange={handleChange}
           className="w-full"
-          options={audioInputDevices.map(device => ({label: device.label, value: device.deviceId}))}
+          options={audioInputDevices.map((device) => ({
+            label: device.label,
+            value: device.deviceId,
+          }))}
         />
         <input className="mt-4 w-full bg-primary" type="range" />
       </div>
@@ -187,10 +205,13 @@ export const AudioVideoSettings = ({
         <Label>Audio Output Device:</Label>
         <Select
           isDark={isDark}
-          key={"audioOutput"}
+          key={'audioOutput'}
           onChange={handleChange}
           className="w-full"
-          options={audioOutputDevices.map(device => ({label: device.label, value: device.deviceId}))}
+          options={audioOutputDevices.map((device) => ({
+            label: device.label,
+            value: device.deviceId,
+          }))}
         />
         <input className="mt-4 w-full bg-primary" type="range" />
       </div>
@@ -209,23 +230,35 @@ export const AudioVideoSettings = ({
         </div>
       ) : (
         <div className="my-3 flex justify-center items-center space-x-5">
-          <Button variant={ButtonVariant.tertiary} onClick={() => {setIsMicOn(!isMicOn); console.log(isMicOn)}} outline className='flex justify-center items-center space-x-2'>
+          <Button
+            variant={ButtonVariant.tertiary}
+            onClick={() => {
+              setIsMicOn(!isMicOn);
+              console.log(isMicOn);
+            }}
+            outline
+            className="flex justify-center items-center space-x-2"
+          >
             Test
             <Icon name="mic"></Icon>
           </Button>
-          <MicTest className="w-full" isMicOn={isMicOn}/>
+          <MicTest className="w-full" isMicOn={isMicOn} />
         </div>
       )}
-      {flexEnabled ?
-        <></> :
+      {flexEnabled ? (
+        <></>
+      ) : (
         <div className="my-3">
-            <Label>Virtual Background</Label>
-            <VirtualBackgroundOptions isDark={isDark} />
+          <Label>Virtual Background</Label>
+          <VirtualBackgroundOptions isDark={isDark} />
         </div>
-      }
-      {flexEnabled ?
-        <div className='text-center'>
-          <Label>Send Patient Telehealth Video Link to Patient Phone ex: (+12345678910)</Label>
+      )}
+      {flexEnabled ? (
+        <div className="text-center">
+          <Label>
+            Send Patient Telehealth Video Link to Patient Phone ex:
+            (+12345678910)
+          </Label>
           <div className="flex flex-row justify-center px-5">
             <Input
               className="rounded-r-none border-r-0"
@@ -233,24 +266,37 @@ export const AudioVideoSettings = ({
               value={phoneNumber}
               onChange={(event) => setPhoneNumber(event.target.value)}
             />
-            <Button 
-              icon='mail' 
-              as='button' 
-              className='rounded-l-sm'
+            <Button
+              icon="mail"
+              as="button"
+              className="rounded-l-sm"
               onClick={sendMessage}
               disabled={phoneNumber.length ? false : true}
             />
           </div>
-          {!isPhoneDigits ? <div className='text-primary mt-2'>{"Phone Number should be in E.164 Format ex: \"+14083334444\" without hyphens"}</div> : <></> }
-          {!isValidPhoneFormat ? <div className='text-primary mt-2'>Phone not in a valid format</div> : <></> }
+          {!isPhoneDigits ? (
+            <div className="text-primary mt-2">
+              {
+                'Phone Number should be in E.164 Format ex: "+14083334444" without hyphens'
+              }
+            </div>
+          ) : (
+            <></>
+          )}
+          {!isValidPhoneFormat ? (
+            <div className="text-primary mt-2">Phone not in a valid format</div>
+          ) : (
+            <></>
+          )}
           <div className="my-5 font-bold ">
             <Button as="button" onClick={startVisit}>
               Start Visit
             </Button>
           </div>
-        </div> :
+        </div>
+      ) : (
         <></>
-      }
+      )}
       <div className="my-5 font-bold text-center text-xs">
         Saved to your Twilio account
       </div>
