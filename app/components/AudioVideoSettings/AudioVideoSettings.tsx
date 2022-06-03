@@ -7,7 +7,11 @@ import MicTest from './MicTest';
 import { Icon } from '../Icon';
 import { TelehealthVisit } from '../../types';
 import clientStorage from '../../services/clientStorage';
-import { CURRENT_VISIT, FLEX_ENABLED_KEY } from '../../constants';
+import {
+  CURRENT_VISIT,
+  FLEX_ENABLED_KEY,
+  STORAGE_VISIT_KEY,
+} from '../../constants';
 import { CurrentVisit } from '../../interfaces';
 import router from 'next/router';
 import { Input } from '../Input';
@@ -58,12 +62,16 @@ export const AudioVideoSettings = ({
   const [isValidPhoneFormat, setIsValidPhoneFormat] = useState<boolean>(true);
   const { user, visit } = useVisitContext();
 
-  function startVisit() {
+  async function startVisit() {
     const currVisit: CurrentVisit = {
       visitId: visitNext.ehrAppointment.id,
       visitType: visitNext.ehrAppointment.type,
     };
-    clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
+    await clientStorage.saveToStorage<CurrentVisit>(CURRENT_VISIT, currVisit);
+    await clientStorage.saveToStorage<TelehealthVisit>(
+      STORAGE_VISIT_KEY,
+      visitNext
+    );
     router.push('/provider/video/');
   }
 
@@ -80,8 +88,8 @@ export const AudioVideoSettings = ({
         },
         body: JSON.stringify({
           action: 'PATIENT',
-          id: visit.ehrAppointment.patient_id,
-          visitId: visit.ehrAppointment.id,
+          id: visitNext.ehrAppointment.patient_id,
+          visitId: visitNext.ehrAppointment.id,
         }),
       }).then((response) => response.json());
 

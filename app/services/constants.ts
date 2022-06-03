@@ -1,9 +1,9 @@
 export const Uris = {
-  //backendRoot : 'http://localhost:3001',
-  backendRoot : '',
+  //backendRoot: 'http://localhost:3001',
+  backendRoot: '',
   token: {
     get: '/visit/token',
-    validate: '/token/validate'
+    validate: '/token/validate',
   },
   visits: {
     list: '/visits',
@@ -13,7 +13,7 @@ export const Uris = {
     patientRoomToken: '/visit/room',
     providerRoomToken: '/visit/provider-room',
     recording: '/visit/recording',
-    completeRoom: '/visit/complete-room'
+    completeRoom: '/visit/complete-room',
   },
   flex: {
     patientLink: '/flex/send-patient-link',
@@ -22,6 +22,5 @@ export const Uris = {
 
   get: (endpoint: string): string => {
     return `${Uris.backendRoot}${endpoint}`;
-  }
+  },
 };
-
