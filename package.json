@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@twilio-labs/serverless-api": "5.4.0",
-    "@twilio/runtime-handler": "1.2.1",
+    "@twilio-labs/serverless-api": "5.4.2",
+    "@twilio/runtime-handler": "1.2.3",
     "configure-env": "2.0.0-1",
     "jsonwebtoken": "8.5.1",
+    "twilio": "3.77.3",
+    "twilio-flex-token-validator": "1.5.6",
     "moment": "2.29.2",
-    "nanoid": "3.1.31",
-    "twilio": "3.71.2",
-    "twilio-flex-token-validator": "1.5.6"
+    "nanoid": "3.1.31"
   },
   "engines": {
     "node": ">=14.0.0"
