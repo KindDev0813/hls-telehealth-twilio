@@ -164,7 +164,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     [user, room, isRecording]
   );
 
-  const titleStyles = { left: '45%' };
+  const titleStyles = { left: '40%' };
   // todo need to render previous speaker in block with all other participants
   const mainDisplayedParticipant =
     (selectedParticipant as RemoteParticipant) || callState.patientParticipant;
@@ -175,7 +175,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
         className="absolute text-white text-2xl font-bold top-4 z-10"
         style={titleStyles}
       >
-        Owl Health
+        Cloud City Healthcare
       </h1>
       <div
         className={joinClasses(

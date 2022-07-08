@@ -19,7 +19,7 @@ const NoAvPermissionPage = () => {
   return (
     <Layout>
       <Alert
-        title={`To use Owl Health, we need\nyour permissions`}
+        title={`To use Cloud City Healthcare, we need\nyour permissions`}
         icon={
           <img alt="No Audio/Video Permissions" src="/icons/no-av-permissions.svg" height={114} width={262} />
         }
