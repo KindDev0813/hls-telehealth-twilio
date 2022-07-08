@@ -92,7 +92,7 @@ export const VisitSurvey = ({ isProvider }: VisitSurveyProps) => {
             <p>If you don’t mind, could you tell us about your experience?</p>
           ) : (
             <p>
-              We appreciate you scheduling a visit through the Owl Health app.
+              We appreciate you scheduling a visit through the Cloud City Healthcare app.
               If you don’t mind, could you tell us about how the visit went?
             </p>
           )}
