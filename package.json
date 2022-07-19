@@ -1,6 +1,6 @@
 {
   "name": "telehealth",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "dependencies": {
     "@twilio-labs/serverless-api": "5.4.2",
