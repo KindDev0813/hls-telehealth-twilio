@@ -7,7 +7,7 @@ on:
 env:
   DOCKER_USER: ${{secrets.DOCKER_USER}}
   DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-  REPO_NAME: hls-website-installer
+  REPO_NAME: hls-telehealth-installer
 
 jobs:
 
