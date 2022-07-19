@@ -24,7 +24,7 @@ RUN npm run export
 WORKDIR /hls-installer
 
 # copy github files needed for running locally
-COPY Dockerfile package.json .env /hls-installer
+COPY Dockerfile package.json .env /hls-installer/
 COPY assets /hls-installer/assets
 COPY functions /hls-installer/functions
 RUN mkdir assets/app

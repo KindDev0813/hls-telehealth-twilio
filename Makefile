@@ -21,13 +21,17 @@ endif
 BLUEPRINT_NAME   := $(shell basename `pwd`)
 SERVERLESS_NAME  := $(BLUEPRINT_NAME)
 GIT_REPO_URL     := $(shell git config --get remote.origin.url)
-INSTALLER_NAME   := hls-ehr-installer
+VERSION          := $(shell jq --raw-output .version package.json)
+INSTALLER_NAME   := hls-telehealth-installer
+INSTALLER_TAG_V  := twiliohls/$(INSTALLER_NAME):$(VERSION)
+INSTALLER_TAG_L  := twiliohls/$(INSTALLER_NAME):latest
 CPU_HARDWARE     := $(shell uname -m)
 DOCKER_EMULATION := $(shell [[ `uname -m` == "arm64" ]] && echo --platform linux/amd64)
 $(info ================================================================================)
 $(info BLUEPRINT_NAME     : $(BLUEPRINT_NAME))
 $(info GIT_REPO_URL       : $(GIT_REPO_URL))
 $(info INSTALLER_NAME     : $(INSTALLER_NAME))
+$(info INSTALLER_TAG_V    : $(INSTALLER_TAG_V))
 $(info CPU_HARDWARE       : $(shell uname -m))
 $(info DOCKER_EMULATION   : $(DOCKER_EMULATION))
 $(info TWILIO_ACCOUNT_NAME: $(shell twilio api:core:accounts:fetch --sid=$(TWILIO_ACCOUNT_SID) --no-header --properties=friendlyName))
@@ -43,17 +47,25 @@ targets:
 
 
 installer-build-github:
-	docker build --tag $(INSTALLER_NAME) --no-cache $(DOCKER_EMULATION) $(GIT_REPO_URL)#main
+	docker build --tag $(INSTALLER_TAG_V) --tag $(INSTALLER_TAG_L) $(DOCKER_EMULATION) --no-cache $(GIT_REPO_URL)#main
 
 
 installer-build-local:
-	docker build --tag $(INSTALLER_NAME) $(DOCKER_EMULATION) --no-cache .
+	docker build --tag $(INSTALLER_TAG_V) --tag $(INSTALLER_TAG_L) $(DOCKER_EMULATION) --no-cache .
+
+
+installer-push:
+	docker login --username twiliohls
+	docker push $(INSTALLER_TAG_V)
+	docker push $(INSTALLER_TAG_L)
+	docker logout
+	open -a "Google Chrome" https://hub.docker.com/r/twiliohls/$(INSTALLER_NAME)
 
 
 installer-run:
 	docker run --name $(INSTALLER_NAME) --rm --publish 3000:3000  $(DOCKER_EMULATION) \
 	--env ACCOUNT_SID=$(TWILIO_ACCOUNT_SID) --env AUTH_TOKEN=$(TWILIO_AUTH_TOKEN) \
-	--interactive --tty $(INSTALLER_NAME)
+	--interactive --tty $(INSTALLER_TAG_V)
 
 
 installer-open:
@@ -63,8 +75,10 @@ installer-open:
     done
 	open -a "Google Chrome" http://localhost:3000/installer/index.html
 
+
 get-service-name:
 	$(eval SERVICE_NAME := $(shell grep -w APPLICATION_NAME .env | head -1 | sed 's/^.*=//'))
+
 
 get-service-sid: get-service-name
 	$(eval SERVICE_SID := $(shell twilio api:serverless:v1:services:list -o=json \

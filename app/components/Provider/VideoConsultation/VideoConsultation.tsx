@@ -24,7 +24,6 @@ import { InviteParticipantModal } from '../../InviteParticipantModal';
 import { roomParticipantsService } from '../../../services/roomParticipantsService';
 import { ProviderRoomState, ChatUser } from '../../../interfaces';
 
-
 export interface VideoConsultationProps {}
 
 export const VideoConsultation = ({}: VideoConsultationProps) => {
@@ -32,18 +31,22 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
   const [isVideoEnabled, toggleVideoEnabled] = useLocalVideoToggle();
   const [inviteModalRef, setInviteModalRef] = useState(null);
   const [inviteModalVisible, setInviteModalVisible] = useState(false);
-  const [dataTrackMessage, setDataTrackMessage] = useState<DataTrackMessage>(null);
+  const [dataTrackMessage, setDataTrackMessage] =
+    useState<DataTrackMessage>(null);
   const [visitorName, setVisitorName] = useState('Patient Visitor');
-  const [providerVisitorName, setProviderVisitorName] = useState('Provider Visitor');
+  const [providerVisitorName, setProviderVisitorName] =
+    useState('Provider Visitor');
   const [chatUsers, setChatUsers] = useState<ChatUser[]>(null);
   const [endCallModalVisible, setEndCallModalVisible] = useState(false);
   const [settingsModalRef, setSettingsModalRef] = useState(null);
-  const [connectionIssueModalVisible, setConnectionIssueModalVisible] = useState(false);
+  const [connectionIssueModalVisible, setConnectionIssueModalVisible] =
+    useState(false);
   const participants = useParticipants();
   const { setIsChatWindowOpen, isChatWindowOpen } = useChatContext();
   const { user } = useVisitContext();
   const { room, isRecording, toggleScreenShare } = useVideoContext();
-  const [selectedParticipant, setSelectedParticipant] = useSelectedParticipant();
+  const [selectedParticipant, setSelectedParticipant] =
+    useSelectedParticipant();
   const [visit, setVisit] = useState<TelehealthVisit>(null);
   const [callState, setCallState] = useState<ProviderRoomState>({
     patientName: null,
@@ -52,73 +55,127 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
     patientParticipant: null,
     providerParticipant: null,
     visitorParticipant: null,
-    providerVisitorParticipant: null
+    providerVisitorParticipant: null,
   });
 
   function toggleInviteModal() {
     setInviteModalVisible(!inviteModalVisible);
   }
 
+  useEffect(() => {
+    const getVisit = async () => {
+      setVisit(await clientStorage.getFromStorage(STORAGE_VISIT_KEY));
+    };
+    getVisit();
+  }, []);
+
   //handle name for visitors
   useEffect(() => {
-    if(!dataTrackMessage) {
+    if (!dataTrackMessage) {
       return;
     }
 
-    if(dataTrackMessage.name) {
-      if(callState.visitorParticipant && callState.visitorParticipant.identity == dataTrackMessage.participantId) {
+    if (dataTrackMessage.name) {
+      if (
+        callState.visitorParticipant &&
+        callState.visitorParticipant.identity == dataTrackMessage.participantId
+      ) {
         setVisitorName(dataTrackMessage.name);
       }
 
-      if(callState.providerVisitorParticipant && callState.providerVisitorParticipant.identity == dataTrackMessage.participantId) {
+      if (
+        callState.providerVisitorParticipant &&
+        callState.providerVisitorParticipant.identity ==
+          dataTrackMessage.participantId
+      ) {
         setProviderVisitorName(dataTrackMessage.name);
       }
-      
-      setChatUsers(roomParticipantsService.getChatUsers(user, room, participants as RemoteParticipant[], visit, visitorName, providerVisitorName));
+
+      setChatUsers(
+        roomParticipantsService.getChatUsers(
+          user,
+          room,
+          participants as RemoteParticipant[],
+          visit,
+          visitorName,
+          providerVisitorName
+        )
+      );
     }
   }, [dataTrackMessage]);
-
 
   function toggleEndCallModal() {
     setEndCallModalVisible(!endCallModalVisible);
   }
 
   useEffect(() => {
-    const getVisit = async () => {
-      setVisit(await clientStorage.getFromStorage(STORAGE_VISIT_KEY));
-    }
-    getVisit();
-  }, []);
-
-  useEffect(() => {
     if (room) {
-      setCallState(prev => {
+      setCallState((prev) => {
         return {
           ...prev,
-          patientParticipant: roomParticipantsService.getPatient(user, room, participants as RemoteParticipant[], visit),
-          providerParticipant: roomParticipantsService.getProvider(user, room, participants as RemoteParticipant[], visit),
-          visitorParticipant: roomParticipantsService.getPatientVisitor(user, room, participants as RemoteParticipant[], visit),
-          providerVisitorParticipant: roomParticipantsService.getProviderVisitor(user, room, participants as RemoteParticipant[], visit),
-        }
-      })
+          patientParticipant: roomParticipantsService.getPatient(
+            user,
+            room,
+            participants as RemoteParticipant[],
+            visit
+          ),
+          providerParticipant: roomParticipantsService.getProvider(
+            user,
+            room,
+            participants as RemoteParticipant[],
+            visit
+          ),
+          visitorParticipant: roomParticipantsService.getPatientVisitor(
+            user,
+            room,
+            participants as RemoteParticipant[],
+            visit
+          ),
+          providerVisitorParticipant:
+            roomParticipantsService.getProviderVisitor(
+              user,
+              room,
+              participants as RemoteParticipant[],
+              visit
+            ),
+        };
+      });
 
-      setChatUsers(roomParticipantsService.getChatUsers(user, room, participants as RemoteParticipant[], visit, visitorName, providerVisitorName));
-
+      setChatUsers(
+        roomParticipantsService.getChatUsers(
+          user,
+          room,
+          participants as RemoteParticipant[],
+          visit,
+          visitorName,
+          providerVisitorName
+        )
+      );
     }
   }, [participants, room]);
 
-  const toggleRecordingCb = useCallback(async () => 
-    await roomService.toggleRecording(user, room.sid, isRecording ? 'stop' : 'start'),
-    [user, room, isRecording]);
+  const toggleRecordingCb = useCallback(
+    async () =>
+      await roomService.toggleRecording(
+        user,
+        room.sid,
+        isRecording ? 'stop' : 'start'
+      ),
+    [user, room, isRecording]
+  );
 
-  const titleStyles = {left: '45%'};
+  const titleStyles = { left: '40%' };
   // todo need to render previous speaker in block with all other participants
-  const mainDisplayedParticipant = selectedParticipant as RemoteParticipant || callState.patientParticipant;
+  const mainDisplayedParticipant =
+    (selectedParticipant as RemoteParticipant) || callState.patientParticipant;
 
   return (
     <div className="relative h-full">
-      <h1 className="absolute text-white text-2xl font-bold top-4 z-10" style={titleStyles}>
-        Owl Health
+      <h1
+        className="absolute text-white text-2xl font-bold top-4 z-10"
+        style={titleStyles}
+      >
+        Cloud City Healthcare
       </h1>
       <div
         className={joinClasses(
@@ -126,9 +183,8 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
           isRecording ? 'border-[10px] border-primary' : 'p-[10px]'
         )}
       >
-
         <div className="absolute right-6 min-w-[12rem] w-[15%] h-[16%] flex flex-col z-20">
-          {callState.providerParticipant &&
+          {callState.providerParticipant && (
             <VideoParticipant
               name={visit.ehrProvider.name}
               hasAudio={isAudioEnabled}
@@ -138,8 +194,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               participant={callState.providerParticipant}
               fullScreen
               setDataTrackMessage={setDataTrackMessage}
-            />}
-          {callState.visitorParticipant &&
+            />
+          )}
+          {callState.visitorParticipant && (
             <VideoParticipant
               name={visitorName}
               hasAudio
@@ -147,8 +204,9 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               participant={callState.visitorParticipant}
               fullScreen
               setDataTrackMessage={setDataTrackMessage}
-            />}
-          {callState.providerVisitorParticipant &&
+            />
+          )}
+          {callState.providerVisitorParticipant && (
             <VideoParticipant
               name={providerVisitorName}
               hasAudio
@@ -156,20 +214,21 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
               participant={callState.providerVisitorParticipant}
               fullScreen
               setDataTrackMessage={setDataTrackMessage}
-            />}
+            />
+          )}
         </div>
 
         <div className="w-2/3 h-full">
-            {mainDisplayedParticipant &&
-              <VideoParticipant
-                name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
-                hasAudio
-                hasVideo
-                participant={mainDisplayedParticipant}
-                fullScreen
-                setDataTrackMessage={setDataTrackMessage}
-                />
-            }
+          {mainDisplayedParticipant && (
+            <VideoParticipant
+              name={`${visit.ehrPatient.given_name} ${visit.ehrPatient.family_name}`}
+              hasAudio
+              hasVideo
+              participant={mainDisplayedParticipant}
+              fullScreen
+              setDataTrackMessage={setDataTrackMessage}
+            />
+          )}
         </div>
         <VideoControls
           containerClass="absolute bottom-10 mb-5 bg-[#FFFFFF4A] rounded-lg z-[50]"
@@ -198,7 +257,7 @@ export const VideoConsultation = ({}: VideoConsultationProps) => {
             userRole={user.role}
             userId={user.id}
             showHeader
-            inputPlaceholder={callState.patientName ?? "Send a message"}
+            inputPlaceholder={callState.patientName ?? 'Send a message'}
           />
         </div>
       )}
