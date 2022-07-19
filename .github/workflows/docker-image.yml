@@ -20,16 +20,16 @@ jobs:
     - name: Docker Login
       run: # log into docker hub account
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-  
-    # Build Image from the Dockerfile in Repo
-    - name: Build the Docker image # push The image to the docker hub
-      run: docker build . --file Dockerfile
 
     - name: get-npm-version
       id: package-version
       uses: martinbeentjes/npm-get-version-action@main
       with:
         path: ./
+  
+    # Build Image from the Dockerfile in Repo
+    - name: Build the Docker image # push The image to the docker hub
+      run: docker build . --file Dockerfile --tag $DOCKER_USER/$REPO_NAME:${{steps.package-version.outputs.current-version}}
 
     - name: Get current Version
       run:
@@ -37,4 +37,3 @@ jobs:
 
     - name: Docker Push
       run: docker push $DOCKER_USER/$REPO_NAME:${{steps.package-version.outputs.current-version}}
-
