@@ -12,6 +12,8 @@
 FROM twilio/twilio-cli:3.0.0
 ARG TWILIO_ACCOUNT_SID=sid
 ARG TWILIO_AUTH_TOKEN=token
+ARG GITHUB_SHA_ARG
+ENV GITHUB_SHA=$GITHUB_SHA_ARG
 
 RUN twilio plugins:install @twilio-labs/plugin-serverless
 
