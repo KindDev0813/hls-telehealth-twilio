@@ -54,14 +54,6 @@ installer-build-local:
 	docker build --tag $(INSTALLER_TAG_V) --tag $(INSTALLER_TAG_L) $(DOCKER_EMULATION) --no-cache .
 
 
-installer-push:
-	docker login --username twiliohls
-	docker push $(INSTALLER_TAG_V)
-	docker push $(INSTALLER_TAG_L)
-	docker logout
-	open -a "Google Chrome" https://hub.docker.com/r/twiliohls/$(INSTALLER_NAME)
-
-
 installer-run:
 	docker run --name $(INSTALLER_NAME) --rm --publish 3000:3000  $(DOCKER_EMULATION) \
 	--env ACCOUNT_SID=$(TWILIO_ACCOUNT_SID) --env AUTH_TOKEN=$(TWILIO_AUTH_TOKEN) \

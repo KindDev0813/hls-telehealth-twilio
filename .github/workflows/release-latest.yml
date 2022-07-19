@@ -1,0 +1,27 @@
+name: Docker Image Release Latest CI
+
+on:
+  release:
+    types: [published]
+
+env:
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  REPO_NAME: hls-website-installer
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Docker Login
+      run: # log into docker hub account
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+  
+    # Build Image from the Dockerfile in Repo
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag $DOCKER_USER/$REPO_NAME:latest --build-arg GITHUB_SHA_ARG=$GITHUB_SHA
+
+    - name: Docker Push
+      run: docker push $DOCKER_USER/$REPO_NAME:latest
