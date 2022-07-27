@@ -73,7 +73,7 @@ After installation make sure to start Docker desktop.
     --interactive --tty hls-telehealth-installer
     ```
 
-4. Open http://localhost:3000/installer.html using a broswer.
+4. Open http://localhost:3000/installer/index.html using a broswer.
 
 5. Follow the instructions in the installer to complete installation & configuration.
 

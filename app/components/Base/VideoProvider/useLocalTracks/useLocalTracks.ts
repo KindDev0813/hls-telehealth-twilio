@@ -21,8 +21,9 @@ export default function useLocalTracks() {
     });
   }, []);
 
-  const getLocalVideoTrack = useCallback(async () => {
-    const selectedVideoDeviceId = window.localStorage.getItem(SELECTED_VIDEO_INPUT_KEY);
+  const getLocalVideoTrack = useCallback(async (deviceId?: string) => {
+    const selectedVideoDeviceId = deviceId ? deviceId 
+                                           : window.localStorage.getItem(SELECTED_VIDEO_INPUT_KEY);
 
     const { videoInputDevices } = await getDeviceInfo();
 
@@ -38,6 +39,10 @@ export default function useLocalTracks() {
 
     return Video.createLocalVideoTrack(options).then(newTrack => {
       setVideoTrack(newTrack);
+      window.localStorage.setItem(
+        SELECTED_VIDEO_INPUT_KEY,
+        newTrack.mediaStreamTrack.getSettings().deviceId ?? ''
+      );
       return newTrack;
     });
   }, []);
