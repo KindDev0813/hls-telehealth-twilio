@@ -3,26 +3,19 @@
  *
  * behavior depends on deployment status of the service
  *
- * getAllParams(context)
  * getParam(context, key)
  * setParam(context, key, value) - when running on localhost, sets variable on deployed service
  *
  * include via:
- *   const { getAllParams, getParam, setParam } = require(Runtime.getFunctions()['helper'].path);
+ *   const { getParam, setParam } = require(Runtime.getFunctions()['helper'].path);
  *
  * --------------------------------------------------------------------------------
  */
 const assert = require("assert");
+const path = require("path");
+const fs = require("fs");
 
 const SERVER_START_TIMESTAMP = new Date().toISOString().replace(/.\d+Z$/g, "Z");
-
-/* --------------------------------------------------------------------------------
- * is executing on localhost
- * --------------------------------------------------------------------------------
- */
-function isLocalhost(context) {
-  return context.DOMAIN_NAME.startsWith('localhost:');
-}
 
 /* --------------------------------------------------------------------------------
  * assert executing on localhost
@@ -85,60 +78,74 @@ async function setParam(context, key, value) {
  * --------------------------------------------------------------------------------
  */
 async function getParam(context, key) {
+  const assert = require('assert');
+
+  assert(context.APPLICATION_NAME, 'undefined .env environment variable APPLICATION_NAME!!!');
+
+  if (key !== 'SERVICE_SID' // avoid warning
+    && key !== 'ENVIRONMENT_SID' // avoid warning
+    && context[key]) {
+    return context[key]; // first return context non-null context value
+  }
 
   const client = context.getTwilioClient();
   try {
     switch (key) {
 
-      case 'IS_LOCALHOST': {
-        return isLocalhost(context);
-      }
-
-      case 'SERVICE_SID': {
-        // will throw error when running on localhost, so lookup by name if localhost
-        if (! isLocalhost(context) && context.SERVICE_SID) return context.SERVICE_SID;
-
+      case 'SERVICE_SID':
+      {
+        // return sid only if deployed; otherwise null
         const services = await client.serverless.services.list();
         const service = services.find(s => s.uniqueName === context.APPLICATION_NAME);
 
-        return (service && service.sid) ? service.sid : null;
+        return service ? service.sid : null;
       }
 
-      case 'ENVIRONMENT_SID': {
-        // will throw error when running on localhost, so lookup by name if localhost
-        if (! isLocalhost(context) && context.ENVIRONMENT_SID) return context.ENVIRONMENT_SID;
-
+      case 'APPLICATION_VERSION':
+      {
         const service_sid = await getParam(context, 'SERVICE_SID');
-        if (service_sid === null) {
-          return null; // service not yet deployed
-        }
+        if (service_sid === null) return null; // service not yet deployed, therefore return 'null'
+
+        const environment_sid = await getParam(context, 'ENVIRONMENT_SID');
+        const variables = await client.serverless
+          .services(service_sid)
+          .environments(environment_sid)
+          .variables.list();
+        const variable = variables.find(v => v.key === 'APPLICATION_VERSION');
+
+        return variable ? variable.value : null;
+      }
+
+      case 'ENVIRONMENT_SID':
+      {
+        // return sid only if deployed; otherwise null
+        const service_sid = await getParam(context, 'SERVICE_SID');
+        if (service_sid === null) return null; // service not yet deployed
+
         const environments = await client.serverless
           .services(service_sid)
           .environments.list({limit : 1});
+        assert(environments && environments.length > 0, `error fetching environment for service_sid=${service_sid}!!!`);
 
-        return environments.length > 0 ? environments[0].sid : null;
+        return environments[0].sid;
       }
 
-      case 'ENVIRONMENT_DOMAIN': {
-        // will throw error when running on localhost, so lookup by name if localhost
+      case 'ENVIRONMENT_DOMAIN':
+      {
+        // return domain_name only if deployed; otherwise null
         const service_sid = await getParam(context, 'SERVICE_SID');
-        if (service_sid === null) {
-          return null; // service not yet deployed
-        }
-        const environment_sid = await getParam(context, 'ENVIRONMENT_SID');
+        if (service_sid === null) return null; // service not yet deployed
 
-        const environment = await client.serverless
+        const environments = await client.serverless
           .services(service_sid)
-          .environments(environment_sid)
-          .fetch();
+          .environments.list({limit : 1});
+        assert(environments && environments.length > 0, `error fetching environment for service_sid=${service_sid}!!!`);
 
-        return environment.domainName;
+        return environments[0].domainName;
       }
 
-      case 'TWILIO_API_KEY_SID': {
-        // value set in .env takes precedence
-        if (context.TWILIO_API_KEY_SID) return context.TWILIO_API_KEY_SID
-
+      case 'TWILIO_API_KEY_SID':
+      {
         const apikeys = await client.keys.list();
         let apikey = apikeys.find(k => k.friendlyName === context.APPLICATION_NAME);
         if (apikey) {
@@ -163,19 +170,15 @@ async function getParam(context, key) {
         return apikey.sid;
       }
 
-      case 'TWILIO_API_KEY_SECRET': {
-        // value set in .env takes precedence
-        if (context.TWILIO_API_KEY_SECRET) return context.TWILIO_API_KEY_SECRET
-
+      case 'TWILIO_API_KEY_SECRET':
+      {
         await getParam(context, 'TWILIO_API_KEY_SID');
 
         return context.TWILIO_API_KEY_SECRET;
       }
 
-      case 'TWILIO_CONVERSATIONS_SID': {
-        // value set in .env takes precedence
-        if (context.TWILIO_CONVERSATIONS_SID) return context.TWILIO_CONVERSATIONS_SID
-
+      case 'TWILIO_CONVERSATIONS_SID':
+      {
         const services = await client.conversations.services.list();
         const service = services.find(s => s.friendlyName === context.APPLICATION_NAME);
         if (service) {
@@ -198,15 +201,8 @@ async function getParam(context, key) {
         return sid;
       }
 
-      case 'TWILIO_SENDGRID_API_KEY': {
-        // value set in .env takes precedence
-        return context.TWILIO_SENDGRID_API_KEY
-      }
-
-      case 'TWILIO_SYNC_SID': {
-        // value set in .env takes precedence
-        if (context.TWILIO_SYNC_SID) return context.TWILIO_SYNC_SID
-
+      case 'TWILIO_SYNC_SID':
+      {
         const services = await client.sync.services.list();
         const service = services.find(s => s.friendlyName === context.APPLICATION_NAME);
         if (service) {
@@ -229,10 +225,8 @@ async function getParam(context, key) {
         return sid;
       }
 
-      case 'TWILIO_VERIFY_SID': {
-        // value set in .env takes precedence
-        if (context.TWILIO_SYNC_SID) return context.TWILIO_SYNC_SID
-
+      case 'TWILIO_VERIFY_SID':
+      {
         const services = await client.verify.services.list();
         const service = services.find(s => s.friendlyName === context.APPLICATION_NAME);
         if (service) {
@@ -255,10 +249,6 @@ async function getParam(context, key) {
         return sid;
       }
 
-      case 'SERVER_START_TIMESTAMP': {
-        return SERVER_START_TIMESTAMP;
-      }
-
       default:
         if (key in context) return context[key];
 
@@ -272,50 +262,25 @@ async function getParam(context, key) {
 
 
 /* --------------------------------------------------------------------------------
- * retrieve all environment variable value
- *
- * Note that SERVICE_SID & ENVIRONMENT_SID will return 'null' if not yet deployed
- *
- * parameters:
- * - context: Twilio Runtime context
- *
- * returns
- * - object of all environment variable values
+ * read version attribute from package.json
  * --------------------------------------------------------------------------------
  */
-async function getAllParams(context) {
+async function fetchVersionToDeploy() {
+  const fs = require('fs');
+  const path = require('path');
 
-  const keys_context = Object.keys(context);
-  // keys defined in getParam function above
-  const keys_derived = [
-    'IS_LOCALHOST',
-  ];
+  const fpath = path.join(process.cwd(), 'package.json');
+  const payload = fs.readFileSync(fpath, 'utf8');
+  const json = JSON.parse(payload);
 
-  // to force saving of 'secret'
-  await getParam(context, 'TWILIO_API_KEY_SID');
-
-  const keys_all = keys_context.concat(keys_derived).sort();
-  try {
-
-    const result = {};
-    for (k of keys_all) {
-      if (k === 'getTwilioClient') continue; // exclude getTwilioClient function
-      result[k] = await getParam(context, k);
-    }
-    return result;
-
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
+  return json.version;
 }
 
 
 // --------------------------------------------------------------------------------
 module.exports = {
-  getAllParams,
   getParam,
   setParam,
-  isLocalhost,
+  fetchVersionToDeploy,
   assertLocalhost,
 };

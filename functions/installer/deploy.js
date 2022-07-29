@@ -19,7 +19,7 @@
  * }
  * --------------------------------------------------------------------------------
  */
-const { getParam, getAllParams, isLocalhost, assertLocalhost } = require(Runtime.getFunctions()['helpers'].path);
+const { getParam, setParam, fetchVersionToDeploy, assertLocalhost } = require(Runtime.getFunctions()['helpers'].path);
 const { TwilioServerlessApiClient } = require('@twilio-labs/serverless-api');
 const { getListOfFunctionsAndAssets } = require('@twilio-labs/serverless-api/dist/utils/fs');
 const fs = require('fs');
@@ -100,14 +100,18 @@ async function deploy(context, event) {
     .update({ uiEditable: true });
 
   console.log(THIS, 'Provisioning dependent Twilio services');
-  const params = await getAllParams(context);
-  console.log(THIS, params);
+  await getParam(context, 'TWILIO_API_KEY_SID');
+  await getParam(context, 'TWILIO_CONVERSATIONS_SID');
+  await getParam(context, 'TWILIO_SYNC_SID');
+  await getParam(context, 'TWILIO_VERIFY_SID');
 
   console.log(THIS, 'Seed application data');
   const summary = await seedData(context);
   console.log(THIS, summary);
 
-  console.log(THIS, `Completed deployment of ${application_name}`);
+  const version_to_deploy = await fetchVersionToDeploy();
+  await setParam(context, 'APPLICATION_VERSION', version_to_deploy);
+  console.log(THIS, `Completed deployment of ${application_name}:${version_to_deploy}`);
 
   return {
     service_sid: service_sid
@@ -214,7 +218,7 @@ async function seedData(context) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   };
-  const http_protocol = isLocalhost(context) ? http : https;
+  const http_protocol = context.DOMAIN_NAME.startsWith('localhost:') ? http : https;
 
   return new Promise((resolve, reject) => {
     const request = http_protocol.request(options, (response) => {

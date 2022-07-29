@@ -141,11 +141,18 @@ run-app:
 
 
 run-serverless:
-	npm install
 	@if [[ ! -f .env.localhost ]]; then \
-      echo ".env.localhost needs to be copied from .env and value set!!! aborting..."; \
+      echo "missing .env.localhost, creating from .env ..."; \
+      cp .env .env.localhost; \
     fi
 	@[[ -f .env.localhost ]]
+	sed -i '' '/^ACCOUNT_SID/d' .env.localhost
+	sed -i '' '/^AUTH_TOKEN/d' .env.localhost
+	sed -i '' '/^DISABLE_AUTH_FOR_LOCALHOST/d' .env.localhost
+	sed -i '' "1s/^/DISABLE_AUTH_FOR_LOCALHOST=true\\n/" .env.localhost
+	sed -i '' "1s/^/ACCOUNT_SID=${TWILIO_ACCOUNT_SID}\\n/" .env.localhost
+	sed -i '' "1s/^/AUTH_TOKEN=${TWILIO_AUTH_TOKEN}\\n/" .env.localhost
+	npm install
 	twilio serverless:start --env=.env.localhost
 
 
