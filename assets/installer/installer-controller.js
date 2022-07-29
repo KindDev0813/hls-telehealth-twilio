@@ -161,7 +161,7 @@ async function validateAdministratorPhone(field, value) {
 function checkApplication() {
     const THIS = checkApplication.name;
     try {
-         fetch('/installer/check-application', {
+         fetch('/installer/check', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -259,7 +259,7 @@ function deployApplication(e) {
 
 //    return;
 
-    fetch('/installer/deploy-application', {
+    fetch('/installer/deploy', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
