@@ -17,6 +17,8 @@ import router from 'next/router';
 import { Input } from '../Input';
 import { Uris } from '../../services/constants';
 import { useVisitContext } from '../../state/VisitContext';
+import useVideoContext from '../Base/VideoProvider/useVideoContext/useVideoContext';
+
 
 export interface AudioVideoSettingsProps {
   className?: string;
@@ -48,6 +50,8 @@ export const AudioVideoSettings = ({
   toggleRecording,
 }: AudioVideoSettingsProps) => {
   const [videoDevices, setVideoDevices] = useState<ReadonlyArray<Device>>([]);
+  const { getLocalVideoTrack } = useVideoContext();
+
   const [audioInputDevices, setAudioInputDevices] = useState<
     ReadonlyArray<Device>
   >([]);
@@ -58,6 +62,7 @@ export const AudioVideoSettings = ({
   // Flex useStates
   const [flexEnabled, setFlexEnabled] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>('');
   const [isPhoneDigits, setIsPhoneDigits] = useState<boolean>(true);
   const [isValidPhoneFormat, setIsValidPhoneFormat] = useState<boolean>(true);
   const { user, visit } = useVisitContext();
@@ -118,6 +123,11 @@ export const AudioVideoSettings = ({
     }
   }
 
+  function changeVideoTrack(e) {
+    getLocalVideoTrack(e.target.value);
+    setSelectedVideoDevice(e.target.value);
+  }
+
   function handleChange(e) {
     // Todo: Handle Device Change.
     console.log(e.target.value);
@@ -151,22 +161,33 @@ export const AudioVideoSettings = ({
 
   // Gets machine's Audio and Video devices
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      const videoInputDevices: Device[] = devices.filter(
-        (device) => device.kind === 'videoinput'
-      );
-      const audioInputs: Device[] = devices.filter(
-        (device, index, array) =>
-          device.kind === 'audioinput' && !device.label.includes('Virtual')
-      );
-      const audioOutputs: Device[] = devices.filter(
-        (device) =>
-          device.kind === 'audiooutput' && !device.label.includes('Virtual')
-      );
-      setVideoDevices(videoInputDevices);
-      setAudioInputDevices(audioInputs);
-      setAudioOutputDevices(audioOutputs);
-    });
+    getLocalVideoTrack().then(track =>
+     {
+      setSelectedVideoDevice(track.mediaStreamTrack.getSettings().deviceId);
+
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+
+        const videoInputDevices: Device[] = devices.filter(
+          (device) => device.kind === 'videoinput'
+        );
+        const audioInputs: Device[] = devices.filter(
+          (device, index, array) =>
+            device.kind === 'audioinput' && !device.label.includes('Virtual')
+        );
+        const audioOutputs: Device[] = devices.filter(
+          (device) =>
+            device.kind === 'audiooutput' && !device.label.includes('Virtual')
+        );
+        setVideoDevices(videoInputDevices);
+        setAudioInputDevices(audioInputs);
+        setAudioOutputDevices(audioOutputs);
+      });
+        
+
+
+     }
+    );
+
   }, [isMicOn]);
 
   const Label = ({ children }) => (
@@ -187,8 +208,9 @@ export const AudioVideoSettings = ({
         <Select
           isDark={isDark}
           key={'videoInput'}
-          onChange={handleChange}
+          onChange={changeVideoTrack}
           className="w-full"
+          value={selectedVideoDevice}
           options={videoDevices.map((device) => ({
             label: device.label ? device.label : 'System Default (Webcam)',
             value: device.deviceId,

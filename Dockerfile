@@ -12,6 +12,8 @@
 FROM twilio/twilio-cli:3.0.0
 ARG TWILIO_ACCOUNT_SID=sid
 ARG TWILIO_AUTH_TOKEN=token
+ARG GITHUB_SHA_ARG
+ENV GITHUB_SHA=$GITHUB_SHA_ARG
 
 RUN twilio plugins:install @twilio-labs/plugin-serverless
 
@@ -24,7 +26,7 @@ RUN npm run export
 WORKDIR /hls-installer
 
 # copy github files needed for running locally
-COPY Dockerfile package.json .env /hls-installer
+COPY Dockerfile package.json .env /hls-installer/
 COPY assets /hls-installer/assets
 COPY functions /hls-installer/functions
 RUN mkdir assets/app

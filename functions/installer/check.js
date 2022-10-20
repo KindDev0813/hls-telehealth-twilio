@@ -18,19 +18,20 @@
  * --------------------------------------------------------------------------------
  */
 const assert = require('assert');
-const { getParam, assertLocalhost } = require(Runtime.getFunctions()['helpers'].path);
+const { getParam, fetchVersionToDeploy, assertLocalhost } = require(Runtime.getFunctions()['helpers'].path);
 
 exports.handler = async function (context, event, callback) {
-  const THIS = 'check-application';
+  const THIS = 'check';
 
   console.time(THIS);
   assertLocalhost(context);
   try {
 
-    const application_name   = await getParam(context, 'APPLICATION_NAME');
-    const service_sid        = await getParam(context, 'SERVICE_SID');
-    const environment_domain = service_sid ? await getParam(context, 'ENVIRONMENT_DOMAIN') : null;
-    const application_url    = service_sid
+    const application_name    = await getParam(context, 'APPLICATION_NAME');
+    const service_sid         = await getParam(context, 'SERVICE_SID');
+    const application_version = await getParam(context, 'APPLICATION_VERSION');
+    const environment_domain  = service_sid ? await getParam(context, 'ENVIRONMENT_DOMAIN') : null;
+    const application_url     = service_sid
       ? `https:/${environment_domain}/administration.html`
       : `administration.html`; // relative url when on localhost and serice is not yet deployed
 
@@ -38,6 +39,10 @@ exports.handler = async function (context, event, callback) {
 
     const response = {
       deploy_state   : service_sid ? 'DEPLOYED' : 'NOT-DEPLOYED',
+      version: {
+        deployed : application_version,
+        to_deploy: await fetchVersionToDeploy(),
+      },
       service_sid    : service_sid ? service_sid : '',
       application_url: service_sid ? application_url : '',
     }

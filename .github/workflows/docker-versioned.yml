@@ -1,0 +1,38 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  REPO_NAME: hls-telehealth-installer
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+    - name: Docker Login
+      run: # log into docker hub account
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: get-npm-version
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@main
+      with:
+        path: ./
+  
+    # Build Image from the Dockerfile in Repo
+    - name: Build the Docker image # push The image to the docker hub
+      run: docker build . --file Dockerfile --tag $DOCKER_USER/$REPO_NAME:${{steps.package-version.outputs.current-version}} --build-arg GITHUB_SHA_ARG=$GITHUB_SHA
+
+    - name: Get current Version
+      run:
+        echo "${{steps.package-version.outputs.current-version}}"
+
+    - name: Docker Push
+      run: docker push $DOCKER_USER/$REPO_NAME:${{steps.package-version.outputs.current-version}}

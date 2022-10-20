@@ -54,14 +54,6 @@ installer-build-local:
 	docker build --tag $(INSTALLER_TAG_V) --tag $(INSTALLER_TAG_L) $(DOCKER_EMULATION) --no-cache .
 
 
-installer-push:
-	docker login --username twiliohls
-	docker push $(INSTALLER_TAG_V)
-	docker push $(INSTALLER_TAG_L)
-	docker logout
-	open -a "Google Chrome" https://hub.docker.com/r/twiliohls/$(INSTALLER_NAME)
-
-
 installer-run:
 	docker run --name $(INSTALLER_NAME) --rm --publish 3000:3000  $(DOCKER_EMULATION) \
 	--env ACCOUNT_SID=$(TWILIO_ACCOUNT_SID) --env AUTH_TOKEN=$(TWILIO_AUTH_TOKEN) \
@@ -149,11 +141,18 @@ run-app:
 
 
 run-serverless:
-	npm install
 	@if [[ ! -f .env.localhost ]]; then \
-      echo ".env.localhost needs to be copied from .env and value set!!! aborting..."; \
+      echo "missing .env.localhost, creating from .env ..."; \
+      cp .env .env.localhost; \
     fi
 	@[[ -f .env.localhost ]]
+	sed -i '' '/^ACCOUNT_SID/d' .env.localhost
+	sed -i '' '/^AUTH_TOKEN/d' .env.localhost
+	sed -i '' '/^DISABLE_AUTH_FOR_LOCALHOST/d' .env.localhost
+	sed -i '' "1s/^/DISABLE_AUTH_FOR_LOCALHOST=true\\n/" .env.localhost
+	sed -i '' "1s/^/ACCOUNT_SID=${TWILIO_ACCOUNT_SID}\\n/" .env.localhost
+	sed -i '' "1s/^/AUTH_TOKEN=${TWILIO_AUTH_TOKEN}\\n/" .env.localhost
+	npm install
 	twilio serverless:start --env=.env.localhost
 
 

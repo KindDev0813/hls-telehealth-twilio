@@ -161,7 +161,7 @@ async function validateAdministratorPhone(field, value) {
 function checkApplication() {
     const THIS = checkApplication.name;
     try {
-         fetch('/installer/check-application', {
+         fetch('/installer/check', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -170,22 +170,23 @@ function checkApplication() {
         })
            .then((response) => response.json())
            .then((response) => {
-               console.log(THIS, 'server returned:', response);
-               $('#service-deploy .button').removeClass('loading');
-               $('.service-loader').hide();
-               if (response.deploy_state === 'NOT-DEPLOYED') {
-                   $('#service-deploy-button').text('Deploy Telehealth Application');
-                   $('#service-deploy').show();
-               } else if (response.deploy_state === 'DEPLOYED') {
-                   $('#service-deploy-button').text('Re-deploy Telehealth Application');
-                   $('#service-deploy').show();
-                   $('#service-deploying').hide();
-                   $('#service-deployed').show();
-                   $('#application-open').attr('href', response.application_url);
-                   $('#service-open').attr('href', `https://www.twilio.com/console/functions/api/start/${response.service_sid}`);
-               } else {
-                   throw new Error(response);
-               }
+             console.log(THIS, 'server returned:', response);
+             $('#service-deploy .button').removeClass('loading');
+             $('.service-loader').hide();
+             if (response.deploy_state === 'NOT-DEPLOYED') {
+               $('#service-deploy-button').text('Deploy Telehealth Application');
+               $('#service-deploy').show();
+               $('#service-deployed').hide();
+             } else if (response.deploy_state === 'DEPLOYED') {
+               $('#service-deploy-button').text('Re-deploy Telehealth Application');
+               $('#service-deploy').show();
+               $('#service-deploying').hide();
+               $('#service-deployed').show();
+               $('#application-open').attr('href', response.application_url);
+               $('#service-open').attr('href', `https://www.twilio.com/console/functions/api/start/${response.service_sid}`);
+             } else {
+               throw new Error(response);
+             }
            });
     } catch (err) {
         console.log(THIS, err);
@@ -254,10 +255,11 @@ function deployApplication(e) {
 //    $('.service-loader.button-loader').show();
     $('#service-deploy-button').prop('disabled', true);
     $('#service-deploying').show();
+    $('#service-deployed').hide();
 
 //    return;
 
-    fetch('/installer/deploy-application', {
+    fetch('/installer/deploy', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
