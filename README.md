@@ -54,7 +54,7 @@ Replace `${TWILIO_ACCOUNT_SID}` and `${TWILIO_AUTH_TOKEN}` with that of your tar
 and execute the following in your terminal window.
 
 ```shell
-docker run --name hls-telehealth-installer --rm --publish 3000:3000  \
+docker run --pull=always --name hls-telehealth-installer --rm --publish 3000:3000  \
 --env ACCOUNT_SID=${TWILIO_ACCOUNT_SID} --env AUTH_TOKEN=${TWILIO_AUTH_TOKEN} \
 --interactive --tty twiliohls/hls-telehealth-installer
 ```
